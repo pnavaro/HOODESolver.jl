@@ -1,10 +1,10 @@
 using Documenter
-using HighOscillatoryProblems
+using HighlyOscillatoryProblems
 
 makedocs(
-    sitename = "HighOscillatoryProblems",
+    sitename = "HighlyOscillatoryProblems",
     format = Documenter.HTML(),
-    modules = [HighOscillatoryProblems]
+    modules = [HighlyOscillatoryProblems]
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.

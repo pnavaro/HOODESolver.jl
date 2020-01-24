@@ -1,3 +1,3 @@
-# HighOscillatoryProblems.jl
+# HighlyOscillatoryProblems.jl
 
-Documentation for HighOscillatoryProblems.jl
+Documentation for HighlyOscillatoryProblems.jl

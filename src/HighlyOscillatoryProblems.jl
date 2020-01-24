@@ -1,4 +1,4 @@
-module HighOscillatoryProblems
+module HighlyOscillatoryProblems
 
 greet() = print("Hello World!")
 

@@ -1,1 +1,1 @@
-# HighOscillatoryProblems
+# HighlyOscillatoryProblems
