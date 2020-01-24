@@ -1,6 +1,7 @@
 .test_template: &test_definition
-  - master
-  - devel
+  only:
+    - master
+    - devel
   script:
     - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("HighlyOscillatoryProblems"); Pkg.test("HighlyOscillatoryProblems"; coverage = true)'
     
