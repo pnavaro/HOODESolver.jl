@@ -1,0 +1,25 @@
+.test_template: &test_definition
+  - master
+  - devel
+  script:
+    - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("HighlyOscillatoryProblems"); Pkg.test("HighlyOscillatoryProblems"; coverage = true)'
+    
+
+test:1.3:
+  image: julia:1.3
+  <<: *test_definition
+
+pages:
+  image: julia:1.3
+  stage: deploy
+  script:
+    - apt-get update -qq && apt-get install -y git  # needed by Documenter
+    - julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("HighlyOscillatoryProblems");'  # rebuild Julia (can be put somewhere else I'm sure
+    - julia -e 'using Pkg; import MyPackage; Pkg.add("Documenter")'  # install Documenter
+    - julia --color=yes docs/make.jl  # make documentation
+    - mv docs/build public  # move to the directory picked up by Gitlab pages
+  artifacts:
+    paths:
+      - public
+  only:
+    - master
