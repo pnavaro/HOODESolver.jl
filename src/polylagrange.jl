@@ -18,32 +18,8 @@ function _getpolylagrange(k::Int64, j::Int64)
     end
     return result
 end
-function _getpolylagrange(k::Int64, j::Int64, dec::Int64)
-    @assert k <= j && dec <= j "_getpolylagrange(k=$k,j=$j,dec=$dec) k and dec must be less or equal to j"
-k_2 = (k+dec)%(j+1)-dec
-
-    result = Poly([one(Complex{Rational{BigInt}})])
-    for l=0:j
-        if l != k
-            l_2 = (l+dec)%(j+1)-dec
-             result *= Poly([l_2//1,1//1])/(l_2-k_2)
-        end
-    end
-    return result
-end
-
-# for j=0:10
-#     for k=0:j
-#         println("(k,j)=($k,$j) res=$(getpolylagrange(k,j))")
-#     end
-# end
 struct PolyLagrange
-    poly
-    polynum
-#    polyexp
     respe
-    respe_neg
-    ressimple
     function PolyLagrange(order::Int64, eps, lTau, dt)
       #  println("PolyLagrange order=$order eps=$eps lTau[1:3]=$(lTau[1:3]), dt=$dt")
         zer = zero(Complex{Rational{BigInt}})
@@ -63,54 +39,22 @@ struct PolyLagrange
             end
             for k=0:j
                 res = view(respe,k+1,j+1,:)
-                res_neg = view(respe_neg,k+1,j+1,:)
-                pol = poly[k+1,j+1]
+                pol = _getpolylagrange(k, j)
                 pol2 = pol(Poly([0//1,1//dt]))
-                pol2_neg = pol(Poly([0//1,-1//dt]))
-                #               println("pol2=$pol2")
+
                 for ind=1:nTau
                     ell = lTau[ind]
-                    if ell == 0
+                    polint = if ell == 0
                         # in this case the exponentiel value is always 1
-                        polint = Polynomials.polyint(pol2)
-                        polint_neg = Polynomials.polyint(pol2_neg)
- #                       println("k=$k, j=$j, ell=$ell, pol=$(polint) res=$(polint(dt)),$(convert(Complex{Float64},polint(dt)))")
- #                       println("k=$k, j=$j, ell=$ell, pol=$(convert(Poly{Complex{Float64}},polint))")
-                   else
-                    polint = polyint(PolyExp(pol2, big(im*ell/eps), big(-im*ell*dt/eps) ))
-                    polint_neg = polyint(PolyExp(pol2_neg, big(im*ell/eps), big(im*ell*dt/eps) ))
-                    if ind == 13 && (j == order || j == 6)
-                        println("j=$j k=$k ind=$ind polint=$polint")
-                        println("j=$j k=$k ind=$ind polint=$polint_neg")
+                        Polynomials.polyint(pol2)
+                    else
+                        polyint(PolyExp(pol2, big(im*ell/eps), big(-im*ell*dt/eps)))
                     end
-                        #                       println("k=$k, j=$j, ell=$ell, pol=$(polint.p) res=$(polint.p(dt)),$(convert(Complex{Float64},polint.p(dt)))")
- #                      println("k=$k, j=$j, ell=$ell, pol=$(convert(Poly{Complex{Float64}},polint.p))")
-                   end
-                   res[ind] = polint(dt)-polint(0)
-                   res_neg[ind] = polint_neg(-dt)-polint_neg(0)
-                   if ind == 13 && (j == order || j == 6)
-                    println("j=$j k=$k ind=$ind res=$(res[ind])")
-                    println("j=$j k=$k ind=$ind res_neg=$(res_neg[ind])")
-                   end
-
- #                  println("polint=$(string(polint))")
- #                  println("k=$k, j=$j, ell=$ell, res=$(convert(Complex{Float64},res[ind]))")
+                    res[ind] = polint(dt)-polint(0)
                 end
-                for z=0:j
-                    p = polynum[k+1,j+1,z+1]
-                    p_2 = p(Poly([0//1,1//dt]))
-                    p_int = Polynomials.polyint(p_2)
-                    ressimple[k+1,j+1,z+1] = (p_int(dt)-p_int(0))/dt
-                end
-
-
- #                println("polyLagrange(k=$k,j=$j)=$(poly[k+1,j+1])")
             end
         end
-        
-  #      println("ressimple=$ressimple")
-
-        return new(poly, polynum, respe, respe_neg, ressimple)
+        return new(respe)
     end
 end
 
