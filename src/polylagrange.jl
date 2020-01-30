@@ -1,5 +1,5 @@
 #=
-PolyLagrangeOld:
+polylagrange:
 - Julia version: 
 - Author: ymocquar
 - Date: 2019-11-25
@@ -8,8 +8,8 @@ using Polynomials
 import Base: show, *, +
 
 
-function _getPolyLagrangeOld(k::Int64, j::Int64)
-    @assert k <= j "_getPolyLagrangeOld(k=$k,j=$j) k must be less or equal to j"
+function _getpolylagrange(k::Int64, j::Int64)
+    @assert k <= j "_getpolylagrange(k=$k,j=$j) k must be less or equal to j"
     result = Poly([one(Complex{Rational{BigInt}})])
     for l=0:j
         if l != k
@@ -18,8 +18,8 @@ function _getPolyLagrangeOld(k::Int64, j::Int64)
     end
     return result
 end
-function _getPolyLagrangeOld(k::Int64, j::Int64, dec::Int64)
-    @assert k <= j && dec <= j "_getPolyLagrangeOld(k=$k,j=$j,dec=$dec) k and dec must be less or equal to j"
+function _getpolylagrange(k::Int64, j::Int64, dec::Int64)
+    @assert k <= j && dec <= j "_getpolylagrange(k=$k,j=$j,dec=$dec) k and dec must be less or equal to j"
 k_2 = (k+dec)%(j+1)-dec
 
     result = Poly([one(Complex{Rational{BigInt}})])
@@ -34,18 +34,18 @@ end
 
 # for j=0:10
 #     for k=0:j
-#         println("(k,j)=($k,$j) res=$(getPolyLagrangeOld(k,j))")
+#         println("(k,j)=($k,$j) res=$(getpolylagrange(k,j))")
 #     end
 # end
-struct PolyLagrangeOld
+struct PolyLagrange
     poly
     polynum
 #    polyexp
     respe
     respe_neg
     ressimple
-    function PolyLagrangeOld(order::Int64, eps, lTau, dt)
-      #  println("PolyLagrangeOld order=$order eps=$eps lTau[1:3]=$(lTau[1:3]), dt=$dt")
+    function PolyLagrange(order::Int64, eps, lTau, dt)
+      #  println("PolyLagrange order=$order eps=$eps lTau[1:3]=$(lTau[1:3]), dt=$dt")
         zer = zero(Complex{Rational{BigInt}})
         poly = repeat([Poly([zer])], order+1, order+1)
         polynum = repeat([Poly([zer])], order+1, order+1, order+1)
@@ -56,9 +56,9 @@ struct PolyLagrangeOld
 
          for j=0:order
             for k=0:j
-                poly[k+1,j+1] = pol = _getPolyLagrangeOld(k, j)
+                poly[k+1,j+1] = pol = _getpolylagrange(k, j)
                 for z=0:j
-                    polynum[k+1,j+1,z+1] = _getPolyLagrangeOld(k, j, z)
+                    polynum[k+1,j+1,z+1] = _getpolylagrange(k, j, z)
                 end
             end
             for k=0:j
@@ -104,7 +104,7 @@ struct PolyLagrangeOld
                 end
 
 
- #                println("PolyLagrangeOld(k=$k,j=$j)=$(poly[k+1,j+1])")
+ #                println("polyLagrange(k=$k,j=$j)=$(poly[k+1,j+1])")
             end
         end
         
@@ -114,9 +114,9 @@ struct PolyLagrangeOld
     end
 end
 
-# getPolyLagrangeOld( par::PolyLagrangeOld, k, j) = view(par.poly, k, j, 1:(j+1))
-getPolyLagrangeOld( par::PolyLagrangeOld, k, j) = par.poly[k+1, j+1]
-getPolyLagrangeOld( par::PolyLagrangeOld, k, j, dec) = par.polynum[k+1, j+1, dec+1]
+# getpolylagrange( par::PolyLagrange, k, j) = view(par.poly, k, j, 1:(j+1))
+getpolylagrange( par::PolyLagrange, k, j) = par.poly[k+1, j+1]
+getpolylagrange( par::PolyLagrange, k, j, dec) = par.polynum[k+1, j+1, dec+1]
 
 
 """
