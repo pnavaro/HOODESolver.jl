@@ -21,27 +21,13 @@ end
 struct PolyLagrange
     respe
     function PolyLagrange(order::Int64, eps, lTau, dt)
-      #  println("PolyLagrange order=$order eps=$eps lTau[1:3]=$(lTau[1:3]), dt=$dt")
-        zer = zero(Complex{Rational{BigInt}})
-        poly = repeat([Poly([zer])], order+1, order+1)
-        polynum = repeat([Poly([zer])], order+1, order+1, order+1)
         nTau = size(lTau,1)
         respe = zeros(Complex{BigFloat}, order+1, order+1, nTau)
-        respe_neg = zeros(Complex{BigFloat}, order+1, order+1, nTau)
-        ressimple = zeros(Rational{BigInt}, order+1, order+1, order+1)
-
          for j=0:order
-            for k=0:j
-                poly[k+1,j+1] = pol = _getpolylagrange(k, j)
-                for z=0:j
-                    polynum[k+1,j+1,z+1] = _getpolylagrange(k, j, z)
-                end
-            end
-            for k=0:j
+             for k=0:j
                 res = view(respe,k+1,j+1,:)
                 pol = _getpolylagrange(k, j)
                 pol2 = pol(Poly([0//1,1//dt]))
-
                 for ind=1:nTau
                     ell = lTau[ind]
                     polint = if ell == 0
@@ -57,12 +43,6 @@ struct PolyLagrange
         return new(respe)
     end
 end
-
-# getpolylagrange( par::PolyLagrange, k, j) = view(par.poly, k, j, 1:(j+1))
-getpolylagrange( par::PolyLagrange, k, j) = par.poly[k+1, j+1]
-getpolylagrange( par::PolyLagrange, k, j, dec) = par.polynum[k+1, j+1, dec+1]
-
-
 """
     PolyExp(p::Vector{T}, a::T, b::T)
     PolyExp(pol::Poly{T},a::T,b::T)
@@ -157,22 +137,15 @@ function polyint(pe::PolyExp)
     end
     return PolyExp( pol, pe.a, pe.b)
 end
-
 polyval(pe::PolyExp, v::AbstractArray) = map(x->polyval(pe, x), v)
-
 polyval(pe::PolyExp, x::Number) = pe.p(x) * exp(pe.a*x + pe.b)
-
 (pe::PolyExp)(x) = polyval(pe, x)
-
 coeffs(pe::PolyExp) = vcat(Polynomials.coeffs(pe.p), pe.a, pe.b)
-
 function polyint(p::PolyExp, v_begin::Number, v_end::Number )
     pol = polyint(p)
     return pol(v_end)-pol(v_begin)
 end
-
 *( p1::PolyExp, p2::PolyExp )=PolyExp(p1.p*p2.p,p1.a+p2.a,p1.b+p2.b)
-
 function +( p1::PolyExp, p2::PolyExp )
     @assert (p1.a == p2.a && p1.b == p2.b) "for adding exponents must be equal"
     return PolyExp(p1.p+p2.p,p1.a,p1.b)
