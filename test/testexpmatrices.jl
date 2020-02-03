@@ -1,6 +1,7 @@
 
 include("../src/expmatrices.jl")
 using LinearAlgebra
+using Random
 using Test
 
 
@@ -26,18 +27,23 @@ function testexp()
             @test isapprox( resRef, res, atol=1e-76*i)
             sens *= -1
         end
-
-
+        b = [ 0 0 0 1; 0 0 -1 0; 0 1 0 0;-1 0 0 0]
         for i=1:20
-            B=rand(4,4)
+            C=rand(4,4)*i
+            B = b*i
+            @test isapprox(exp(C), _expm1(C), rtol=1e-14)
+            @test isapprox(exp(10C), _expm1(10C), rtol=1e-13)
+            @test isapprox(exp(100C), _expm1(100C), rtol=1e-12)
+            @test isapprox(exp(1000C), _expm1(1000C), rtol=1e-11)
+            @test isapprox(exp(10000C), _expm1(10000C), rtol=1e-10)
             @test isapprox(exp(B), _expm1(B), rtol=1e-14)
             @test isapprox(exp(10B), _expm1(10B), rtol=1e-13)
             @test isapprox(exp(100B), _expm1(100B), rtol=1e-12)
+            @test isapprox(exp(1000B), _expm1(1000B), rtol=1e-11)
+            @test isapprox(exp(10000B), _expm1(10000B), rtol=1e-10)
+
         end
     end
-        
-
-
 end
 
 testexp()
