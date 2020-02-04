@@ -1,5 +1,6 @@
 include("../src/coefexp_ab.jl")
 include("datacoefexp.jl")
+using LinearAlgebra
 using Test
 function testcoefexp_ab()
     
