@@ -73,7 +73,7 @@ struct CoefExpAB
         eps_rat = rationalize(N, epsilon, coef*Base.eps(epsilon))
         dt_rat = rationalize(N, dt, coef*Base.eps(dt))
         if T == BigFloat
-            prec = precision()
+            prec = precision(BigFloat)
             setprecision(1024)
         end
         list_tau = [collect(0:n_tau / 2 - 1); collect(-n_tau / 2:-1)]
