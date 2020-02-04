@@ -33,7 +33,7 @@ struct CoefExpAB
         pol_x = Poly([0//1,1//dt])
         for j=0:order
             for k=0:j
-                res = view(tab_coef,k+1,j+1,:)
+                res = view(tab_coef,j+1,k+1,:)
                 pol = getpolylagrange(k, j, N)
                 pol2 = pol(pol_x)
                 for ind=1:nTau
