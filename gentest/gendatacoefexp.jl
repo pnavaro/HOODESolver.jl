@@ -42,6 +42,7 @@ function print_for_test(order, epsilon::Rational{BigInt}, n_tau, dt::Rational{Bi
             println("")
         end
         println("]")
+        println("    println(\"trace$j \")")
     end
     println("    return tabres")
     println("end")
