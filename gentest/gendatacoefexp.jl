@@ -30,14 +30,14 @@ function print_for_test(order, epsilon::Rational{BigInt}, n_tau, dt::Rational{Bi
         for i = 1:ordp1
             print("    ")
             res = view(par.tab_coef, j, i, :)
-            if i <= j
-                for ell=1:n_tau
+            for ell=1:n_tau
+                if i <= j
                     _printnumstr(real(res[ell]))
                     print("+ im * ")
                     _printnumstr(imag(res[ell]))
+                else
+                    print(" 0")
                 end
-            else
-                print(" 0")
             end
             println("")
         end
