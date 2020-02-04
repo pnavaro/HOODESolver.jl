@@ -102,7 +102,8 @@ struct CoefExpAB
         if prec != 0
             setprecision(prec)
         end
-        return new(T.(tab_coef))
+        # conversion to the new precision
+        return new(T.(real(tab_coef)) + im * T.(imag(tab_coef)))
     end
 end
 
