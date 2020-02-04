@@ -47,16 +47,16 @@ struct CoefExpAB
                         polyint(pol3)
                     end
                     res[ind] = pol_int(dt)-pol_int(0)
-                    if j==order && k in [3,5,7] && ind==2
+ #                   if j==order && k in [3,5,7] && ind==2
                     #     println("epsilon=$epsilon dt=$dt")
                     #     println("j=$j k=$k ind=$ind pol=$pol")
                     #     println("j=$j k=$k ind=$ind pol2=$pol2")
                     #     println("j=$j k=$k ind=$ind pol3=$pol3")
                     #    println("j=$j k=$k ind=$ind pol_int=$pol_int")
-                    println("pol_int(0)=$(pol_int(0))")
-                    println("pol_int(dt)=$(pol_int(dt))")
+ #                   println("pol_int(0)=$(pol_int(0))")
+ #                   println("pol_int(dt)=$(pol_int(dt))")
                     #     println("2 j=$j k=$k ind=$ind res=$(res[ind])")
-                    end
+ #                   end
 
                 end
             end
