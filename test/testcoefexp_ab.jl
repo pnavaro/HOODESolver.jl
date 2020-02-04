@@ -10,7 +10,7 @@ function testcoefexp_ab()
 
     println("norm = $(norm(par.tab_coef-tab, Inf))")
 
-    @test approx.(par.tab_coef, tab, atol=1e-70, rtol=1e-70)
+    @test isapprox.(par.tab_coef, tab, atol=1e-70, rtol=1e-70)
 end
 
 testcoefexp_ab()
