@@ -26,15 +26,15 @@ function print_for_test(order, epsilon::Rational{BigInt}, n_tau, dt::Rational{Bi
     println("function get_coef_ab_for_test()")
     println("    tabres = zeros(Complex{BigFloat}, $ordp1, $ordp1, $n_tau)")
     for j = 1:ordp1
-        println("    tabres[$j, :, :] .= [")
-        for i = 1:ordp1
+        println("    tabres[ :, :, $j] .= [")
+        for i_ell=1:n_tau
             print("    ")
-            res = view(par.tab_coef, j, i, :)
-            for ell=1:n_tau
+            res = view(par.tab_coef, i_ell, :, j)
+            for i = 1:ordp1
                 if i <= j
-                    _printnumstr(real(res[ell]))
+                    _printnumstr(real(res[i]))
                     print("+ im * ")
-                    _printnumstr(imag(res[ell]))
+                    _printnumstr(imag(res[i]))
                 else
                     print(" 0")
                 end

@@ -22,22 +22,22 @@ function getpolylagrange(k::Int64, j::Int64, N::DataType)
 end
 struct CoefExpAB
     tab_coef
-    function CoefExpAB(order::Int64, epsilon::AbstractFloat, lTau, dt::AbstractFloat)
-        nTau = size(lTau,1)
+    function CoefExpAB(order::Int64, epsilon::AbstractFloat, list_tau, dt::AbstractFloat)
+        n_tau = size(list_tau,1)
         T = typeof(epsilon)
-        tab_coef = zeros(Complex{T}, order+1, order+1, nTau)
+        tab_coef = zeros(Complex{T}, n_tau, order+1, order+1)
         N = T == BigFloat ? BigInt : Int64
         epsilon = rationalize(N,epsilon, tol=epsilon*10*Base.eps(T) )
         dt = rationalize(N,dt, tol=dt*10*Base.eps(T) )
-        lTau = rationalize.(N,lTau)
+        list_tau = rationalize.(N,list_tau)
         pol_x = Poly([0//1,1//dt])
         for j=0:order
             for k=0:j
-                res = view(tab_coef,j+1,k+1,:)
+                res = view(tab_coef, :, k+1, j+1)
                 pol = getpolylagrange(k, j, N)
                 pol2 = pol(pol_x)
-                for ind=1:nTau
-                    ell = lTau[ind]
+                for ind=1:n_tau
+                    ell = list_tau[ind]
                     pol3 = undef
                     pol_int = if ell == 0
                         # in this case the exponentiel value is always 1
@@ -66,19 +66,19 @@ struct CoefExpAB
 end
 struct CoefExpABfloat
     tab_coef
-    function CoefExpABfloat(order::Int64, epsilon::AbstractFloat, lTau, dt)
-        nTau = size(lTau,1)
+    function CoefExpABfloat(order::Int64, epsilon::AbstractFloat, list_tau, dt)
+        n_tau = size(list_tau,1)
         T=typeof(epsilon)
         N = T == BigFloat ? BigInt : Int64
-        tab_coef = zeros(Complex{T}, order+1, order+1, nTau)
+        tab_coef = zeros(Complex{T}, n_tau, order+1, order+1)
         pol_x = Poly([0, 1/dt])
         for j=0:order
             for k=0:j
-                res = view(tab_coef,j+1,k+1,:)
+                res = view(tab_coef, :, k+1,j+1)
                 pol = getpolylagrange(k, j, N)
                 pol2 = pol(pol_x)
-                for ind=1:nTau
-                    ell = lTau[ind]
+                for ind=1:n_tau
+                    ell = list_tau[ind]
                     # res[ind] = if ell == 0
                     #     # in this case the exponentiel value is always 1
                     #     Polynomials.polyint(pol2)(dt)
