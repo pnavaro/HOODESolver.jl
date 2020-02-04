@@ -8,7 +8,7 @@ function testcoefexp_ab()
 
     tab = get_coef_ab_for_test()
 
-    println("norm = $(norm(par.tab_coef-tab))")
+    println("norm = $(norm(par.tab_coef-tab, Inf))")
 
     @test approx.(par.tab_coef, tab, atol=1e-70, rtol=1e-70)
 end
