@@ -20,9 +20,9 @@ function getpolylagrange(k::Int64, j::Int64, N::DataType)
     end
     return result
 end
-struct CoefExpAB
+struct CoefExpABRational
     tab_coef
-    function CoefExpAB(order::Int64, epsilon::AbstractFloat, list_tau, dt::AbstractFloat)
+    function CoefExpABRational(order::Int64, epsilon::AbstractFloat, list_tau, dt::AbstractFloat)
         n_tau = size(list_tau,1)
         T = typeof(epsilon)
         tab_coef = zeros(Complex{T}, n_tau, order+1, order+1)
@@ -64,13 +64,23 @@ struct CoefExpAB
         return new(tab_coef)
     end
 end
-struct CoefExpABfloat
+struct CoefExpAB
     tab_coef
-    function CoefExpABfloat(order::Int64, epsilon::AbstractFloat, list_tau, dt)
-        n_tau = size(list_tau,1)
+    function CoefExpAB(order::Int64, epsilon::AbstractFloat, n_tau, dt)
         T=typeof(epsilon)
-        N = T == BigFloat ? BigInt : Int64
-        tab_coef = zeros(Complex{T}, n_tau, order+1, order+1)
+        N, coef = T == BigFloat ? (BigInt, 10) : (Int64, 1)
+        prec = 0
+        eps_rat = rationalize(N, epsilon, coef*Base.eps(epsilon))
+        dt_rat = rationalize(N, dt, coef*Base.eps(dt))
+        if T == BigFloat
+            prec = precision()
+            setprecision(1024)
+        end
+        list_tau = [collect(0:n_tau / 2 - 1); collect(-n_tau / 2:-1)]
+        epsilon = float(eps_rat)
+        dt = float(dt_rat)
+        T2 = BigFloat 
+        tab_coef = zeros(Complex{T2}, n_tau, order+1, order+1)
         pol_x = Poly([0, 1/dt])
         for j=0:order
             for k=0:j
@@ -79,13 +89,6 @@ struct CoefExpABfloat
                 pol2 = pol(pol_x)
                 for ind=1:n_tau
                     ell = list_tau[ind]
-                    # res[ind] = if ell == 0
-                    #     # in this case the exponentiel value is always 1
-                    #     Polynomials.polyint(pol2)(dt)
-                    # else
-                    #     pol3 = polyint(PolyExp(pol2, im*ell/epsilon, -im*ell*dt/epsilon)).p
-                    #     pol3(dt) - pol3.a[1]*exp(-im*ell*dt/epsilon)
-                    # end
                     pol_int = if ell == 0
                         # in this case the exponentiel value is always 1
                         Polynomials.polyint(pol2)
@@ -93,19 +96,13 @@ struct CoefExpABfloat
                         polyint(PolyExp(pol2, im*ell/epsilon, -im*ell*dt/epsilon))
                     end
                     res[ind] = pol_int(dt)-pol_int(0)
-#                    res[ind] = (ell == 0 ? pol_int(dt) : pol_int.p(dt)) - pol_int(0)
-                    if j==order && k in [4,5,6] && ind==1
-                        println("f0 j=$j k=$k ind=$ind pol=$pol")
-                        println("f1 j=$j k=$k ind=$ind pol2=$pol2")
-#                        println("float j=$j k=$k ind=$ind pol_int=$pol_int")
-                        println("fl2 j=$j k=$k ind=$ind res=$(res[ind])")
-                    end
-
-
                 end
             end
         end
-        return new(tab_coef)
+        if prec != 0
+            setprecision(prec)
+        end
+        return new(T.(tab_coef))
     end
 end
 

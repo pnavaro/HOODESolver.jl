@@ -18,7 +18,7 @@ function print_for_test(order, epsilon::Rational{BigInt}, n_tau, dt::Rational{Bi
     prec=precision(BigFloat)
     setprecision(1024)
     coef_tau = [collect(0:n_tau / 2 - 1); collect(-n_tau / 2:-1)]
-    par = CoefExpAB(order, float(epsilon), coef_tau, float(dt) )
+    par = CoefExpABRational(order, float(epsilon), coef_tau, float(dt) )
     ordp1=order+1
     println("# CoefExpAB order=$order epsilon=$epsilon n_tau =$n_tau dt=$dt")
     println("# tab_res_coef is AB coefficient for each value from 1 to n_tau")
