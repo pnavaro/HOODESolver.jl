@@ -27,9 +27,9 @@ function print_for_test(order, epsilon::Rational{BigInt}, n_tau, dt::Rational{Bi
         print("    ")
         res = view(par.tab_coef,i,order+1,:)
         for j=1:n_tau
-            _printnumstr(real(res[i]))
+            _printnumstr(real(res[j]))
             print("+ im * ")
-            _printnumstr(imag(res[i]))
+            _printnumstr(imag(res[j]))
         end
         println("")
     end
