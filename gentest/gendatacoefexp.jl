@@ -48,7 +48,7 @@ function print_for_test(
         end
         println("]")
     end
-    println("    return tabres list_j")
+    println("    return tabres $list_j")
     println("end")
     setprecision(prec)
 end
