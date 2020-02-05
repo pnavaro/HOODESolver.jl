@@ -4,7 +4,7 @@ using SparseArrays
 
 function _expm2( mat )
     res = one(mat)
-    resprec=zeros(mat)
+    resprec=zero(mat)
     mult = one(mat)
     i=1
     while resprec != res
