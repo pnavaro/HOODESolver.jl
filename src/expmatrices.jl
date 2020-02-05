@@ -4,16 +4,15 @@ using SparseArrays
 
 function _expm2( mat )
     res = one(mat)
-    resprec=one(mat)
+    resprec=zeros(mat)
     mult = one(mat)
-    for i=1:1000
+    i=1
+    while resprec != res
         resprec .= res
         mult *= mat
         mult /= i
         res += mult
-        if resprec == res
-            break
-        end
+        i += 1
     end
  #   println("normdiff=$(norm(resprec-res))")
     return res
