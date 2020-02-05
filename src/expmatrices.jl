@@ -6,7 +6,7 @@ function _expm2( mat )
     res = one(mat)
     resprec=one(mat)
     mult = one(mat)
-    for i=1:100
+    for i=1:1000
         resprec .= res
         mult *= mat
         mult /= i
