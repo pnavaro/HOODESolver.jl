@@ -4,15 +4,23 @@ using SparseArrays
 
 function _expm2( mat )
     res = one(mat)
-    resprec=zero(mat)
+    resprec = zero(mat)
     mult = one(mat)
     i=1
-    while resprec != res
+    cpt=0
+    borne=precision(BigFloat)
+    while cpt < 4
         resprec .= res
         mult *= mat
         mult /= i
         res += mult
         i += 1
+        cpt = resprec == res ? cpt +1 : 0
+        if i > borne
+            println("EREEUR!!!!!!!!!!! dans _expm2")
+            println("norm(resprec-prec)=$(norm(resprec-res))")
+            break
+        end
     end
  #   println("normdiff=$(norm(resprec-res))")
     return res
