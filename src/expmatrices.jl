@@ -17,16 +17,13 @@ function _expm2( mat )
         i += 1
         cpt = resprec == res ? cpt +1 : 0
         if i > borne
-            println("EREEUR!!!!!!!!!!! dans _expm2")
+            println("ERROR!!!!!!!!!!! Integer _expm2")
             println("norm(resprec-prec)=$(norm(resprec-res))")
             break
         end
     end
- #   println("normdiff=$(norm(resprec-res))")
     return res
 end
-
-
 function _expm1( mat )
     valnorm= norm(mat)
     if valnorm > 1
@@ -38,11 +35,11 @@ function _expm1( mat )
         return _expm2(mat)
     end
 end
-
 Base.exp(mat::Array{Complex{BigFloat}, 2}) = _expm1(mat)
 Base.exp(mat::Array{BigFloat, 2}) = _expm1(mat)
 Base.exp(mat::Array{Integer, 2}) = _expm1(mat)
-Base.exp(mat::SparseMatrixCSC{Complex{BigFloat}, Integer}) = _expm1(mat)
-Base.exp(mat::SparseMatrixCSC{BigFloat, Integer}) = _expm1(mat)
+Base.exp(mat::SparseMatrixCSC{Complex{BigFloat}, Int64}) = _expm1(mat)
+Base.exp(mat::SparseMatrixCSC{BigFloat, Int64}) = _expm1(mat)
+Base.exp(mat::SparseMatrixCSC{Float64, Int64}) = _expm1(mat)
 Base.exp(mat::Array{Rational, 2}) = Base.exp(float(mat))
 Base.exp(mat::SparseMatrixCSC{Rational, Integer}) = Base.exp(float(mat))

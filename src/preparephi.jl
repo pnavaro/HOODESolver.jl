@@ -1,3 +1,8 @@
+include("expmatrices.jl")
+include("fftbig.jl")
+using LinearAlgebra
+using SparseArrays
+
 """
     PreparePhi(nTau::Integer, eps::AbstractFloat)
 
@@ -5,75 +10,72 @@ Immutable structure, to share calculations, needed for the phi function.
 These data can be used elsewhere for example in twoscale function.
 
 # Arguments :
-- `nTau::Integer` : number of value around the unit disk, it must be a power of two.
-- `eps::AbstractFloat` : epsilon of the system.
+- `n_tau::Integer` : number of value around the unit disk, it must be a power of two.
+- `epsilon::AbstractFloat` : epsilon of the system, the type of this value will be the typeof the result.
+- `matrix_A::Matrix{Number}` : Matrix of twoscale system
+- `fct::Function` : function of the system
 
 # Implementation :
-- tau : list of value of t from zero to 1 - 1/nTau.
-- sinTauList : list of values sin( 2pi t ) for t in tau list.
-- cosTauList : list of values cos( 2pi t ) for t in tau list.
-- coefTauList : power coefficients.
-- fftIntegralList : integral coefficents.
-- parFft : fft parameters.
-- tabA : differents values of A^n, with n ∈ N.
+- epsilon : epsilon of the system.
+- n_tau : number of values for fft
+- list_tau : list of value around the unit disk
+- matrix_A : sparse matrix
+- tau_A : for each angular ``\tau`` around the unit disk the matrix ``e^{(\tau \time A)}```
+- par_fft : fft parameters.
+- fct : function of differential equation.
+- size_vect : size of vector that is the size of the matrix
 
 """
 struct PreparePhi
-    epsilon
-    n_tau
-    list_tau
-    matrix_A
-    tau_A
-    coefTauList
-    fftIntegralList
-    parFft
-    tabA
-    dictPhi
-    nbCallPhi
-
-    function  PreparePhi(n_tau::Integer, epsilon::AbstractFloat, matrix_A)
-        @assert prevpow(2,n_tau) == n_tau "$nTau is not a power of 2"
-        T = typeof(epsilon)
-
-        tau_A = 
-        tau_A = exp.([0:n_tau-1]*T(pi)/n_tau.*matrix_A)
-        # Sinus and cosinus values around the unit circle.
-        sinTauList = sinpi.(2tau)
-        cosTauList = cospi.(2tau)
-
-        coefTauList = [collect(0:nTau / 2 - 1); collect(-nTau / 2:-1)]
-
-        # Coefficients to integrate
-        fftIntegralList = -1im ./ coefTauList
-        fftIntegralList[1] = 0
-
-        if T==BigFloat
-            parFft = PrepareFftBig(nTau,eps)
-        else
-            parFft = missing
-        end
-
-        A = zeros(Int64, 4, 4)
-
-        tabA = Array{Int64,2}[]
-        push!(tabA,A+1I)
-        A[1,3] = 1
-        A[3,1] = -1
-        varA = A
-        push!(tabA,varA)
-        varA *= A
-        while( varA != A )
-            push!(tabA,varA)
-            varA *= A
-        end
-        dictPhi=Array{Dict{Array{T,1},Array{T,2}},1}(undef,20)
-        for i=1:20
-            dictPhi[i] = Dict{Array{T,1},Array{T,2}}()
-        end
-        nbCallPhi = zeros(Int64, 20, 2)
-        return new(
-    nTau, eps, eps_rat,  tau, sinTauList, cosTauList, coefTauList, fftIntegralList, parFft, tabA, dictPhi, nbCallPhi
+    epsilon, 
+    n_tau, 
+    tau_list, 
+    sparse_A, 
+    tau_A, 
+    par_fft
+    fct::Function
+    size_vect
+    function  PreparePhi(
+    n_tau::Integer, 
+    epsilon::AbstractFloat, 
+    matrix_A::Matrix{Number}, 
+    fct::Function
 )
-
+        T = typeof(epsilon)
+        @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
+        @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}, T}) 
+        "function fct is not correct"
+        sparse_A = sparse(matrix_A)
+        tau_A = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
+        prec= precision(T)
+        for i = 1:n_tau
+            tau_A[i] = BigFloat.( setprecision(prec+32) do
+                round.( 
+    exp((i-1) * 2big(pi) / n_tau * sparse_A), 
+    digits=prec+16, 
+    base=2 
+)
+            end )
+        end
+        @assert tau_A[div(n_tau, 2) + 1]^2 == I "The matrix must be periodic"
+        tau_list = [collect(0:(div(n_tau, 2) - 1)); collect(-div(n_tau, 2):-1)]
+        par_fft = T == BigFloat ? PrepareFftBig(n_tau, epsilon) : missing
+        return new( 
+    epsilon, 
+    n_tau, 
+    tau_list, 
+    sparse_A, 
+    tau_A, 
+    par_fft,
+    fct,
+    size(matrix_A,1),
+)
     end
+end
+function filtredFctGen(par::PreparePhi, u_mat::Array{T,2}) where T <: Number
+    return reshape(
+    collect(Iterators.flatten(par.fct.( par.tau_A .* eachcol(u_mat), par.epsilon))),
+    par.size_vect,
+    par.n_tau
+)
 end

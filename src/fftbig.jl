@@ -55,7 +55,7 @@ end
 PrepareFftBig( size::Integer, type::DataType ) = PrepareFftBig( size, one(type))
 PrepareFftBig( size::Integer) = PrepareFftBig( size, one(BigFloat))
 function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
-    s=size(signal,1)
+    s=size(signal,2)
     @assert prevpow(2,s) == s "size(signal)=$s is not a power of 2"
     s_div2 = div(s,2)
     len = s
@@ -69,8 +69,8 @@ function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
  #           println("start=$start suite=$suite n_len_m1=$n_len_m1")
              deb = 1
              for j=deb:nb_r:s_div2
-                signal[start,:], signal[suite,:] = (signal[start,:] + signal[suite,:]), 
-    (signal[start,:] - signal[suite,:])*rootO[j]
+                signal[:,start], signal[:,suite] = (signal[:,start] + signal[:,suite,]), 
+    (signal[:,start] - signal[:,suite])*rootO[j]
  #               println("start=$start suite=$suite nb_r=$nb_r")
                 start += 1
                 suite += 1
@@ -82,11 +82,8 @@ function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
         n_len >>= 1
         nb_r <<= 1
     end
-    if ndims(signal) == 1
-        signal .= signal[par.tab_permut]
-    else
-        signal .= signal[par.tab_permut,:]       
-    end
+    signal .= signal[:,par.tab_permut]       
+    
     if flag_inv
         signal ./= s
     end

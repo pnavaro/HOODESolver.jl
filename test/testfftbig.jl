@@ -24,19 +24,19 @@ end
 function testfftbig( s, T::DataType, seed_val )
 
     Random.seed!(seed_val)
-    tab = zeros(Complex{T}, s)
-    tab .= rand(T,s)
+    tab = zeros(Complex{T}, 1, s)
+    tab .= rand(T, 1, s)
     if T == Float64
-        tabfftref = fft(tab,1)
+        tabfftref = fft(tab,2)
     else
-        tab2 = zeros(Complex{Float64}, s)
+        tab2 = zeros(Complex{Float64}, 1, s)
         tab2 .= tab
-        tabfftref = fft(tab2,1)
+        tabfftref = fft(tab2,2)
     end
 
     tab_test = copy(tab)
 
-    p = PrepareFftBig(s, real(tab[1]))
+    p = PrepareFftBig(s, real(tab[1, 1]))
 
     fftbig!(p, tab_test)
 
@@ -54,14 +54,14 @@ end
 function testfftbig2( s, T::DataType, seed_val, nb_v )
 
     Random.seed!(seed_val)
-    tab = zeros(Complex{T}, s, nb_v)
-    tab .= rand(T,s, nb_v)
+    tab = zeros(Complex{T}, nb_v, s)
+    tab .= rand(T, nb_v, s)
     if T == Float64
-        tabfftref = fft(tab,1)
+        tabfftref = fft(tab,2)
     else
-        tab2 = zeros(Complex{Float64}, s, nb_v)
+        tab2 = zeros(Complex{Float64}, nb_v, s)
         tab2 .= tab
-        tabfftref = fft(tab2,1)
+        tabfftref = fft(tab2,2)
     end
 
     tab_test = copy(tab)
