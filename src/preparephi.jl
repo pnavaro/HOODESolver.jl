@@ -34,8 +34,8 @@ struct PreparePhi
     tau_list, 
     sparse_A, 
     tau_A, 
-    par_fft
-    fct::Function
+    par_fft,
+    fct::Function,
     size_vect
     function  PreparePhi(
     n_tau::Integer, 
