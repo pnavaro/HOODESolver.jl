@@ -29,7 +29,7 @@ These data can be used elsewhere for example in twoscale function.
 
 """
 struct PreparePhi
-    epsilon, 
+    epsilon3, 
     n_tau, 
     tau_list, 
     sparse_A, 
@@ -39,7 +39,7 @@ struct PreparePhi
     size_vect
     function  PreparePhi(
     n_tau::Integer, 
-    epsilon::AbstractFloat, 
+    epsilon4::AbstractFloat, 
     matrix_A::Matrix{Number}, 
     fct1::Function
 )
