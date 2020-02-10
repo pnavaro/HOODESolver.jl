@@ -17,7 +17,7 @@ end
 function print_for_test(
     order,
     u0,
-    epsilon::Rational{BigInt}, 
+    epsilon::BigFloat, 
     n_tau,
     matrix_A::Matrix,
     fct::Function,
