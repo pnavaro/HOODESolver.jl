@@ -44,7 +44,7 @@ function print_for_test(
         end
         println("]")
     end
-    println("    return tab_u")
+    println("    return tab_u0")
     println("end")
     setprecision(prec)
 end
