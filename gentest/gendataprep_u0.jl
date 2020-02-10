@@ -20,7 +20,7 @@ function print_for_test(
     epsilon::BigFloat, 
     n_tau,
     matrix_A::Matrix,
-    fct::Function,
+    fct::Function
 )
     prec=precision(BigFloat)
     setprecision(1024)

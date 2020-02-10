@@ -29,7 +29,7 @@ These data can be used elsewhere for example in twoscale function.
 
 """
 struct PreparePhi
-    epsilon3, 
+    epsilon, 
     n_tau, 
     tau_list, 
     sparse_A, 
@@ -39,11 +39,11 @@ struct PreparePhi
     size_vect
     function  PreparePhi(
     n_tau::Integer, 
-    epsilon2::AbstractFloat, 
+    epsilon::AbstractFloat, 
     matrix_A::Matrix{Number}, 
     fct::Function
 )
-        T = typeof(epsilon2)
+        T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
         @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}, T}) 
         "function fct is not correct"
