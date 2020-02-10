@@ -39,8 +39,6 @@ function print_for_test(
             for i_ell=1:n_tau
                 print("    ")
                 _printnumstr(real(pu0.ut0[i, i_ell]))
-                print("+ im * ")
-                _printnumstr(imag(pu0.ut0[i, i_ell]))
             end
             println("")
         end
