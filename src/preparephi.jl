@@ -35,13 +35,13 @@ struct PreparePhi
     sparse_A, 
     tau_A, 
     par_fft,
-    fct::Function,
+    fct2::Function,
     size_vect
     function  PreparePhi(
     n_tau::Integer, 
     epsilon::AbstractFloat, 
     matrix_A::Matrix{Number}, 
-    fct::Function
+    fct1::Function
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
