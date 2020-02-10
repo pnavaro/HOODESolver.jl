@@ -3,7 +3,6 @@ include("fftbig.jl")
 using LinearAlgebra
 using SparseArrays
 using Statistics
-
 """
     PreparePhi(n_au::Integer, epsilon::AbstractFloat, matrix_A::Matrix{Number},
     fct::Function)
@@ -30,7 +29,7 @@ These data can be used elsewhere for example in twoscale function.
 
 """
 struct PreparePhi
-    epsilon, 
+    epsilon3, 
     n_tau, 
     tau_list, 
     sparse_A, 
@@ -40,11 +39,11 @@ struct PreparePhi
     size_vect
     function  PreparePhi(
     n_tau::Integer, 
-    epsilon::AbstractFloat, 
+    epsilon2::AbstractFloat, 
     matrix_A::Matrix{Number}, 
     fct::Function
 )
-        T = typeof(epsilon)
+        T = typeof(epsilon2)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
         @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}, T}) 
         "function fct is not correct"
