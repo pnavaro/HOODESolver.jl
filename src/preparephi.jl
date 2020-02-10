@@ -5,7 +5,9 @@ using SparseArrays
 using Statistics
 
 """
-    PreparePhi(nTau::Integer, eps::AbstractFloat)
+    PreparePhi(n_au::Integer, epsilon::AbstractFloat, matrix_A::Matrix{Number},
+    fct::Function)
+)
 
 Immutable structure, to share calculations, needed for the phi function.
 These data can be used elsewhere for example in twoscale function.
