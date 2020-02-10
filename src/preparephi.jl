@@ -4,9 +4,8 @@ using LinearAlgebra
 using SparseArrays
 using Statistics
 """
-    PreparePhi(n_au::Integer, epsilon::AbstractFloat, matrix_A::Matrix{Number},
+    PreparePhi(n_tau::Integer, epsilon::AbstractFloat, matrix_A::Matrix{Number},
     fct::Function)
-)
 
 Immutable structure, to share calculations, needed for the phi function.
 These data can be used elsewhere for example in twoscale function.
@@ -29,19 +28,20 @@ These data can be used elsewhere for example in twoscale function.
 
 """
 struct PreparePhi
-    epsilon3, 
-    n_tau, 
-    tau_list, 
-    sparse_A, 
-    tau_A, 
-    par_fft,
-    fct2,
+    epsilon
+    n_tau
+    tau_list
+    tau_int
+    sparse_A 
+    tau_A
+    par_fft
+    fct
     size_vect
     function  PreparePhi(
+    epsilon::AbstractFloat, 
     n_tau::Integer, 
-    epsilon4::AbstractFloat, 
-    matrix_A::Matrix{Number}, 
-    fct1::Function
+    matrix_A::Matrix, 
+    fct::Function
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
@@ -61,12 +61,13 @@ struct PreparePhi
         end
         @assert tau_A[div(n_tau, 2) + 1]^2 == I "The matrix must be periodic"
         tau_list = [collect(0:(div(n_tau, 2) - 1)); collect(-div(n_tau, 2):-1)]       
-        tau_int = vcat( [0], -im / tau_list[2,end]) # Coefficients to integrate
+        tau_int = hcat([0], -im / tau_list[2:end])
         par_fft = T == BigFloat ? PrepareFftBig(n_tau, epsilon) : missing
         return new( 
     epsilon, 
     n_tau, 
-    tau_list, 
+    tau_list,
+    tau_int,
     sparse_A, 
     tau_A, 
     par_fft,
@@ -84,6 +85,7 @@ function filtredfct(par::PreparePhi, u_mat::Array{T,2}) where T <: Number
 end
 function phi( par::PreparePhi, u, order)
     @assert 2 <= order <= 20 "the order is $order, it must be between 2 and 20"
+    f = undef
     if  order == 2
         f = filtredfct(par, reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau))
     else
@@ -95,8 +97,8 @@ function phi( par::PreparePhi, u, order)
         f11 = coef * mean(f, dims=2)
         f .-= (phi(par, u + f11, order - 1) - resPhi_u) / coef
     end
-    f = fftgen(par.parFft, f)
-    f = par.epsilon*real(ifftgen(par.parFft, f .* par.tau_int))
+    f = fftgen(par.par_fft, f)
+    f = par.epsilon*real(ifftgen(par.par_fft, f .* par.tau_int))
     return f
 end
 struct PrepareU0
@@ -113,10 +115,10 @@ struct PrepareU0
             prec = precision(BigFloat)
             setprecision(newprec)
         end
-        y = phi(2, u0, parphi)
+        y = phi(parphi, u0, 2)
         um = u0 - y[:, 1]
         for i=3:order
-            y = phi(i, um, parphi)
+            y = phi(parphi, um, i)
             um = u0 - y[:, 1]
         end
         if prec != 0
