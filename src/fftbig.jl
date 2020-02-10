@@ -5,6 +5,7 @@ fft:
 - Date: 2019-11-15
 =#
 # function that reverse the order of the pos lowest bits
+using FFTW
 function _reverse_num(num, pos)
     result = 0
     pos_m1 = pos-1
@@ -97,3 +98,11 @@ function fftbig(par::PrepareFftBig, signal; flag_inv=false)
         flag_inv=fl
     )
 end
+fftgen(_::Any, t::Array{Complex{Float64}}) = fft(t, (2,))
+fftgen(_::Any, t::Array{Float64}) = fft(t, (2,))
+fftgen(p::PrepareFftBig, t::Array{T}) where {T<:AbstractFloat} = fftbig(p, t)
+fftgen(p::PrepareFftBig, t::Array{Complex{T}}) where {T<:AbstractFloat} = fftbig(p, t)
+ifftgen(_::Any, t::Array{Complex{Float64}}) = ifft(t, (2,))
+ifftgen(_::Any, t::Array{Float64}) = ifft(t, (2,))
+ifftgen(p::PrepareFftBig, t::Array{T}) where {T<:AbstractFloat}  = fftbig(p, t, flag_inv = true)
+ifftgen(p::PrepareFftBig, t::Array{Complex{T}}) where {T<:AbstractFloat}  = fftbig(p, t, flag_inv = true)
