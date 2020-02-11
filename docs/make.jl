@@ -9,7 +9,8 @@ makedocs(
     modules = [HighlyOscillatoryProblems],
     pages = ["Documentation" => "index.md",
              "Types"         => "types.md",
-             "Functions"     => "functions.md"]
+             "Functions"     => "functions.md"],
+    repo = "https://gitlab.inria.fr/ua/HighlyOscillatoryProblems.jl/blob/{commit}{path}#{line}"
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.
