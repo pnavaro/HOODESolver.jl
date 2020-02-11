@@ -60,7 +60,12 @@ struct PreparePhi
             end )
         end
         @assert tau_A[div(n_tau, 2) + 1]^2 == I "The matrix must be periodic"
-        tau_list = [collect(0:(div(n_tau, 2) - 1)); collect(-div(n_tau, 2):-1)]       
+        size_vect = size(matrix_A,1)
+        tau_list = [collect(0:(div(n_tau, 2) - 1)); collect(-div(n_tau, 2):-1)]
+#         tau_list_2 = collect(transpose(reshape(repeat(
+#     tau_list,
+#     size_vect
+# ),n_tau,size_vect)))       
         tau_int = hcat([0], -im / tau_list[2:end])
         par_fft = T == BigFloat ? PrepareFftBig(n_tau, epsilon) : missing
         return new( 
@@ -72,7 +77,7 @@ struct PreparePhi
     tau_A, 
     par_fft,
     fct,
-    size(matrix_A,1),
+    size_vect
 )
     end
 end
@@ -110,19 +115,19 @@ struct PrepareU0
         #
         # Numerical preparation (corresponds to formula (2.6), p3 with j=2, and
         # algorithm is given p4).
-        prec = 0
-        if newprec != 0
+        if newprec == 0
             prec = precision(BigFloat)
-            setprecision(newprec)
+            newprec = prec + 32 + div(-exponent(parphi.epsilon)*order^2, 3)
+            println("prec : $prec --> $newprec")
         end
-        y = phi(parphi, u0, 2)
-        um = u0 - y[:, 1]
-        for i=3:order
-            y = phi(parphi, um, i)
+        y, um = setprecision(newprec) do
+            y = phi(parphi, u0, 2)
             um = u0 - y[:, 1]
-        end
-        if prec != 0
-            setprecision(prec)
+            for i=3:order
+                y = phi(parphi, um, i)
+                um = u0 - y[:, 1]
+            end
+            y, um
         end
         ut0 = reshape(repeat(um, parphi.n_tau), parphi.size_vect, parphi.n_tau) + y
         return new(parphi, order, ut0, u0)

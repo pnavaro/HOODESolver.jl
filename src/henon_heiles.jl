@@ -18,3 +18,4 @@ Ouput :
 function henon_heiles(u,p)
     return [u[3]/p, u[4], -u[1]/p-2u[1]*u[2], -u[2]-u[1]^2+u[2]^2]
 end
+henon_heiles(u,p,t)=henon_heiles(u,p)

@@ -55,17 +55,14 @@ struct CoefExpAB
     tab_coef_neg
     function CoefExpAB(order::Int64, epsilon::AbstractFloat, n_tau, dt)
         T=typeof(epsilon)
-        N, coef = T == BigFloat ? (BigInt, 10) : (Int64, 1)
-        prec = 0
+        N = T == BigFloat ? BigInt : Int64
         new_prec = precision(BigFloat)
-        if T == BigFloat
-            new_prec += order*16
-        end
+        new_prec +=  T == BigFloat ? order * 16 : 0
         setprecision(BigFloat,new_prec) do
             list_tau = [collect(0:n_tau / 2 - 1); collect(-n_tau / 2:-1)]
             T2 = BigFloat 
-            epsilon=T2(epsilon)
-            dt=T2(dt)
+            epsilon = T2(epsilon)
+            dt = T2(dt)
             tab_coef = zeros(Complex{T2}, n_tau, order+1, order+1)
             pol_x = Poly([0, 1/dt])
             for j=0:order

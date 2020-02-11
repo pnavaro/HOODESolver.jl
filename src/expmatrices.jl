@@ -8,7 +8,6 @@ function _expm2( mat )
     mult = one(mat)
     i=1
     cpt=0
-    borne=precision(BigFloat)
     while cpt < 4
         resprec .= res
         mult *= mat
@@ -16,11 +15,6 @@ function _expm2( mat )
         res += mult
         i += 1
         cpt = resprec == res ? cpt +1 : 0
-        if i > borne
-            println("ERROR!!!!!!!!!!! Integer _expm2")
-            println("norm(resprec-prec)=$(norm(resprec-res))")
-            break
-        end
     end
     return res
 end
