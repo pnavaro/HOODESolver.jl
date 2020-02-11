@@ -18,7 +18,7 @@ function twoscales_solve( par_u0::PrepareU0, order, t, nb)
 end
 
 function fctmain(n_tau)
-    u0 =[big"1"/8, big"1"/8+big"1"/128, big"1"/8+big"2"/128, big"1"/8+big"3"/128]
+    u0 =[big"1"/8, big"1"/8, big"1"/8, big"1"/8]
     epsilon=big"1"/256
     nbmaxtest=9
     ordmax=5
