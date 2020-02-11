@@ -19,18 +19,18 @@ end
 """
     PrepareFftBig( size::Unsigned, [T=BigFloat])
 
-    Immutable structure to operate fft transform, 
-    x is the type of non transformed data also called signal.
-    
-    # Arguments :
-    - `size::Integer` : Number of values, must be a power of two
-    - `[T=BigFloat | x::T ]` : type of the values
+Immutable structure to operate fft transform, 
+x is the type of non transformed data also called signal.
 
-    # Implementation
-    - size : size of the signal
-    - tab_permut : permutation
-    - root_one : size order roots of one
-    - root_one_conj : conjugate of root_one
+# Arguments :
+- `size::Integer` : Number of values, must be a power of two
+- `[T=BigFloat | x::T ]` : type of the values
+
+# Implementation
+- size : size of the signal
+- tab_permut : permutation
+- root_one : size order roots of one
+- root_one_conj : conjugate of root_one
 
 """
 struct PrepareFftBig
