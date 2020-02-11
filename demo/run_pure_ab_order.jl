@@ -21,7 +21,7 @@ function fctmain(n_tau)
     u0 =[big"1"/8, big"1"/8+big"1"/128, big"1"/8+big"2"/128, big"1"/8+big"3"/128]
     epsilon=big"1"/256
     nbmaxtest=9
-    ordmax=14
+    ordmax=5
     debord=3
     y = ones(Float64, nbmaxtest, div(ordmax-debord,2)+1 )
  #   y = ones(Float64, nbmaxtest, size(tabEps,1) )
@@ -33,7 +33,7 @@ function fctmain(n_tau)
     par_u0 = PrepareU0(parphi, ordmax+2, u0)    
 	nball = 100*2^(nbmaxtest+1)
     @time solrefall = twoscales_solve( par_u0, ordmax, big"1.0", nball)
-	solref = solrefall[end,:]
+	solref = solrefall[:,end]
     for order=debord:ordmax
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 100
@@ -44,9 +44,9 @@ function fctmain(n_tau)
             @time resall = twoscales_solve( par_u0, order, big"1.0", nb)
             coef = div(nball,nb)
             for i=1:(nb+1)
-                println("tr__$nb i=$i error=$(norm(resall[i]-solrefall[coef*(i-1)+1]))")
+                println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
             end
-            sol = resall[end,:]
+            sol = resall[:,end]
             println("solref=$solref")
             println("nb=$nb sol=$sol")
             diff=solref-sol
