@@ -39,11 +39,7 @@ function fctmain(n_tau)
         nb = 100
         indc =1
         labels=Array{String,2}(undef, 1, order-debord+1)
-
-        parphi = PreparePhi(n_tau, epsilon)
-        par_u0 = PrepareU0(parphi, order+2, u0)
-
-        
+        par_u0 = PrepareU0(parphi, order+2, u0)       
         while indc <= nbmaxtest
             @time resall = twoscales_solve( par_u0, order, big"1.0", nb)
             coef = div(nball,nb)
