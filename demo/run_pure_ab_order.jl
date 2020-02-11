@@ -21,7 +21,7 @@ function fctmain(n_tau)
     u0 =[big"1"/8, big"1"/8, big"1"/8, big"1"/8]
     epsilon=big"1"/256
     nbmaxtest=9
-    ordmax=5
+    ordmax=15
     debord=3
     y = ones(Float64, nbmaxtest, div(ordmax-debord,2)+1 )
  #   y = ones(Float64, nbmaxtest, size(tabEps,1) )
@@ -74,7 +74,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_all+v5.pdf")
+        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_all+v6.pdf")
         ind+= 1
     end
 end
