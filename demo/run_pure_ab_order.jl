@@ -40,7 +40,7 @@ function fctmain(n_tau)
         indc =1
         labels=Array{String,2}(undef, 1, order-debord+1)
 
-        parphi = PreparePhi(n_tau, eps)
+        parphi = PreparePhi(n_tau, epsilon)
         par_u0 = PrepareU0(parphi, order+2, u0)
 
         
@@ -77,7 +77,7 @@ function fctmain(n_tau)
                         marker=2
                     )
         prec_v = precision(BigFloat)
-        eps_v = convert(Float32,eps)
+        eps_v = convert(Float32,epsilon)
         Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_all+v5.pdf")
         ind+= 1
     end
