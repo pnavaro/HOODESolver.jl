@@ -2,8 +2,12 @@
 
 Documentation for HighlyOscillatoryProblems.jl
 
+# Contents
 
-```@autodocs
-Modules = [HighlyOscillatoryProblems]
-Order   = [:type, :function]
+```@contents
+```
+
+## Index
+
+```@index
 ```
