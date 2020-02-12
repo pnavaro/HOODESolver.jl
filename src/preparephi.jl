@@ -34,6 +34,7 @@ struct PreparePhi
     tau_int
     sparse_A 
     tau_A
+    tau_A_inv
     par_fft
     fct
     size_vect
@@ -45,15 +46,23 @@ struct PreparePhi
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
-        @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}, T}) 
+        @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}}) 
         "function fct is not correct"
         sparse_A = sparse(matrix_A)
         tau_A = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
+        tau_A_inv = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
         prec= precision(T)
         for i = 1:n_tau
             tau_A[i] = BigFloat.( setprecision(prec+32) do
                 round.( 
     exp((i-1) * 2big(pi) / n_tau * sparse_A), 
+    digits=prec+16, 
+    base=2 
+)
+            end )
+            tau_A_inv[i] = BigFloat.( setprecision(prec+32) do
+                round.( 
+    exp(-(i-1) * 2big(pi) / n_tau * sparse_A), 
     digits=prec+16, 
     base=2 
 )
@@ -75,18 +84,21 @@ struct PreparePhi
     tau_int,
     sparse_A, 
     tau_A, 
+    tau_A_inv, 
     par_fft,
     fct,
     size_vect
 )
     end
 end
+filtred_f(u, mat_inv, fct, mat)= mat_inv * fct(mat*u)
 function filtredfct(par::PreparePhi, u_mat::Array{T,2}) where T <: Number
     return reshape(
-    collect(Iterators.flatten(par.fct.( par.tau_A .* eachcol(u_mat), par.epsilon))),
+    collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_A_inv, par.fct, par.tau_A))),
     par.size_vect,
     par.n_tau
 )
+# return filtred_f.(eachcol(u_mat), par.tau_A_inv, par.fct, par.tau_A)
 end
 function phi( par::PreparePhi, u, order)
     @assert 2 <= order <= 20 "the order is $order, it must be between 2 and 20"

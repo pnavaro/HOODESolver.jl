@@ -20,8 +20,8 @@ end
 function fctmain(n_tau)
     u0 =[big"1"/8, big"1"/8, big"1"/8, big"1"/8]
     epsilon=big"1"/256
-    nbmaxtest=9
-    ordmax=15
+    nbmaxtest=5
+    ordmax=10
     debord=3
     y = ones(Float64, nbmaxtest, div(ordmax-debord,2)+1 )
  #   y = ones(Float64, nbmaxtest, size(tabEps,1) )
@@ -33,8 +33,9 @@ function fctmain(n_tau)
     par_u0 = PrepareU0(parphi, ordmax+2, u0)    
 	nball = 100*2^(nbmaxtest+1)
     @time solrefall = twoscales_solve( par_u0, ordmax, big"1.0", nball)
-	solref = solrefall[:,end]
-    for order=debord:ordmax
+    solref = solrefall[:,end]
+    pasord=1
+    for order=debord:pasord:ordmax
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 100
         indc =1
@@ -57,8 +58,8 @@ function fctmain(n_tau)
             nb *= 2
             indc += 1
         end
-        for i=debord:2:order
-            labels[1,(i-debord)÷2+1] = " eps,order=$(convert(Float32,epsilon)),$i "
+        for i=debord:pasord:order
+            labels[1,(i-debord)÷pasord+1] = " eps,order=$(convert(Float32,epsilon)),$i "
         end
         gr()
         p=Plots.plot(
@@ -68,7 +69,7 @@ function fctmain(n_tau)
                         xaxis=:log,
                         ylabel="error",
                         yaxis=:log,
-                        legend=:topleft,
+                        legend=:bottomright,
                         label=labels,
                         marker=2
                     )
