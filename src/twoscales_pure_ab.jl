@@ -149,7 +149,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB)
     result = zeros(typeof(par.parphi.epsilon), par.parphi.size_vect, par.n_max+1)
     result[:,1] = u0
 
-    println("diff result ori = $(norm(u0-_getresult(fft_u[par.order], 0, par.parphi)))")
+   # println("diff result ori = $(norm(u0-_getresult(fft_u[par.order], 0, par.parphi)))")
 
     _init_ab(par, fftfct, fft_u)
 

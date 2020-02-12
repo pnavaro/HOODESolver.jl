@@ -18,11 +18,11 @@ function twoscales_solve( par_u0::PrepareU0, order, t, nb)
 end
 
 function fctmain(n_tau)
-    u0 =[big"1"/8, big"1"/8, big"1"/8, big"1"/8]
-    epsilon=big"1"/256
-    nbmaxtest=9
-    ordmax=14
-    debord=3
+    u0 =[big"0.1", big"0.11", big"0.15", big"0.10781"]
+    epsilon=big"0.0000001"
+    nbmaxtest=11
+    ordmax=18
+    debord=10
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
  #   y = ones(Float64, nbmaxtest, size(tabEps,1) )
@@ -31,7 +31,9 @@ function fctmain(n_tau)
     ind=1
  
     parphi = PreparePhi(epsilon, n_tau, [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0], henon_heiles)
-    par_u0 = PrepareU0(parphi, ordmax+2, u0)    
+    println("Preparation ordre $(ordmax+2)")
+    @time par_u0 = PrepareU0(parphi, ordmax+2, u0)
+    println("fin preparation")
 	nball = 100*2^(nbmaxtest+1)
     @time solrefall = twoscales_solve( par_u0, ordmax, big"1.0", nball)
     solref = solrefall[:,end]
