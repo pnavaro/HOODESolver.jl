@@ -97,7 +97,7 @@ function testpreparephi()
             tol=max((1e-77)^i_prec, 1e-200)
             setprecision(prec) do
                 for i_eps=1:size(tab_eps,1)
-                   epsilon = tab_eps[i_eps]
+                   epsilon = BigFloat(tab_eps[i_eps])
                    n_tau = 32
                    parphi = PreparePhi(
     epsilon, 
