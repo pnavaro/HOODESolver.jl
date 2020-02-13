@@ -106,7 +106,7 @@ function testpreparephi()
     henon_heiles
 )
                     u0 = BigFloat.([0.125, 0.140625, 0.15625, 0.171875])
-                    for ord=2:15
+                    for ord=2:10
             #     paru0 = PrepareU0(parphi, ord, u0, 1024)
                         paru0 = PrepareU0(parphi, ord, u0)
  #                   println("prec=$prec ord=$ord norm=$(norm(tab_ref[:, :, ord]- paru0.ut0))")
