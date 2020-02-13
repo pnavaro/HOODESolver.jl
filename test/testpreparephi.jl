@@ -96,8 +96,8 @@ function testpreparephi()
             prec = 256*2^(i_prec-1)
             tol=max((1e-77)^i_prec, 1e-200)
             setprecision(prec) do
-                for i_prec=1:size(tab_eps,1)
-                   epsilon = tab_eps[i_prec]
+                for i_eps=1:size(tab_eps,1)
+                   epsilon = tab_eps[i_eps]
                    n_tau = 32
                    parphi = PreparePhi(
     epsilon, 
@@ -110,7 +110,7 @@ function testpreparephi()
             #     paru0 = PrepareU0(parphi, ord, u0, 1024)
                         paru0 = PrepareU0(parphi, ord, u0)
  #                   println("prec=$prec ord=$ord norm=$(norm(tab_ref[:, :, ord]- paru0.ut0))")
-                        @test isapprox(tab_ref[:, :, ord, i_prec], paru0.ut0, atol=tol, rtol=tol)
+                        @test isapprox(tab_ref[:, :, ord, i_eps], paru0.ut0, atol=tol, rtol=tol)
                     end
                 end
             end
