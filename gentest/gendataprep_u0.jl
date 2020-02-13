@@ -24,7 +24,7 @@ function print_for_test(
 )
     prec=precision(BigFloat)
     setprecision(1024)
-    println("# PrepareU0 order=$order epsilon=$epsilon n_tau =$n_tau")
+    println("# PrepareU0 order=$order n_tau =$n_tau")
 
     println("# tab_u0 i prepared data for each order from 2 to order")
     println(" u0=$u0")
