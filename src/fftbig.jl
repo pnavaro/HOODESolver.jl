@@ -17,47 +17,64 @@ function _reverse_num(num, pos)
     return result
 end
 """
-    PrepareFftBig( size::Unsigned, [T=BigFloat])
+    PrepareFftBig( size_fft::Unsigned, [T=BigFloat])
 
 Immutable structure to operate fft transform, 
 x is the type of non transformed data also called signal.
 
 # Arguments :
-- `size::Integer` : Number of values, must be a power of two
+- `size_fft::Integer` : Number of values, must be a power of two
 - `[T=BigFloat | x::T ]` : type of the values
 
 # Implementation
-- size : size of the signal
+- size_fft : size of the signal
 - tab_permut : permutation
 - root_one : size order roots of one
 - root_one_conj : conjugate of root_one
 
 """
 struct PrepareFftBig
-    size
+    size_fft
     tab_permut
     root_one
     root_one_conj
     type::DataType
-    function PrepareFftBig( size::Integer, x::T ) where {T<:AbstractFloat}
-        @assert prevpow(2,size) == size "size=$size is not a power of 2"
-        power = convert(Int64,log2(size))
-        tab_permut = zeros(Int64,size)
-        root_one = zeros(Complex{T}, size )
-        root_one_conj = zeros(Complex{T}, size )
-        for i=1:size
-            tab_permut[i] = _reverse_num( i-1, power) + 1
-            root_one[i] = exp(one(T)*2pi*im*(i-1)/size)
-            root_one_conj[i] = exp(-one(T)*2pi*im*(i-1)/size)
+    function PrepareFftBig( size_fft::Integer, x::T ) where {T<:AbstractFloat}
+        @assert prevpow(2,size_fft) == size_fft "size_fft=$size_fft is not a power of 2"
+        power = convert(Int64,log2(size_fft))
+        tab_permut = zeros(Int64,size_fft)
+        root_one = zeros(Complex{T}, size_fft )
+        root_one_conj = zeros(Complex{T}, size_fft )
+        prec= precision(T)
+        setprecision(prec+32) do
+            for i=1:size_fft
+                tab_permut[i] = _reverse_num( i-1, power) + 1
+                root_one[i] = round(
+    exp(one(T)*2big(pi)*im*(i-1)/size_fft),    
+    digits=prec+16, 
+    base=2 
+)
+                root_one_conj[i] = round(
+    exp(-one(T)*2big(pi)*im*(i-1)/size_fft),
+    digits=prec+16,
+    base=2
+)
+            end
         end
-        return new(size, tab_permut, root_one, root_one_conj, typeof(x))
+        return new(
+    size_fft, 
+    tab_permut, 
+    Complex{T}.(root_one), 
+    Complex{T}.(root_one_conj), 
+    typeof(x)
+)
     end
 end
-PrepareFftBig( size::Integer, type::DataType ) = PrepareFftBig( size, one(type))
-PrepareFftBig( size::Integer) = PrepareFftBig( size, one(BigFloat))
+PrepareFftBig( size_fft::Integer, type::DataType ) = PrepareFftBig( size_fft, one(type))
+PrepareFftBig( size_fft::Integer) = PrepareFftBig( size_fft, one(BigFloat))
 function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
     s=size(signal,2)
-    @assert prevpow(2,s) == s "size(signal)=$s is not a power of 2"
+    @assert prevpow(2,s) == s "size_fft(signal)=$s is not a power of 2"
     s_div2 = div(s,2)
     len = s
     n_len = len>>1
@@ -94,7 +111,7 @@ function fftbig(par::PrepareFftBig, signal; flag_inv=false)
     fl = flag_inv
     return fftbig!(
         par::PrepareFftBig,
-        copy(convert(Array{Complex{par.type}}, signal));
+        copy(convert(Array{Complex{par.type}}, signal)),
         flag_inv=fl
     )
 end

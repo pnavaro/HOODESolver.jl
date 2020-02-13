@@ -20,6 +20,7 @@ function _expm2( mat )
 end
 function _expm1( mat )
     valnorm= norm(mat)
+
     if valnorm > 1
         b = mat/valnorm
         coef_int = Integer(floor(valnorm))
@@ -29,11 +30,17 @@ function _expm1( mat )
         return _expm2(mat)
     end
 end
-Base.exp(mat::Array{Complex{BigFloat}, 2}) = _expm1(mat)
-Base.exp(mat::Array{BigFloat, 2}) = _expm1(mat)
+function _expm0( mat )
+    res  = setprecision(precision(BigFloat)+32) do
+        _expm1(mat)
+    end
+    return BigFloat.(res)
+end
+Base.exp(mat::Array{Complex{BigFloat}, 2}) = _expm0(mat)
+Base.exp(mat::Array{BigFloat, 2}) = _expm0(mat)
 Base.exp(mat::Array{Integer, 2}) = _expm1(mat)
-Base.exp(mat::SparseMatrixCSC{Complex{BigFloat}, Int64}) = _expm1(mat)
-Base.exp(mat::SparseMatrixCSC{BigFloat, Int64}) = _expm1(mat)
+Base.exp(mat::SparseMatrixCSC{Complex{BigFloat}, Int64}) = _expm0(mat)
+Base.exp(mat::SparseMatrixCSC{BigFloat, Int64}) = _expm0(mat)
 Base.exp(mat::SparseMatrixCSC{Float64, Int64}) = _expm1(mat)
 Base.exp(mat::Array{Rational, 2}) = Base.exp(float(mat))
 Base.exp(mat::SparseMatrixCSC{Rational, Integer}) = Base.exp(float(mat))

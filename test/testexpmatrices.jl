@@ -17,12 +17,13 @@ function testexp()
         sens=1
         for i = 1:100:100000
             v=rand(BigFloat)*i*sens
-            res = _expm1(v*Abig)
+            res = _expm0(v*Abig)
             resRef = one(Abig)
             resRef[1,1] = resRef[3,3] = cos(v)
             resRef[1,3] = sin(v)
             resRef[3,1]= -resRef[1,3]
-            @test isapprox( resRef, res, atol=1e-76*i)
+ #           println("i=$i norm=$(norm(resRef-res))")
+            @test isapprox( resRef, res, atol=1e-78)
             sens *= -1
         end
     end    
