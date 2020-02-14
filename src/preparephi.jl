@@ -106,7 +106,8 @@ function phi( par::PreparePhi, u, order)
     if  order == 2
         f = filtredfct(par, reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau))
     else
-        coef = par.epsilon^(order - 2)
+#        coef = par.epsilon^(order - 2)
+        coef = par.epsilon^(order/2) #just to try
         resPhi_u = phi(par, u, order - 1)
         f = resPhi_u + reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau)
         f = filtredfct(par, f)
