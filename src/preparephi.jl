@@ -5,7 +5,7 @@ using SparseArrays
 using Statistics
 """
     PreparePhi(n_tau::Integer, epsilon::AbstractFloat, matrix_A::Matrix{Number},
-    fct::Function)
+    fct::Function, [matrix_B::Matrix])
 
 Immutable structure, to share calculations, needed for the phi function.
 These data can be used elsewhere for example in twoscale function.
@@ -15,6 +15,7 @@ These data can be used elsewhere for example in twoscale function.
 - `epsilon::AbstractFloat` : epsilon of the system, the type of this value will be the typeof the result.
 - `matrix_A::Matrix{Number}` : Matrix of twoscale system
 - `fct::Function` : function of the system
+- `[matrix_B::Matrix]` : matrix representing the linear function for debug
 
 # Implementation :
 - epsilon : epsilon of the system.
@@ -38,11 +39,13 @@ struct PreparePhi
     par_fft
     fct
     size_vect
+    matrix_B::Union{Matrix,Missing} # for debug only (linear function)
     function  PreparePhi(
     epsilon::AbstractFloat, 
     n_tau::Integer, 
     matrix_A::Matrix, 
-    fct::Function
+    fct::Function,
+    matrix_B::Union{Matrix,Missing}
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
@@ -87,10 +90,25 @@ struct PreparePhi
     tau_A_inv, 
     par_fft,
     fct,
-    size_vect
+    size_vect,
+    matrix_B
 )
     end
+    function  PreparePhi(
+        epsilon::AbstractFloat, 
+        n_tau::Integer, 
+        matrix_A::Matrix, 
+        fct::Function
+    )
+        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing)
+    end
 end
+isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
+function getexactsol(par::PreparePhi, u0, t)
+    @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
+    return exp(t*(1/par.epsilon*par.sparse_A+par.matrix_B))*u0
+end
+
 filtred_f(u, mat_inv, fct, mat)= mat_inv * fct(mat*u)
 function filtredfct(par::PreparePhi, u_mat::Array{T,2}) where T <: Number
     return reshape(
@@ -106,8 +124,8 @@ function phi( par::PreparePhi, u, order)
     if  order == 2
         f = filtredfct(par, reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau))
     else
-#        coef = par.epsilon^(order - 2)
-        coef = par.epsilon^(order/2) #just to try
+        coef = par.epsilon^(order - 2)
+ #       coef = par.epsilon^(order/2) #just to try
         resPhi_u = phi(par, u, order - 1)
         f = resPhi_u + reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau)
         f = filtredfct(par, f)

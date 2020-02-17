@@ -60,8 +60,14 @@ function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
     fft_u[dec] = resfft
     fftfct[dec] = _calculfft(par, resfft)
 
-    if dec == par.order+sens
-        u = _getresult(fft_u[par.order+sens], sens*par.dt, par.parphi)
+    # if isexactsol(par.parphi)
+    #     u = _getresult(fft_u[dec], (dec-par.order)*par.dt, par.parphi)
+    #     u_exact = getexactsol(par.parphi, par.par_u0.u0, (dec-par.order)*par.dt)
+    #     println("ordre = $ord/$(par.order) indice=$(dec-par.order) normdiff=$(norm(u-u_exact,Inf))")
+    # end
+
+    # if dec == par.order+sens
+    #     u = _getresult(fft_u[par.order+sens], sens*par.dt, par.parphi)
         # println("u=$(convert(Array{Float64,1},u))")
         # if sens == 1
         #     global solJul
@@ -72,20 +78,24 @@ function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
         #     println("solJul_neg=$(convert(Array{Float64,1},solJul_neg))")
         #     println("sens=$sens par.order=$(par.order) ord=$ord diff=$(norm(solJul_neg-u))")
         # end
-    end
+    # end
 end
 
 function _init_ab(par::PrepareTwoScalePureAB, fftfct, fft_u)
     println("_init_ab order=$(par.order)")
     if par.order != 1
-        for new_ord = 2:par.order
-            _calcul_ab(par, new_ord-1, fftfct, fft_u, par.order+new_ord-1, 1)
+#        oo=0
+        for new_ord=2:par.order #  in vcat(collect(2:par.order),[par.order])
+ #           if oo != new_ord
+                _calcul_ab(par, new_ord-1, fftfct, fft_u, par.order+new_ord-1, 1)
+ #           end
             for k = 1:new_ord-1
                 _calcul_ab(par, new_ord, fftfct, fft_u, par.order-k, -1)
             end
             for k = 1:new_ord-1
                 _calcul_ab(par, new_ord, fftfct, fft_u, par.order+k, 1)
             end
+ #           oo=new_ord
         end
     end
 end

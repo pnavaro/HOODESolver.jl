@@ -19,7 +19,13 @@ end
 
 function fctmain(n_tau)
     u0 =[big"0.1", big"0.11", big"0.15", big"0.10781"]
-    epsilon=big"0.0000001"
+    B = [ big"-0.12984599677" big"-0.9277" big"0.32984110099677" big"0.142984599677"
+    big"-0.4294599677" big"0.127337" big"0.4298411009977" big"0.99484599677"
+    big"0.2298499677" big"0.327667" big"0.1298410099677" big"-0.342984599677"
+    big"0.7298459677" big"-0.027887" big"0.7294110099677" big"-0.66294599677"
+    ]
+
+    epsilon=big"0.001"
     nbmaxtest=11
     ordmax=16
     debord=10
@@ -29,13 +35,17 @@ function fctmain(n_tau)
     x=zeros(Float64,nbmaxtest)
 
     ind=1
- 
-    parphi = PreparePhi(epsilon, n_tau, [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0], henon_heiles)
-    println("Preparation ordre $(ordmax+2)")
-    @time par_u0 = PrepareU0(parphi, ordmax+2, u0)
+    fct = u -> B*u
+    parphi = PreparePhi(epsilon, n_tau, [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0], fct, B)
+    println("Preparation ordre 2")
+    @time par_u0 = PrepareU0(parphi, 2, u0)
     println("fin preparation")
-	nball = 100*2^(nbmaxtest+1)
-    @time solrefall = twoscales_solve( par_u0, ordmax, big"1.0", nball)
+	nball = 100*2^nbmaxtest
+    solrefall = zeros(4,nball+1)
+    for i=1:nball
+        solrefall[:,i+1] = getexactsol(parphi, u0, i*big"1.0"/nball)
+    end
+    solrefall[:,1] = u0
     solref = solrefall[:,end]
     for order=debord:pasord:ordmax
         println("eps=$epsilon solRef=$solref order=$order")
@@ -77,7 +87,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_all+v6.pdf")
+        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact.pdf")
         ind+= 1
     end
 end
