@@ -13,7 +13,7 @@ function twoscales_solve( par_u0::PrepareU0, order, t, nb)
     
     pargen = PrepareTwoScalePureAB(nb, t, order, par_u0)
 
-    return twoscales_pure_ab(pargen)
+    return twoscales_pure_ab(pargen, only_end=true)
 
 end
 
@@ -24,7 +24,7 @@ function fctmain(n_tau)
     big"0.2298499677" big"0.327667" big"0.1298410099677" big"-0.342984599677"
     big"0.7298459677" big"-0.027887" big"0.7294110099677" big"-0.66294599677"
     ]
-
+    t_max = big"1.0"
     epsilon=big"0.001"
     nbmaxtest=11
     ordmax=16
@@ -40,31 +40,31 @@ function fctmain(n_tau)
     println("Preparation ordre 2")
     @time par_u0 = PrepareU0(parphi, 2, u0)
     println("fin preparation")
-	nball = 100*2^nbmaxtest
-    solrefall = zeros(BigFloat,4,nball+1)
-    for i=1:nball
-        solrefall[:,i+1] = getexactsol(parphi, u0, i*big"1.0"/nball)
-    end
-    solrefall[:,1] = u0
-    solref = solrefall[:,end]
+#	nball = 100*2^nbmaxtest
+ #   solrefall = zeros(BigFloat,4,nball+1)
+    # for i=1:nball
+    #     solrefall[:,i+1] = getexactsol(parphi, u0, i*big"1.0"/nball)
+    # end
+ #   solrefall[:,1] = u0
+    solref = getexactsol(parphi, u0, t_max)
     for order=debord:pasord:ordmax
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 100
-        indc =1
+        indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
 #        par_u0 = PrepareU0(parphi, order+2, u0)       
         while indc <= nbmaxtest
-            @time resall = twoscales_solve( par_u0, order, big"1.0", nb)
-            coef = div(nball,nb)
-            for i=1:(nb+1)
-                if i <= 1000 || i > (nb-1000)
-                    println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
-                end
-                if i == 1000 && nb > 2001
-                    println("    ...")
-                end
-            end
-            sol = resall[:,end]
+            @time sol = twoscales_solve( par_u0, order, t_max, nb)
+            # coef = div(nball,nb)
+            # for i=1:(nb+1)
+            #     if i <= 1000 || i > (nb-1000)
+            #         println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
+            #     end
+            #     if i == 1000 && nb > 2001
+            #         println("    ...")
+            #     end
+            # end
+            # sol = resall[:,end]
             println("solref=$solref")
             println("nb=$nb sol=$sol")
             diff=solref-sol
@@ -92,7 +92,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact.pdf")
+        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2.pdf")
         ind+= 1
     end
 end
