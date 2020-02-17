@@ -58,8 +58,11 @@ function fctmain(n_tau)
             coef = div(nball,nb)
             mod_c = div(nb,100)
             for i=1:(nb+1)
-                if (i-1)%mod == 0
+                if i <= 1000 || i > (nb-1000)
                     println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
+                end
+                if i == 1000 && nb > 2001
+                    println("    ...")
                 end
             end
             sol = resall[:,end]
