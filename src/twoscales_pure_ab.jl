@@ -136,7 +136,7 @@ function _getresult(u_chap, t, par::PreparePhi)
 end
 
 
-function twoscales_pure_ab(par::PrepareTwoScalePureAB)
+function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
 
     fftfct = Vector{Array{Complex{BigFloat}, 2}}(undef, 2par.order-1)
 
@@ -165,8 +165,10 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB)
 
     memfft = view(fftfct, par.order:(2par.order-1))
 
-    for i=2:par.order
-        result[:,i] = _getresult(fft_u[par.order+i-1], (i-1)*par.dt, par.parphi)
+    if only_end
+        for i=2:par.order
+            result[:,i] = _getresult(fft_u[par.order+i-1], (i-1)*par.dt, par.parphi)
+        end
     end
 
      # ring permutation where the beginning becomes the end and the rest is shifted by one
@@ -179,7 +181,9 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB)
             println(" $(i-1)/$(par.n_max)")
         end
         resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft)
-        result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)
+        if !only_end
+            result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)
+        end
         memfft = memfft[permut]
         memfft[end] = resfft
         if i%100 == 0
@@ -187,5 +191,6 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB)
         end
     end
 
-    return result
+
+    return only_end ? _getresult(ut0_fft, par.t_max, par.parphi) : result
 end
