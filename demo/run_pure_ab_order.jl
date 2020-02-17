@@ -41,7 +41,7 @@ function fctmain(n_tau)
     @time par_u0 = PrepareU0(parphi, 2, u0)
     println("fin preparation")
 	nball = 100*2^nbmaxtest
-    solrefall = zeros(4,nball+1)
+    solrefall = zeros(BigFloat,4,nball+1)
     for i=1:nball
         solrefall[:,i+1] = getexactsol(parphi, u0, i*big"1.0"/nball)
     end
