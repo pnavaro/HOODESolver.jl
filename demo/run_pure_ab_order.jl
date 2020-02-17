@@ -28,7 +28,7 @@ function fctmain(n_tau)
     epsilon=big"0.001"
     nbmaxtest=11
     ordmax=16
-    debord=10
+    debord=2
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
  #   y = ones(Float64, nbmaxtest, size(tabEps,1) )
@@ -52,12 +52,15 @@ function fctmain(n_tau)
         nb = 100
         indc =1
         labels=Array{String,2}(undef, 1, order-debord+1)
-        par_u0 = PrepareU0(parphi, order+2, u0)       
+#        par_u0 = PrepareU0(parphi, order+2, u0)       
         while indc <= nbmaxtest
             @time resall = twoscales_solve( par_u0, order, big"1.0", nb)
             coef = div(nball,nb)
+            mod_c = div(nb,100)
             for i=1:(nb+1)
-                println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
+                if (i-1)%mod == 0
+                    println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
+                end
             end
             sol = resall[:,end]
             println("solref=$solref")
