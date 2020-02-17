@@ -68,7 +68,7 @@ function fctmain(n_tau)
             diff=solref-sol
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
-            y[indc,ind] = norm(diff,Inf)
+            y[indc,ind] = max(norm(diff,Inf), 1)
             println("result=$y")
             nb *= 2
             indc += 1
