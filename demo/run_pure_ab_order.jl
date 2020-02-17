@@ -56,7 +56,6 @@ function fctmain(n_tau)
         while indc <= nbmaxtest
             @time resall = twoscales_solve( par_u0, order, big"1.0", nb)
             coef = div(nball,nb)
-            mod_c = div(nb,100)
             for i=1:(nb+1)
                 if i <= 1000 || i > (nb-1000)
                     println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
