@@ -27,7 +27,7 @@ function fctmain(n_tau)
     t_max = big"1.0"
     epsilon=big"0.001"
     nbmaxtest=14
-    ordmax=31
+    ordmax=
     debord=3
     pasord=2
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
@@ -47,7 +47,8 @@ function fctmain(n_tau)
         labels=Array{String,2}(undef, 1, order-debord+1)
         resnorm=0
         resnormprec=1
-        # par_u0 = PrepareU0(parphi, order+2, u0)       
+        println("preparation ordre $order + 2")
+        @time par_u0 = PrepareU0(parphi, order+2, u0)       
         while indc <= nbmaxtest
             @time sol = twoscales_solve( par_u0, order, t_max, nb)
             # coef = div(nball,nb)
