@@ -26,12 +26,11 @@ function fctmain(n_tau)
     ]
     t_max = big"1.0"
     epsilon=big"0.001"
-    nbmaxtest=11
+    nbmaxtest=14
     ordmax=31
     debord=3
     pasord=2
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
- #   y = ones(Float64, nbmaxtest, size(tabEps,1) )
     x=zeros(Float64,nbmaxtest)
 
     ind=1
@@ -40,18 +39,14 @@ function fctmain(n_tau)
     println("Preparation ordre 2")
     @time par_u0 = PrepareU0(parphi, 2, u0)
     println("fin preparation")
-#	nball = 100*2^nbmaxtest
- #   solrefall = zeros(BigFloat,4,nball+1)
-    # for i=1:nball
-    #     solrefall[:,i+1] = getexactsol(parphi, u0, i*big"1.0"/nball)
-    # end
- #   solrefall[:,1] = u0
     solref = getexactsol(parphi, u0, t_max)
     for order=debord:pasord:ordmax
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 100
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
+        resnorm=0
+        resnormprec=1
         # par_u0 = PrepareU0(parphi, order+2, u0)       
         while indc <= nbmaxtest
             @time sol = twoscales_solve( par_u0, order, t_max, nb)
@@ -70,6 +65,7 @@ function fctmain(n_tau)
             diff=solref-sol
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
+            resnorm = norm(diff,Inf)
             y[indc,ind] = min(norm(diff,Inf), 1.1)
             println("result=$y")
             nb *= 2
@@ -92,7 +88,11 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2b.pdf")
+        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2c.pdf")
+        if resnorm > resnormprec
+            break
+        end
+        resnormprec = resnorm
         ind+= 1
     end
 end
