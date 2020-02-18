@@ -23,7 +23,7 @@ function fctMain(n_tau)
 
     u0 =[big"0.12345678", big"0.1209182736", big"0.1290582671", big"0.1239681094" ]
 
-    Random.seed(123456789)
+    Random.seed!(123456789)
 
     B = 2rand(BigFloat, 4, 4) - ones(BigFloat, 4, 4)
     println("B=$B")
