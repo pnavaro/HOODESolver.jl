@@ -78,7 +78,7 @@ struct PreparePhi
 #     tau_list,
 #     size_vect
 # ),n_tau,size_vect)))       
-        tau_int = hcat([0], -im / tau_list[2:end])
+        tau_int = collect(transpose(vcat([0], -im ./ tau_list[2:end])))
         par_fft = T == BigFloat ? PrepareFftBig(n_tau, epsilon) : missing
         return new( 
     epsilon, 
