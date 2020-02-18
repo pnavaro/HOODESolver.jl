@@ -27,9 +27,9 @@ function fctmain(n_tau)
     t_max = big"1.0"
     epsilon=big"0.001"
     nbmaxtest=11
-    ordmax=16
-    debord=2
-    pasord=1
+    ordmax=31
+    debord=3
+    pasord=2
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
  #   y = ones(Float64, nbmaxtest, size(tabEps,1) )
     x=zeros(Float64,nbmaxtest)
@@ -52,7 +52,7 @@ function fctmain(n_tau)
         nb = 100
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
-#        par_u0 = PrepareU0(parphi, order+2, u0)       
+        # par_u0 = PrepareU0(parphi, order+2, u0)       
         while indc <= nbmaxtest
             @time sol = twoscales_solve( par_u0, order, t_max, nb)
             # coef = div(nball,nb)
@@ -92,7 +92,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2.pdf")
+        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2b.pdf")
         ind+= 1
     end
 end

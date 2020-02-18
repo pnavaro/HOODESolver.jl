@@ -1,5 +1,6 @@
 include("../src/coefexp_ab.jl")
 include("datacoefexp.jl")
+include("datacoefexp10.jl")
 using LinearAlgebra
 using Test
 function testcoefexp_ab()
@@ -11,6 +12,30 @@ function testcoefexp_ab()
                 dt = parse(BigFloat,"0.0001")
                 par = CoefExpAB(15, epsilon, 32, dt)
                 tab, list_j = get_coef_ab_for_test()
+                for j in list_j
+                    @time @test all(isapprox.(
+    par.tab_coef[:,:,j], 
+    tab[:,:,j], 
+    atol=eps(BigFloat)*100, 
+    rtol=eps(BigFloat)*100
+))
+                end
+                @test par.tab_coef == -conj(par.tab_coef_neg)
+            end
+            prec *= 2
+        end
+    end
+    setprecision(prec_old)
+end
+function testcoefexp10_ab()
+    prec = prec_old = precision(BigFloat)
+    @time @testset "test 1 coef for exponential Adams-Bashforth" begin
+        for i=1:2
+            setprecision(prec) do
+                epsilon = big"1"/10^10
+                dt = big"1"/10000
+                par = CoefExpAB(15, epsilon, 32, dt)
+                tab, list_j = get_coef_ab_for_test10()
                 for j in list_j
                     @time @test all(isapprox.(
     par.tab_coef[:,:,j], 
@@ -44,3 +69,4 @@ function testpolylagrange()
 end
 testpolylagrange()
 testcoefexp_ab()
+testcoefexp10_ab()
