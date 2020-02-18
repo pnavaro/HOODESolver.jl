@@ -78,7 +78,6 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        eps_v = convert(Float32,eps)
         Plots.savefig(p,"out/resAB_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_v1.pdf")
         ind+= 1
     end
