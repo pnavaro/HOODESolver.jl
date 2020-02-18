@@ -42,7 +42,7 @@ function fctMain(n_tau)
         fct = u -> B*u
         parphi = PreparePhi(epsilon, n_tau, [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0], fct, B)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
-        @time par_u0 = PrepareU0(parphi, 2, u0)
+        @time par_u0 = PrepareU0(parphi, order+2, u0, precision(BigFloat)*4)
         solref = getexactsol(parphi, u0, t_max)
         eps_v = convert(Float32,epsilon)
         println("epsilon = $eps_v solref=$solref")
@@ -78,7 +78,7 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/resAB_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_v1.pdf")
+        Plots.savefig(p,"out/resAB_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_v3.pdf")
         ind+= 1
     end
 end
