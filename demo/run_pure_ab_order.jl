@@ -26,10 +26,10 @@ function fctmain(n_tau)
     ]
     t_max = big"1.0"
     epsilon=big"0.001"
-    nbmaxtest=14
-    ordmax=
+    nbmaxtest=12
+    ordmax=19
     debord=3
-    pasord=2
+    pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
 
@@ -88,7 +88,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2c.pdf")
+        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2d.pdf")
         if resnorm > resnormprec
             break
         end
