@@ -75,7 +75,6 @@ function fctmain(n_tau)
         for i=debord:pasord:order
             labels[1,(i-debord)÷pasord+1] = " eps,order=$(convert(Float32,epsilon)),$i "
         end
-        gr()
         p=Plots.plot(
                         x,
                         view(y,:,1:ind),
