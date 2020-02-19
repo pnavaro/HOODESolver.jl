@@ -20,7 +20,7 @@ function fctmain(n_tau)
 
     t_max = big"1.0"
     epsilon=big"0.00005"
-    nbmaxtest=9
+    nbmaxtest=7
     ordmax=12
     debord=2
     pasord=1
@@ -30,7 +30,9 @@ function fctmain(n_tau)
     parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
     @time par_u0 = PrepareU0(parphi, ordmax+2, u0)
     
-    @time solref = twoscales_solve( par_u0, ordmax, t_max, 100*2^nbmaxtest)
+    @time solref = twoscales_solve( par_u0, ordmax, t_max, 100*2^(nbmaxtest+1))
+
+    println("solref=$solref")
 
     
     
@@ -75,7 +77,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/rapres_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2f.pdf")
+        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
         if resnorm > resnormprec
             break
         end
