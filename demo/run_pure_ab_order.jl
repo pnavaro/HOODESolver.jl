@@ -25,8 +25,8 @@ function fctmain(n_tau)
     big"0.7298459677" big"-0.027887" big"0.7294110099677" big"-0.66294599677"
     ]
     t_max = big"1.0"
-    epsilon=big"0.001"
-    nbmaxtest=12
+    epsilon=big"0.000001"
+    nbmaxtest=9
     ordmax=19
     debord=3
     pasord=1
@@ -34,13 +34,18 @@ function fctmain(n_tau)
     x=zeros(Float64,nbmaxtest)
 
     ind=1
-    fct = u -> B*u
-    parphi = PreparePhi(epsilon, n_tau, [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0], fct, B)
-    println("Preparation ordre 2")
-    @time par_u0 = PrepareU0(parphi, 2, u0)
-    println("fin preparation")
-    solref = getexactsol(parphi, u0, t_max)
+    A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for order=debord:pasord:ordmax
+        if order > 10
+            setprecision(512)
+        end
+        u0=BigFloat.(u0)
+        t_max = BigFloat(t_max)
+        epsilon = BigFloat(epsilon)
+        B = BigFloat.(B)
+        fct = u -> B*u
+        parphi = PreparePhi(epsilon, n_tau, A, fct, B)
+        solref = getexactsol(parphi, u0, t_max)
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 100
         indc = 1
@@ -51,16 +56,6 @@ function fctmain(n_tau)
         @time par_u0 = PrepareU0(parphi, order+2, u0)       
         while indc <= nbmaxtest
             @time sol = twoscales_solve( par_u0, order, t_max, nb)
-            # coef = div(nball,nb)
-            # for i=1:(nb+1)
-            #     if i <= 1000 || i > (nb-1000)
-            #         println("tr__$nb i=$i error=$(norm(resall[:,i]-solrefall[:,coef*(i-1)+1]))")
-            #     end
-            #     if i == 1000 && nb > 2001
-            #         println("    ...")
-            #     end
-            # end
-            # sol = resall[:,end]
             println("solref=$solref")
             println("nb=$nb sol=$sol")
             diff=solref-sol
@@ -69,6 +64,7 @@ function fctmain(n_tau)
             resnorm = norm(diff,Inf)
             y[indc,ind] = min(norm(diff,Inf), 1.1)
             println("result=$y")
+            println("log2(y)=$(log2.(y))")
             nb *= 2
             indc += 1
         end
@@ -88,7 +84,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2d.pdf")
+        Plots.savefig(p,"out/rapres_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2f.pdf")
         if resnorm > resnormprec
             break
         end
