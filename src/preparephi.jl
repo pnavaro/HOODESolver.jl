@@ -125,7 +125,8 @@ function phi( par::PreparePhi, u, order)
         f = filtredfct(par, reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau))
     else
         coef = par.epsilon^(order - 2)
- #       coef = par.epsilon^(order/2) #just to try
+#        coef = par.epsilon^(order/2) #just to try
+#        coef = eps(typeof(par.epsilon))^0.2
         resPhi_u = phi(par, u, order - 1)
         f = resPhi_u + reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau)
         f = filtredfct(par, f)
@@ -149,6 +150,7 @@ struct PrepareU0
         if newprec == 0
             prec = precision(BigFloat)
             newprec = prec + 32 + div(-exponent(parphi.epsilon)*order^2, 3)
+#            newprec = prec*4
             println("prec : $prec --> $newprec")
         end
         y, um = setprecision(newprec) do
