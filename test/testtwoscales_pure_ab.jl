@@ -158,6 +158,7 @@ function testtwoscales_pure_ab_epsilon()
             B
         )    
         sol_ref = getexactsol(parphi, u0, t_max)
+        println("epsilon=$eps_v sol_ref=$sol_ref")
         nb = 1000
         par_u0 = PrepareU0(parphi, order+2, u0)
         res_err = zeros(BigFloat,5)
