@@ -165,7 +165,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
 
     memfft = view(fftfct, par.order:(2par.order-1))
 
-    if only_end
+    if !only_end
         for i=2:par.order
             result[:,i] = _getresult(fft_u[par.order+i-1], (i-1)*par.dt, par.parphi)
         end

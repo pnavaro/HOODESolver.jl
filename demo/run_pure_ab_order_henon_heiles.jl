@@ -21,7 +21,7 @@ function fctmain(n_tau)
     t_max = big"1.0"
     epsilon=big"0.00005"
     nbmaxtest=7
-    ordmax=12
+    ordmax=10
     debord=2
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )

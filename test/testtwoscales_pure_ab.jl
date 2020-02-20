@@ -123,7 +123,7 @@ function testtwoscales_pure_ab_epsilon()
 
     u0=[big"0.12345678", big"0.13787878", big"0.120099999001", big"0.12715124"]
 
-    Random.seed!(9988)
+    Random.seed!(19988)
     u0=rand(BigFloat,4)
 
     println("u0=$u0")
