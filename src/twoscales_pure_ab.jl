@@ -1,6 +1,5 @@
 include("preparephi.jl")
 include("coefexp_ab.jl")
-include("henon_heiles.jl")
 
 """
     PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0)
@@ -176,6 +175,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
 
     ut0_fft = fft_u[end]
     println("")
+    norm_delta_fft = 0
     for i=par.order:par.n_max
         if i%10000 == 1
             println(" $(i-1)/$(par.n_max)")
@@ -184,6 +184,8 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
         if !only_end
             result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)
         end
+        nm = norm(resfft-memfft[end],Inf)
+        norm_delta_fft = max(norm_delta_fft, nm) 
         memfft = memfft[permut]
         memfft[end] = resfft
         if i%100 == 0
@@ -191,6 +193,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
         end
     end
 
+    println("norm diff fft = $norm_delta_fft")
 
     return only_end ? _getresult(ut0_fft, par.t_max, par.parphi) : result
 end

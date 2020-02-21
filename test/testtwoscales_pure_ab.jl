@@ -178,5 +178,5 @@ function testtwoscales_pure_ab_epsilon()
 end
 #testtwoscales_pure_ab()
 #testtwoscales_pure_ab2()
-# testtwoscales_pure_ab3()
+testtwoscales_pure_ab3()
 testtwoscales_pure_ab_epsilon()
