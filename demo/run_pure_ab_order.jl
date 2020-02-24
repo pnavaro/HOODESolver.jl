@@ -52,6 +52,7 @@ function fctmain(n_tau)
         resnorm=0
         resnormprec=1
         ordprep = min(order+2,10)
+        ordprep = order+2
         println("preparation ordre $ordprep")
         @time par_u0 = PrepareU0(parphi, ordprep, u0)       
         while indc <= nbmaxtest
