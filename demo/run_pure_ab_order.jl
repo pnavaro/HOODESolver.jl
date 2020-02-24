@@ -1,4 +1,5 @@
 
+setprecision(512)
 include("../src/twoscales_pure_ab.jl")
 using DifferentialEquations
 using LinearAlgebra
@@ -18,17 +19,18 @@ function twoscales_solve( par_u0::PrepareU0, order, t, nb)
 end
 
 function fctmain(n_tau)
-    u0 =[big"0.1", big"0.11", big"0.15", big"0.10781"]
+    setprecision(512)
+    u0 =[big"0.11111222233331", big"0.11120018281727119900000", big"0.15", big"0.10781"]
     B = [ big"-0.12984599677" big"-0.9277" big"0.32984110099677" big"0.142984599677"
     big"-0.4294599677" big"0.1273371193457" big"0.429841100997777222" big"0.99484599677"
     big"0.22984996779898" big"0.327667214311" big"0.1298410099677" big"-0.342984599677"
     big"0.7298459677881111007" big"-0.0278879898" big"0.7294110099677" big"-0.66294599677"
     ]
     t_max = big"1.0"
-    epsilon=big"1.0"/big"12800.0"
+    epsilon=big"1.0"/big"3200.0"
     nbmaxtest=9
-    ordmax=15
-    debord=3
+    ordmax=17
+    debord=8
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
@@ -36,9 +38,6 @@ function fctmain(n_tau)
     ind=1
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for order=debord:pasord:ordmax
-        if order > 10
-            setprecision(512)
-        end
         u0=BigFloat.(u0)
         t_max = BigFloat(t_max)
         epsilon = BigFloat(epsilon)
@@ -98,4 +97,5 @@ end
 # for i=3:9
 #     fctMain(2^i)
 # end
+setprecision(512)
 fctmain(32)

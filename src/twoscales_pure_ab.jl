@@ -180,8 +180,9 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft
     ut0_fft = fft_u[end]
     println("")
     norm_delta_fft = 0
-	nbnan = 0
-	borne_nm=0
+    nbnan = 0
+    borne_nm=0
+    c_mult=1.1
     for i=par.order:par.n_max
         if i%10000 == 1
             println(" $(i-1)/$(par.n_max)")
@@ -191,12 +192,13 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft
             result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)
         end
         nm = norm(resfft-memfft[end],Inf)
-	norm_delta_fft = max(nm,norm_delta_fft)
-	if ( nm > borne_nm || isnan(nm) ) && nbnan < 10
-        	borne_nm = nm*1.1 
-		println("i=$i nm=$nm")
-		nbnan += isnan(nm) ? 1 : 0
-	end
+        norm_delta_fft = max(nm,norm_delta_fft)
+        if ( nm > borne_nm || isnan(nm) ) && nbnan < 10
+            borne_nm = nm*c_mult
+            c_mult *= 2
+            println("i=$i nm=$nm")
+            nbnan += isnan(nm) ? 1 : 0
+        end
         memfft = memfft[permut]
         memfft[end] = resfft
         if i%100 == 0
