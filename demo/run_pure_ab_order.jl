@@ -60,10 +60,10 @@ function fctmain(n_tau)
             println("solref=$solref")
             println("nb=$nb sol=$sol")
             for i=1:50
-    println("i=$i/$nb diff=$(norm(result[i]-getexactsol(parphi,u0,t_max*(i-1)/nb),Inf))")
+    println("i=$i/$nb diff=$(norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb),Inf))")
             end
             for i=(nb-50):nb
-    println("i=$i/$nb diff=$(norm(result[i]-getexactsol(parphi,u0,t_max*(i-1)/nb),Inf))")
+    println("i=$i/$nb diff=$(norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb),Inf))")
             end
 
             diff=solref-sol
