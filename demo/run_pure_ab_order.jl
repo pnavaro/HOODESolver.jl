@@ -56,7 +56,7 @@ function fctmain(n_tau)
         @time par_u0 = PrepareU0(parphi, ordprep, u0)       
         while indc <= nbmaxtest
             @time result = twoscales_solve( par_u0, order, t_max, nb)
-            sol=result[end]
+            sol=result[:,end]
             println("solref=$solref")
             println("nb=$nb sol=$sol")
             for i=1:50
