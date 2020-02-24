@@ -15,6 +15,34 @@ setprecision(512)
 
 end
 
+
+function getindmin( tab::Array{Array{BigFloat,1},1} )
+
+    summin=Inf
+    for i=1:size(tab,1)
+        sum = zero(BigFloat)
+        for j=i:size(tab,1)
+            sum += norm(tab[i]-tab[j],Inf)
+        end
+        if sum < summin
+            sum = summin
+            ret = i
+        end
+    end
+end
+
+
+
+function getsolref( solref_gen, res_gen, y)
+    mindiff = 1.0
+    for i=1:size(y,1), j=1:size(y,2)
+        if y[i,j] != NaN && y[i,j] != undef
+            diff = norm(solref_gen-res_gen[i,j], Inf)
+            if diff < mindiff && diff != 0.0
+                mindiff = diff
+
+
+
 function fctmain(n_tau)
 
 setprecision(512)
@@ -28,6 +56,8 @@ setprecision(512)
     debord=10
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
+
+    res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
@@ -36,6 +66,7 @@ setprecision(512)
     @time solref = twoscales_solve( par_u0, ordmax, t_max, 100*2^(nbmaxtest))
 
     println("solref=$solref")
+    solref_gen = solref
 
     
     
@@ -54,11 +85,16 @@ setprecision(512)
             @time sol = twoscales_solve( par_u0, order, t_max, nb)
             println("solref=$solref")
             println("nb=$nb sol=$sol")
+            res_gen[indc,ind] = sol
             diff=solref-sol
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
             resnorm = norm(diff,Inf)
             y[indc,ind] = min(norm(diff,Inf), 1.1)
+            if y[indc,ind] == 1.1
+                y[indc,ind] = NaN
+            end
+            solref = getsolref(solref_gen, res_gen, y)
             println("result=$y")
             println("log2(y)=$(log2.(y))")
             nb *= 2

@@ -20,14 +20,14 @@ end
 function fctmain(n_tau)
     u0 =[big"0.1", big"0.11", big"0.15", big"0.10781"]
     B = [ big"-0.12984599677" big"-0.9277" big"0.32984110099677" big"0.142984599677"
-    big"-0.4294599677" big"0.127337" big"0.4298411009977" big"0.99484599677"
-    big"0.2298499677" big"0.327667" big"0.1298410099677" big"-0.342984599677"
-    big"0.7298459677" big"-0.027887" big"0.7294110099677" big"-0.66294599677"
+    big"-0.4294599677" big"0.1273371193457" big"0.429841100997777222" big"0.99484599677"
+    big"0.22984996779898" big"0.327667214311" big"0.1298410099677" big"-0.342984599677"
+    big"0.7298459677881111007" big"-0.0278879898" big"0.7294110099677" big"-0.66294599677"
     ]
     t_max = big"1.0"
-    epsilon=big"0.000001"
+    epsilon=big"1.0"/big"12800.0"
     nbmaxtest=9
-    ordmax=19
+    ordmax=15
     debord=3
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
@@ -84,7 +84,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/rapres_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2f.pdf")
+        Plots.savefig(p,"out/rapres_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2g.pdf")
         if resnorm > resnormprec
             break
         end
