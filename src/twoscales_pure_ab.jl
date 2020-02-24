@@ -196,8 +196,11 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft
         if ( nm > borne_nm || isnan(nm) ) && nbnan < 10
             borne_nm = nm*c_mult
             c_mult *= 2
-            println("i=$i nm=$nm")
+            println("i=$i nm=$nm saut nm")
             nbnan += isnan(nm) ? 1 : 0
+        end
+        if i < 100
+            println("i=$i nm=$nm")
         end
         memfft = memfft[permut]
         memfft[end] = resfft

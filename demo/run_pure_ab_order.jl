@@ -14,7 +14,7 @@ function twoscales_solve( par_u0::PrepareU0, order, t, nb)
     
     pargen = PrepareTwoScalePureAB(nb, t, order, par_u0)
 
-    return twoscales_pure_ab(pargen, only_end=true)
+    return twoscales_pure_ab(pargen)
 
 end
 
@@ -46,17 +46,26 @@ function fctmain(n_tau)
         parphi = PreparePhi(epsilon, n_tau, A, fct, B)
         solref = getexactsol(parphi, u0, t_max)
         println("eps=$epsilon solRef=$solref order=$order")
-        nb = 100
+        nb = 128
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
         resnorm=0
         resnormprec=1
-        println("preparation ordre $order + 2")
-        @time par_u0 = PrepareU0(parphi, order+2, u0)       
+        ordprep = min(order+2,10)
+        println("preparation ordre $ordprep")
+        @time par_u0 = PrepareU0(parphi, ordprep, u0)       
         while indc <= nbmaxtest
-            @time sol = twoscales_solve( par_u0, order, t_max, nb)
+            @time result = twoscales_solve( par_u0, order, t_max, nb)
+            sol=result[end]
             println("solref=$solref")
             println("nb=$nb sol=$sol")
+            for i=1:50
+    println("i=$i/$nb diff=$(norm(result[i]-getexactsol(parphi,u0,t_max*(i-1)/nb),Inf))")
+            end
+            for i=(nb-50):nb
+    println("i=$i/$nb diff=$(norm(result[i]-getexactsol(parphi,u0,t_max*(i-1)/nb),Inf))")
+            end
+
             diff=solref-sol
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
@@ -83,7 +92,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/rapres_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_exact_v2g.pdf")
+        Plots.savefig(p,"out/rapres_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact_v2g.pdf")
         if resnorm > resnormprec
             break
         end
