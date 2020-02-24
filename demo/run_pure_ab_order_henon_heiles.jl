@@ -1,28 +1,31 @@
-
+setprecision(512)
 include("../src/twoscales_pure_ab.jl")
 include("../src/henon_heiles.jl")
 using DifferentialEquations
 using LinearAlgebra
 using Plots
 using Random
+setprecision(512)
 function twoscales_solve( par_u0::PrepareU0, order, t, nb)
     
+setprecision(512)
     pargen = PrepareTwoScalePureAB(nb, t, order, par_u0)
 
-    return twoscales_pure_ab(pargen, only_end=true)
+    return twoscales_pure_ab(pargen, only_end=true, borne_fft=100/nb)
 
 end
 
 function fctmain(n_tau)
 
+setprecision(512)
     Random.seed!(5612)
     u0=rand(BigFloat,4)
 
     t_max = big"1.0"
-    epsilon=big"0.00005"
-    nbmaxtest=9
-    ordmax=14
-    debord=2
+    epsilon=big"0.1"
+    nbmaxtest=12
+    ordmax=20
+    debord=10
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
@@ -30,7 +33,7 @@ function fctmain(n_tau)
     parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
     @time par_u0 = PrepareU0(parphi, ordmax+2, u0)
     
-    @time solref = twoscales_solve( par_u0, ordmax, t_max, 100*2^(nbmaxtest+1))
+    @time solref = twoscales_solve( par_u0, ordmax, t_max, 100*2^(nbmaxtest))
 
     println("solref=$solref")
 
@@ -77,7 +80,7 @@ function fctmain(n_tau)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
+        Plots.savefig(p,"out/res2_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
         if resnorm > resnormprec
             break
         end
@@ -91,4 +94,5 @@ end
 # for i=3:9
 #     fctMain(2^i)
 # end
-fctmain(32)
+setprecision(512)
+fctmain(64)

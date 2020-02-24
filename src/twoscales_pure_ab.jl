@@ -135,7 +135,7 @@ function _getresult(u_chap, t, par::PreparePhi)
 end
 
 
-function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
+function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft=1.0)
 
     fftfct = Vector{Array{Complex{BigFloat}, 2}}(undef, 2par.order-1)
 
@@ -146,6 +146,10 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
     u0 = par.par_u0.u0
    
     fftfct[par.order] = fftgen(par.parphi.par_fft, filtredfct(par.parphi, res_u))
+
+    println("twoscales_pure_ab epsilon/dt=$(par.parphi.epsilon/par.dt)")
+    println("twoscales_pure_ab dt/epsilon=$(par.dt/par.parphi.epsilon)")
+    println("twoscales_pure_ab order=$(par.order)")
 
   #  dump(par)
 
@@ -162,7 +166,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
 
     _init_ab(par, fftfct, fft_u)
 
-    memfft = view(fftfct, par.order:(2par.order-1))
+    memfft = fftfct[par.order:(2par.order-1)]
 
     if !only_end
         for i=2:par.order
@@ -176,6 +180,8 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
     ut0_fft = fft_u[end]
     println("")
     norm_delta_fft = 0
+	nbnan = 0
+	borne_nm=0
     for i=par.order:par.n_max
         if i%10000 == 1
             println(" $(i-1)/$(par.n_max)")
@@ -185,7 +191,12 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false)
             result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)
         end
         nm = norm(resfft-memfft[end],Inf)
-        norm_delta_fft = max(norm_delta_fft, nm) 
+	norm_delta_fft = max(nm,norm_delta_fft)
+	if ( nm > borne_nm || isnan(nm) ) && nbnan < 10
+        	borne_nm = nm*1.1 
+		println("i=$i nm=$nm")
+		nbnan += isnan(nm) ? 1 : 0
+	end
         memfft = memfft[permut]
         memfft[end] = resfft
         if i%100 == 0
