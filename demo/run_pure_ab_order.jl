@@ -64,7 +64,7 @@ function fctmain(n_tau, prec)
             for i=1:50
                 println("i=$i/$nb difffftInf=$(tabdf[i])")
             end
-            pasaff=nb/100
+            pasaff=div(nb,100)
             for i=51:pasaff:(nb-50)
                 println("i=$i/$nb difffftInf=$(tabdf[i])")
             end
