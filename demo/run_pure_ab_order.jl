@@ -45,7 +45,7 @@ function fctmain(n_tau, prec)
     only_end=false,
     diff_fft=true
 )
-            pasaff = nb/100
+            pasaff=div(nb,100)
             sol = result[:, end]
             println("solref=$solref")
             println("nb=$nb sol=$sol")
@@ -64,7 +64,6 @@ function fctmain(n_tau, prec)
             for i=1:50
                 println("i=$i/$nb difffftInf=$(tabdf[i])")
             end
-            pasaff=div(nb,100)
             for i=51:pasaff:(nb-50)
                 println("i=$i/$nb difffftInf=$(tabdf[i])")
             end
