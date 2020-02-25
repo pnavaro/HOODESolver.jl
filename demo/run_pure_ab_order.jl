@@ -7,7 +7,7 @@ using Random
 
 function fctmain(n_tau, prec)
     setprecision(prec)
-    Random.seed(89161)
+    Random.seed!(89161)
     u0 = rand(BigFloat, 4)
     B = 2rand(BigFloat, 4, 4)-ones(BigFloat,4, 4)
     t_max = big"1.0"
