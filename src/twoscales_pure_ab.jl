@@ -135,7 +135,7 @@ function _getresult(u_chap, t, par::PreparePhi)
 end
 
 
-function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft=1.0)
+function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, diff_fft=false)
 
     fftfct = Vector{Array{Complex{BigFloat}, 2}}(undef, 2par.order-1)
 
@@ -174,12 +174,26 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft
         end
     end
 
+    tabdifffft = undef
+    tabdifffft_2 = undef
+    if diff_fft
+        tabdifffft = zeros(BigFloat, par.n_max)
+        tabdifffft_2 = zeros(BigFloat, par.n_max)
+        for i = 1:(par.order-1)
+            tabdifffft[i] = norm(memfft[i]-memfft[i+1],Inf)
+            tabdifffft_2[i] = norm(memfft[i]-memfft[i+1])
+        end
+    end
+
+
+
      # ring permutation where the beginning becomes the end and the rest is shifted by one
     permut = collect(Iterators.flatten((2:par.order,1:1)))
 
     ut0_fft = fft_u[end]
     println("")
     norm_delta_fft = 0
+    norm_delta_fft_2 = 0
     nbnan = 0
     borne_nm=0
     c_mult=1.1
@@ -191,13 +205,13 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft
         if !only_end
             result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)
         end
-        nm = norm(resfft-memfft[end],Inf)
-        norm_delta_fft = max(nm,norm_delta_fft)
-        if ( nm > borne_nm || isnan(nm) ) && nbnan < 10
-            borne_nm = nm*c_mult
-            c_mult *= 2
-            println("i=$i nm=$nm saut nm")
-            nbnan += isnan(nm) ? 1 : 0
+        if diff_fft
+            nm = norm(resfft-memfft[end],Inf)
+            nm_2 = norm(resfft-memfft[end])
+            norm_delta_fft = max(nm,norm_delta_fft)
+            norm_delta_fft_2 = max(nm_2,norm_delta_fft_2)
+            tabdifffft = nm
+            tabdifffft_2 = nm_2
         end
         if i < 100
             println("i=$i nm=$nm")
@@ -211,5 +225,11 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, borne_fft
 
     println("norm diff fft = $norm_delta_fft")
 
-    return only_end ? _getresult(ut0_fft, par.t_max, par.parphi) : result
+    ret =  only_end ? _getresult(ut0_fft, par.t_max, par.parphi) : result
+
+    if diff_fft 
+        return ret, tabdifffft, tabdifffft_2, norm_delta_fft, norm_delta_fft_2
+    else
+        return ret
+    end
 end
