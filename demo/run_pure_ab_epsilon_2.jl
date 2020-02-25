@@ -26,7 +26,7 @@ function fctMain(n_tau)
     t_max = big"1.0"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for order = ordmin:ordpas:ordmax
-        y = ones(Float64, nbmaxtest, nbeps  )
+        y = ones(Float64, nbeps, nbmaxtest)
         x=zeros(Float64,nbeps)
         for i_eps=1:nbeps
             epsilon = big"1.0"/paseps^i_eps
@@ -46,7 +46,7 @@ function fctMain(n_tau)
                 println("nb=$nb sol=$sol")
                 diff=solref-sol
                 println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
-                y[indc, i_eps] = norm(diff,Inf)
+                y[i_eps, indc] = norm(diff,Inf)
                 println("epsilon=$epsilon result=$y")
             end
         end
@@ -54,6 +54,13 @@ function fctMain(n_tau)
         for i=1:nbmaxtest
             nb = 10*10^i
             labels[1,i] = " delta t,order=$(1/nb), $order "
+            mindiff = minimum(y[:,i])
+            bornediff = min(mindiff*1e20,1)
+            for j=1:nbeps
+                if y[j,i] >= bornediff
+                    y[j,i] = NaN
+                end
+            end
         end
         gr()
         p=Plots.plot(
