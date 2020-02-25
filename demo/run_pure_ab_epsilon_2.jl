@@ -46,7 +46,7 @@ function fctMain(n_tau)
                 println("nb=$nb sol=$sol")
                 diff=solref-sol
                 println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
-                y[i_eps, indc] = norm(diff,Inf)
+                y[indc, i_eps] = norm(diff,Inf)
                 println("epsilon=$epsilon result=$y")
             end
         end
