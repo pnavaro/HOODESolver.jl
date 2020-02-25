@@ -210,8 +210,8 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, diff_fft=
             nm_2 = norm(resfft-memfft[end])
             norm_delta_fft = max(nm,norm_delta_fft)
             norm_delta_fft_2 = max(nm_2,norm_delta_fft_2)
-            tabdifffft = nm
-            tabdifffft_2 = nm_2
+            tabdifffft[i] = nm
+            tabdifffft_2[i] = nm_2
         end
         if i < 100
             println("i=$i nm=$nm")
