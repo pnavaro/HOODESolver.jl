@@ -19,7 +19,7 @@ function fctMain(n_tau)
     println("seed = $seed B=$B")
     nbeps=48
     nbmaxtest=3
-    paseps = big"10.0"^0.25
+    paseps = big"10.0"^0.125
     ordmin=3
     ordmax=14
     ordpas = 1
@@ -75,7 +75,7 @@ function fctMain(n_tau)
     marker=2
 )
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r_$(prec_v)_$(order)_$(n_tau)_epsilon_lgn.pdf")
+        Plots.savefig(p,"out/r_$(prec_v)_$(order)_$(n_tau)_epsilon_lgn_2.pdf")
     end
 end
 fctMain(32)
