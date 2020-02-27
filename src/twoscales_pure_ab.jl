@@ -213,9 +213,6 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, diff_fft=
             tabdifffft[i] = nm
             tabdifffft_2[i] = nm_2
         end
-        if i < 100
-            println("i=$i nm=$nm")
-        end
         memfft = memfft[permut]
         memfft[end] = resfft
         if i%100 == 0
