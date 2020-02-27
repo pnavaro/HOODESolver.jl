@@ -127,6 +127,8 @@ diff_fft=false
             res_gen[indc,ind] = sol 
             (a, b), nm = getmindif(tabsol)
             if a != indref
+                println("New solref !!!! a=$a, b=$b nm=$nm")
+                indref = a
                 solref = tabsol[a]
                 for i=1:indc
                     borne = (i <indc) ? size(res_gen,1) : ind
