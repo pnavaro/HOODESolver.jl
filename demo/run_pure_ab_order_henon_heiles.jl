@@ -61,8 +61,8 @@ function fctmain(n_tau, prec)
     t_max = big"1.0"
     epsilon=big"0.001"
     println("epsilon=$epsilon")
-    nbmaxtest=8
-    ordmax=10
+    nbmaxtest=12
+    ordmax=17
     debord=3
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
