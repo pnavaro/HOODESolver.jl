@@ -16,31 +16,35 @@ setprecision(512)
 end
 
 
-function getindmin( tab::Array{Array{BigFloat,1},1} )
+# function getindmin( tab::Array{Array{BigFloat,1},1} )
 
-    summin=Inf
-    for i=1:size(tab,1)
-        sum = zero(BigFloat)
-        for j=i:size(tab,1)
-            sum += norm(tab[i]-tab[j],Inf)
-        end
-        if sum < summin
-            sum = summin
-            ret = i
-        end
-    end
-end
+    # summin=Inf
+    # for i=1:size(tab,1)
+        # sum = zero(BigFloat)
+        # for j=i:size(tab,1)
+            # sum += norm(tab[i]-tab[j],Inf)
+        # end
+        # if sum < summin
+            # sum = summin
+            # ret = i
+        # end
+    # end
+# end
 
 
 
-function getsolref( solref_gen, res_gen, y)
-    mindiff = 1.0
-    for i=1:size(y,1), j=1:size(y,2)
-        if y[i,j] != NaN && y[i,j] != undef
-            diff = norm(solref_gen-res_gen[i,j], Inf)
-            if diff < mindiff && diff != 0.0
-                mindiff = diff
-
+# function getsolref( solref_gen, res_gen, y)
+    # mindiff = 1.0
+    # for i=1:size(y,1), j=1:size(y,2)
+        # if y[i,j] != NaN && y[i,j] != undef
+            # diff = norm(solref_gen-res_gen[i,j], Inf)
+            # if diff < mindiff && diff != 0.0
+                # mindiff = diff
+# 
+		# end
+# end
+# end
+# end
 
 
 function fctmain(n_tau)
@@ -50,9 +54,9 @@ setprecision(512)
     u0=rand(BigFloat,4)
 
     t_max = big"1.0"
-    epsilon=big"0.1"
+    epsilon=big"0.001"
     nbmaxtest=12
-    ordmax=20
+    ordmax=17
     debord=10
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
@@ -61,15 +65,26 @@ setprecision(512)
     x=zeros(Float64,nbmaxtest)
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
-    @time par_u0 = PrepareU0(parphi, ordmax+2, u0)
+
+    nm = NaN
+
+    ordmax += 1
+
+    while isnan(nm)
+
+	ordmax -= 1
+
+    	@time par_u0 = PrepareU0(parphi, ordmax+2, u0)
     
-    @time solref = twoscales_solve( par_u0, ordmax, t_max, 100*2^(nbmaxtest))
+    	@time solref = twoscales_solve( par_u0, ordmax, t_max, 100*2^(nbmaxtest))
+
+	nm = norm(solref, Inf)
+    end
+
+    prinln("ordmax=$ordmax")
 
     println("solref=$solref")
     solref_gen = solref
-
-    
-    
 
     ind=1
     for order=debord:pasord:ordmax
