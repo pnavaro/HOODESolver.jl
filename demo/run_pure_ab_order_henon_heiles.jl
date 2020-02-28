@@ -131,7 +131,7 @@ diff_fft=false
                 indref = a
                 solref = tabsol[a]
                 for i=1:indc
-                    borne = (i <indc) ? size(res_gen,1) : ind
+                    borne = (i <indc) ? size(res_gen,2) : ind
                     for j = 1:borne
                         nm2 = min( norm(res_gen[i,j] - solref, Inf), 1.1)
                         y[i,j] = nm2 == 0 ? nm : nm2
