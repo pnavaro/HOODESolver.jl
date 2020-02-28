@@ -115,9 +115,9 @@ diff_fft=false
         resnormprec=1
         sol =undef
         println("preparation ordre $order + 2")
-        @time par_u0 = PrepareU0(parphi, order+2, u0)       
+        @time par_u0 = PrepareU0(parphi, ordprep, u0)       
         while indc <= nbmaxtest
-            @time pargen = PrepareTwoScalePureAB(nb, t_max, ordprep, par_u0)
+            @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
             @time sol = twoscales_pure_ab(
     pargen,
     only_end=true,
