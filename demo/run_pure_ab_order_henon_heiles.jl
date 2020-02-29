@@ -130,11 +130,11 @@ diff_fft=false
                 println("New solref !!!! a=$a, b=$b nm=$nm")
                 indref = a
                 solref = tabsol[a]
-                for i=1:indc
-                    borne = (i <indc) ? size(res_gen,2) : ind
+                for i=1:ind
+                    borne = (i <ind) ? size(res_gen,1) : indc
                     for j = 1:borne
-                        nm2 = min( norm(res_gen[i,j] - solref, Inf), 1.1)
-                        y[i,j] = nm2 == 0 ? nm : nm2
+                        nm2 = min( norm(res_gen[j,i] - solref, Inf), 1.1)
+                        y[j,i] = nm2 == 0 ? nm : nm2
                    end
                 end
             else
