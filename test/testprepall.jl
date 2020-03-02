@@ -11,8 +11,8 @@ function testprepare()
         setprecision(256*2^(i-1))
         for i_eps = 1:20
             epsilon = big"1.25"^(-i_eps)
-            @time @testset "test PrepareU0 prec=$prec epsilon=$epsilon" begin
-                for order=3:16
+            for order=3:16
+                @time @testset "test PrepareU0 prec=$prec order=$order epsilon=$epsilon" begin
                     newprec = prec + 32 + div(-exponent(epsilon)*order^2, 3)
                     precref = newprec + 10
                     parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
