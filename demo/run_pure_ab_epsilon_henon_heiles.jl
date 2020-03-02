@@ -16,7 +16,7 @@ function fctmain(n_tau)
     println("seed = $seed")
     tab_eps = zeros(BigFloat,14)
     epsilon=big"0.8"
-    for i=1:15
+    for i=1:14
         tab_eps[i] = epsilon
         epsilon /= 2^i
     end
