@@ -14,11 +14,11 @@ function fctmain(n_tau)
     Random.seed!(seed)
     u0=rand(BigFloat,4)
     println("seed = $seed")
-    tab_eps = zeros(BigFloat,10)
+    tab_eps = zeros(BigFloat,14)
     epsilon=big"0.8"
-    for i=1:10
+    for i=1:15
         tab_eps[i] = epsilon
-        epsilon /= 1.25^i
+        epsilon /= 2^i
     end
     nbmaxtest=8
     order=6
@@ -29,7 +29,6 @@ function fctmain(n_tau)
     ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        fct = u -> B*u
         parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
         @time par_u0 = PrepareU0(parphi, ordprep, u0)
@@ -65,7 +64,7 @@ function fctmain(n_tau)
     xaxis=:log,
     ylabel="error",
     yaxis=:log,
-    legend=:bottomright,
+    legend=:topleft,
     label=labels,
     marker=2
 )
