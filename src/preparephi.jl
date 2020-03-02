@@ -104,7 +104,7 @@ struct PreparePhi
         fct::Function;
         mode=1
     )
-        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode)
+        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode=mode)
     end
 end
 isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
