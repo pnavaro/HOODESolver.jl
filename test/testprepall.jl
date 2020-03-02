@@ -9,10 +9,10 @@ function testprepare()
     for i=1:5
         prec = 256*2^(i-1)
         setprecision(256*2^(i-1))
-        for i_eps = 1:20
+        for i_eps = 1:40
             epsilon = big"1.25"^(-i_eps)
             println("prec=$prec epsilon=$epsilon")
-            for order=3:16
+            for order=3:10
                 @time @testset "test PrepareU0 prec=$prec order=$order epsilon=$epsilon" begin
                     newprec = prec + 32 + div(-exponent(epsilon)*order^2, 3)
                     precref = newprec + 10
