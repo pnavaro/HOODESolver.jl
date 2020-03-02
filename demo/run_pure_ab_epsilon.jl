@@ -21,16 +21,17 @@ end
 
 function fctMain(n_tau)
 
-    u0 =[big"0.12345678", big"0.1209182736", big"0.1290582671", big"0.1239681094" ]
+ #   u0 =[big"0.12345678", big"0.1209182736", big"0.1290582671", big"0.1239681094" ]
     seed=123456
     Random.seed!(seed)
+    u0=rand(BigFloat,4)
     B = 2rand(BigFloat, 4, 4) - ones(BigFloat, 4, 4)
     println("seed = $seed B=$B")
     tab_eps = zeros(BigFloat,8)
-    epsilon=big"0.1"
-    for i=1:8
+    epsilon=big"0.8"
+    for i=1:15
         tab_eps[i] = epsilon
-        epsilon /= 10
+        epsilon /= 1.25
     end
     nbMaxTest=8
     order=6

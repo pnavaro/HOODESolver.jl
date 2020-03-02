@@ -39,13 +39,15 @@ struct PreparePhi
     par_fft
     fct
     size_vect
+    mode
     matrix_B::Union{Matrix,Missing} # for debug only (linear function)
     function  PreparePhi(
     epsilon::AbstractFloat, 
     n_tau::Integer, 
     matrix_A::Matrix, 
     fct::Function,
-    matrix_B::Union{Matrix,Missing}
+    matrix_B::Union{Matrix,Missing};
+    mode=1
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
@@ -91,16 +93,18 @@ struct PreparePhi
     par_fft,
     fct,
     size_vect,
-    matrix_B
+    matrix_B,
+    mode
 )
     end
     function  PreparePhi(
         epsilon::AbstractFloat, 
         n_tau::Integer, 
         matrix_A::Matrix, 
-        fct::Function
+        fct::Function;
+        mode=1
     )
-        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing)
+        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode)
     end
 end
 isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
@@ -124,7 +128,12 @@ function phi( par::PreparePhi, u, order)
     if  order == 2
         f = filtredfct(par, reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau))
     else
-        coef = par.epsilon^(order - 2)
+
+        coef = if par.mode == 1
+            par.epsilon^(order - 2)
+        elseif par.mode == 2
+            eps(BigFloat)^0.5
+        end
 #        coef = par.epsilon^(order/1.9117569711) #just to try
 #        coef = eps(typeof(par.epsilon))^0.2
         resPhi_u = phi(par, u, order - 1)
