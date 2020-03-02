@@ -10,7 +10,7 @@ function testprepare()
         prec = 256*2^(i-1)
         setprecision(256*2^(i-1))
         for i_eps = 1:20
-            epsilon = 1.25^(-i_eps)
+            epsilon = big"1.25"^(-i_eps)
             @time @testset "test PrepareU0 prec=$prec epsilon=$epsilon" begin
                 for order=3:16
                     newprec = prec + 32 + div(-exponent(epsilon)*order^2, 3)
@@ -23,6 +23,5 @@ function testprepare()
             end
         end
     end
-
-
 end
+testprepare()
