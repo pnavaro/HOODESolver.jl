@@ -39,8 +39,8 @@ struct PreparePhi
     par_fft
     fct
     size_vect
-    mode
     matrix_B::Union{Matrix,Missing} # for debug only (linear function)
+    mode
     function  PreparePhi(
     epsilon::AbstractFloat, 
     n_tau::Integer, 
