@@ -49,7 +49,7 @@ function fctmain(n_tau)
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
             y[indc,ind] = norm(diff,Inf)
-            println("epsilon=$epsilon\nresult=$y\nlog(result)=$(log.(y))")
+            println("epsilon=$epsilon\nresult=$y\nlog(result)=$(log2.(y))")
             nb *= 2
             indc += 1
         end
