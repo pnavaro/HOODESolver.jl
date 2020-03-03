@@ -14,15 +14,15 @@ function fctmain(n_tau)
     Random.seed!(seed)
     u0=rand(BigFloat,4)
     println("seed = $seed")
-    tab_eps = zeros(BigFloat,14)
-    epsilon=big"0.8"
-    for i=1:14
-        tab_eps[i] = epsilon
+    tab_eps = zeros(BigFloat,9)
+    epsilon=big"0.4"
+    for i=2:10
+        tab_eps[i-1] = epsilon
         epsilon /= 2^i
     end
     nbmaxtest=8
-    order=6
-    ordprep=8
+    order=14
+    ordprep=16
     t_max = big"1.0"
     y = ones(Float64, nbmaxtest, size(tab_eps,1) )
     x=zeros(Float64,nbmaxtest)
@@ -49,7 +49,7 @@ function fctmain(n_tau)
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
             y[indc,ind] = norm(diff,Inf)
-            println("epsilon=$epsilon result=$y")
+            println("epsilon=$epsilon\nresult=$y\nlog(result)=$(log.(y))")
             nb *= 2
             indc += 1
         end
@@ -70,7 +70,7 @@ function fctmain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_hh_1.pdf")
+        Plots.savefig(p,"out/r_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_hh_2.pdf")
         ind+= 1
     end
 end
