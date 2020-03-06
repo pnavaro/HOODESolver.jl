@@ -27,14 +27,14 @@ struct HiOscDESolution{T} <:DiffEqBase.DESolution
 end
 function DiffEqBase.build_solution{T}(prob::HiOscDEProblem{T}, 
     sol::Vector{Vector{T}}, 
-    t::Vector{T}t, 
+    t::Vector{T}, 
     fftsol::Vector{Array{T,2}}) where T<:AbstractFloat
-    HiOscDESolution(sol, t, fftsol)
+    return HiOscDESolution(sol, t, fftsol)
 end
 function DiffEqBase.build_solution{T}(prob::HiOscDEProblem{T}, 
     sol::Vector{Vector{T}}, 
     t::Vector{T}t) where T<:AbstractFloat
-    HiOscDESolution(sol, t, undef)
+    return HiOscDESolution(sol, t, undef)
 end
 
 function DiffEqBase.solve(prob::HiOscDEProblem{T}; ) where T<:AbstractFloat
