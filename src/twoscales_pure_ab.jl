@@ -39,9 +39,9 @@ struct PrepareTwoScalePureAB
     end
 end
 
-function _calculfft(par::PrepareTwoScalePureAB, resfft)
-    f = filtredfct(par.parphi, real(ifftgen(par.parphi.par_fft, resfft)))
-    return fftgen(par.parphi.par_fft, f)
+function _calculfft(parphi::PreparePhi, resfft)
+    f = filtredfct(parphi, real(ifftgen(parphi.par_fft, resfft)))
+    return fftgen(parphi.par_fft, f)
 end
 solJul = zeros(BigFloat,4)
 solJul_neg = zeros(BigFloat,4)
@@ -57,7 +57,7 @@ function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
         resfft .+= transpose(tab_coef[:, k, ord]).*fftfct[indice]
     end
     fft_u[dec] = resfft
-    fftfct[dec] = _calculfft(par, resfft)
+    fftfct[dec] = _calculfft(par.parphi, resfft)
 
     # if isexactsol(par.parphi)
     #     u = _getresult(fft_u[dec], (dec-par.order)*par.dt, par.parphi)
@@ -123,7 +123,7 @@ function _tr_ab(par::PrepareTwoScalePureAB, fftfct, u_chap)
 #        println("k=$k coef[1,2]=$(par.p_coef.tab_coef[k+1,par.order,1:2])")
         resfft .+= transpose(par.p_coef.tab_coef[:, k+1, par.order]).*fftfct[end-k]
     end
-    f = _calculfft(par, resfft)
+    f = _calculfft(par.parphi, resfft)
     return f, resfft
 end
 function _getresult(u_chap, t, par::PreparePhi)
@@ -134,8 +134,26 @@ function _getresult(u_chap, t, par::PreparePhi)
     return res
 end
 
+function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
+    nb = size(tab_u_chap,1)-1
+    dt = (t_max-t_begin)/nb
+    t_ex = t/dt
+    t_int = convert(Int64,floor(t_ex))
+    t_int_begin = t_int-div(order,2)
+    t_ex -= t_int_begin
+    t1 = t_int_begin+1
+    u_chap = interpolate(tab_u_chap[t1:(t1+order)], order, t_ex)
+    return _getresult( u_chap, t, par)
+end
 
-function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, diff_fft=false)
+
+function getresultfromfft(rfft, t, par::PreparePhi)
+    return _getresult(_calculfft(par, rfft), t, par)
+end
+
+
+function twoscales_pure_ab(par::PrepareTwoScalePureAB; 
+    only_end=false, diff_fft=false, res_fft=false)
 
     fftfct = Vector{Array{Complex{BigFloat}, 2}}(undef, 2par.order-1)
 
@@ -162,18 +180,26 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, diff_fft=
     result = zeros(typeof(par.parphi.epsilon), par.parphi.size_vect, par.n_max+1)
     result[:,1] = u0
 
+    result_fft = undef
    # println("diff result ori = $(norm(u0-_getresult(fft_u[par.order], 0, par.parphi)))")
 
     _init_ab(par, fftfct, fft_u)
 
     memfft = fftfct[par.order:(2par.order-1)]
 
+    if res_fft
+        result_fft = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
+        res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
+        for i=1:par.order
+            result_fft[i] = memfft[i]
+            res_u_chap[i] = fft_u[i+par.order-1]
+        end
+    end
     if !only_end
         for i=2:par.order
             result[:,i] = _getresult(fft_u[par.order+i-1], (i-1)*par.dt, par.parphi)
         end
     end
-
     tabdifffft = undef
     tabdifffft_2 = undef
     if diff_fft
@@ -202,6 +228,10 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, diff_fft=
             println(" $(i-1)/$(par.n_max)")
         end
         resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft)
+        if res_fft
+            result_fft[i] = resfft
+            res_u_chap[i+1] = ut0_fft
+        end
         if !only_end
             result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)
         end
@@ -224,9 +254,17 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB; only_end=false, diff_fft=
 
     ret =  only_end ? _getresult(ut0_fft, par.t_max, par.parphi) : result
 
-    if diff_fft 
-        return ret, tabdifffft, tabdifffft_2, norm_delta_fft, norm_delta_fft_2
+    if res_fft
+        if diff_fft 
+            return ret, result_fft, res_u_chap, tabdifffft, tabdifffft_2, norm_delta_fft, norm_delta_fft_2
+        else
+            return ret, result_fft, res_u_chap
+        end
     else
-        return ret
+        if diff_fft 
+            return ret, tabdifffft, tabdifffft_2, norm_delta_fft, norm_delta_fft_2
+        else
+            return ret
+        end
     end
 end

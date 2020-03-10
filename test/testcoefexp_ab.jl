@@ -67,6 +67,36 @@ function testpolylagrange()
         @test polyOri == polyResult
     end
 end
+function testinterpolate()
+    Random.seed!(9817171)
+    @time @testset "testinterpolate" begin
+        order= 8
+        tab = Vector{Array{BigFloat,2}}(undef,order+1)
+        for i=1:(order+1)
+            tab[i]=zeros(BigFloat,4,32)
+        end
+        fctref = Array{Poly{BigFloat},2}(undef,4,32)
+        for i=1:4 
+            for j=1:32
+                fctref[i,j]=Poly(rand(BigFloat,8)/10)
+                for k = 1:(order+1) 
+                    tab[k][i,j] = fctref[i,j](k-1)
+                end
+            end
+        end
+        value = big"4.22856371432981357654"
+        res = interpolate(tab, order, value)
+        resref = zeros(BigFloat,4,32)
+        for i=1:4 
+            for j=1:32
+                resref[i,j]=fctref[i,j](value)
+            end
+        end
+        println("norm=$(norm(resref-res,Inf))")
+        @test isapprox( resref, res,atol=1e-60,rtol=1e-60)
+    end
+end
+testinterpolate()
 testpolylagrange()
 testcoefexp_ab()
 testcoefexp10_ab()

@@ -176,7 +176,7 @@ function testtwoscales_pure_ab_epsilon()
         println("epsilon=$eps_v coef log = $coef")
     end
 end
-#testtwoscales_pure_ab()
-#testtwoscales_pure_ab2()
+testtwoscales_pure_ab()
+testtwoscales_pure_ab2()
 testtwoscales_pure_ab3()
 testtwoscales_pure_ab_epsilon()

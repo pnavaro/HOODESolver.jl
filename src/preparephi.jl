@@ -147,6 +147,12 @@ function phi( par::PreparePhi, u, order)
     f = par.epsilon*real(ifftgen(par.par_fft, f .* par.tau_int))
     return f
 end
+function get_tab_rand(n, T::DataType)
+    tab = 2rand(T,n)-ones(T,n)
+    correct=sum(tab)/n
+    tab .-= correct
+    return tab
+end
 struct PrepareU0
     parphi
     order # it is the order of preparation at less one more than the order of AB process
@@ -156,6 +162,14 @@ struct PrepareU0
         #
         # Numerical preparation (corresponds to formula (2.6), p3 with j=2, and
         # algorithm is given p4).
+        if parphi.mode == 3
+            uu0 = reshape(repeat(u0, parphi.n_tau), parphi.size_vect, parphi.n_tau)
+            tab = transpose(reshape(repeat(get_tab_rand(parphi.n_tau, 
+    typeof(parphi.epsilon)), parphi.size_vect), parphi.n_tau, parphi.size_vect))
+            ut0 = uu0 + 0.2*tab
+            return new(parphi, -1, ut0, u0)
+        end    
+
         if newprec == 0
             prec = precision(BigFloat)
             newprec = prec + 32 + div(-exponent(parphi.epsilon)*order^2, 3)

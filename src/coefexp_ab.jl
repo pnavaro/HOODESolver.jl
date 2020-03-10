@@ -17,6 +17,13 @@ function getpolylagrange(k::Int64, j::Int64, N::DataType)
     end
     return result
 end
+function interpolate(tab, order, value)
+    res=zeros(Complex{BigFloat},size(tab[1]))
+    for i=0:order
+        res .+= getpolylagrange(i,order,BigInt)(-value)*tab[i+1] 
+    end
+    return res
+end
 struct CoefExpABRational
     tab_coef
     function CoefExpABRational(order::Int64, epsilon::AbstractFloat, list_tau, dt::AbstractFloat)
