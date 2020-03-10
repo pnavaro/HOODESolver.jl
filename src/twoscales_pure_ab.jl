@@ -137,11 +137,17 @@ end
 function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     nb = size(tab_u_chap,1)-1
     dt = (t_max-t_begin)/nb
-    t_ex = t/dt
+    t_ex = (t-t_begin)/dt
     t_int = convert(Int64,floor(t_ex))
     t_int_begin = t_int-div(order,2)
+    println("t=$t")
+    println("t_begin=$t_begin")
+    println("t_ex=$t_ex")
+    println("t_int_begin=$t_int_begin")
+    println("dt=$dt")
     t_ex -= t_int_begin
     t1 = t_int_begin+1
+    println("t1=$t1 t_ex=$t_ex")
     u_chap = interpolate(tab_u_chap[t1:(t1+order)], order, t_ex)
     return _getresult( u_chap, t, par)
 end
@@ -189,10 +195,12 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
 
     if res_fft
         result_fft = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
-        res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
+        res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+par.order)
         for i=1:par.order
             result_fft[i] = memfft[i]
-            res_u_chap[i] = fft_u[i+par.order-1]
+        end
+        for i=1:(2par.order-1)
+            res_u_chap[i] = fft_u[i]
         end
     end
     if !only_end
@@ -230,7 +238,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
         resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft)
         if res_fft
             result_fft[i] = resfft
-            res_u_chap[i+1] = ut0_fft
+            res_u_chap[i+par.order] = ut0_fft
         end
         if !only_end
             result[:,i+1] = _getresult(ut0_fft, i*par.dt, par.parphi)

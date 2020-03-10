@@ -120,40 +120,21 @@ function testtwoscales_pure_ab3()
     end
 end
 function testtwoscales_pure_ab_epsilon()
-
-    u0=[big"0.12345678", big"0.13787878", big"0.120099999001", big"0.12715124"]
-
     Random.seed!(19988)
     u0=rand(BigFloat,4)
-
     println("u0=$u0")
-
-    # B = [ big"-0.12984599677" big"-0.9277" big"0.32984110099677" big"0.142984599677"
-    # big"-0.4294599677" big"0.127337" big"0.4298411009977" big"0.99484599677"
-    # big"0.2298499677" big"0.327667" big"0.1298410099677" big"-0.342984599677"
-    # big"0.7298459677" big"-0.027887" big"0.7294110099677" big"-0.66294599677"
-    # ]
-
     B = 2rand(BigFloat,4,4)-ones(BigFloat,4,4)
-
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-
- 
-
     fct = u -> B*u
-
     order = 5
     for i=1:60
         epsilon = big"1.0"/big"10"^i
         eps_v = convert(Float32, epsilon)
-
         t_max = big"1.0"
-    
-    
         parphi = PreparePhi( 
             epsilon, 
             32, 
-            [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0], 
+            A, 
             fct,
             B
         )    
@@ -176,6 +157,41 @@ function testtwoscales_pure_ab_epsilon()
         println("epsilon=$eps_v coef log = $coef")
     end
 end
+function testtwoscales_interpolate()
+    seed=9818871
+    A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+    order = 6
+    nb = 100
+    t_max = big"1.0"
+    for i=1:60
+        seed += 10
+        Random.seed!(seed)
+        u0=rand(BigFloat,4)
+        println("u0=$u0")
+        B = 2rand(BigFloat,4,4)-ones(BigFloat,4,4)
+        fct = u -> B*u
+        epsilon = big"0.4"/2.0^i
+        eps_v = convert(Float32, epsilon)
+        t_max = big"1.0"
+        parphi = PreparePhi(epsilon, 32, A, fct, B)
+        par_u0 = PrepareU0(parphi, order+2, u0)
+        pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+        @time result, tfft, tabu = twoscales_pure_ab(pargen, 
+    only_end=false, res_fft=true)
+        reftol=norm(getexactsol(parphi, u0, t_max)-result[:,end], Inf)*10
+        for j=1:100
+            t=t_max
+            while t > t_max*0.95
+                t=rand(BigFloat)
+            end
+            res_ex=getexactsol(parphi, u0, t)
+            res_ap=_getresult(tabu, t, parphi, -(order-1)*t_max/nb, t_max, order)
+            println("t=$t norm=$(norm(res_ex-res_ap, Inf))")
+            @test isapprox(res_ex, res_ap, atol=reftol, rtol=reftol*10)
+        end
+    end
+end
+testtwoscales_interpolate()
 testtwoscales_pure_ab()
 testtwoscales_pure_ab2()
 testtwoscales_pure_ab3()
