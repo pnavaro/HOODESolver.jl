@@ -180,12 +180,9 @@ function testtwoscales_interpolate()
     only_end=false, res_fft=true)
         reftol=norm(getexactsol(parphi, u0, t_max)-result[:,end], Inf)*10
         for j=1:100
-            t=t_max
-            while t > t_max*0.95
-                t=rand(BigFloat)
-            end
+            t=rand(BigFloat)
             res_ex=getexactsol(parphi, u0, t)
-            res_ap=_getresult(tabu, t, parphi, -(order-1)*t_max/nb, t_max, order)
+            res_ap=_getresult(tabu, t, parphi, 0, t_max, order)
             println("t=$t norm=$(norm(res_ex-res_ap, Inf))")
             @test isapprox(res_ex, res_ap, atol=reftol, rtol=reftol*10)
         end

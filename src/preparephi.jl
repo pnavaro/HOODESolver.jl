@@ -147,9 +147,9 @@ function phi( par::PreparePhi, u, order)
     f = par.epsilon*real(ifftgen(par.par_fft, f .* par.tau_int))
     return f
 end
-function get_tab_rand(n, T::DataType)
-    tab = 2rand(T,n)-ones(T,n)
-    correct=sum(tab)/n
+function get_tab_rand( T::DataType, s, n)
+    tab = 2rand(T,s,n)-ones(T,s,n)
+    correct=sum(tab, dims=2)/n
     tab .-= correct
     return tab
 end
@@ -162,28 +162,28 @@ struct PrepareU0
         #
         # Numerical preparation (corresponds to formula (2.6), p3 with j=2, and
         # algorithm is given p4).
-        if parphi.mode == 3
-            uu0 = reshape(repeat(u0, parphi.n_tau), parphi.size_vect, parphi.n_tau)
+        y, um = if parphi.mode == 3
             tab = transpose(reshape(repeat(get_tab_rand(parphi.n_tau, 
     typeof(parphi.epsilon)), parphi.size_vect), parphi.n_tau, parphi.size_vect))
-            ut0 = uu0 + 0.2*tab
-            return new(parphi, -1, ut0, u0)
-        end    
-
-        if newprec == 0
-            prec = precision(BigFloat)
-            newprec = prec + 32 + div(-exponent(parphi.epsilon)*order^2, 3)
-#            newprec = prec*4
-            println("prec : $prec --> $newprec")
-        end
-        y, um = setprecision(newprec) do
-            y = phi(parphi, u0, 2)
-            um = u0 - y[:, 1]
-            for i=3:order
-                y = phi(parphi, um, i)
-                um = u0 - y[:, 1]
-            end
+            y = parphi.epsilon*tab
+            um = u0 - y[:,1]
             y, um
+        else
+            if newprec == 0
+                prec = precision(BigFloat)
+                newprec = prec + 32 + div(-exponent(parphi.epsilon)*order^2, 3)
+    #            newprec = prec*4
+                println("prec : $prec --> $newprec")
+            end
+            y, um = setprecision(newprec) do
+                y = phi(parphi, u0, 2)
+                um = u0 - y[:, 1]
+                for i=3:order
+                    y = phi(parphi, um, i)
+                    um = u0 - y[:, 1]
+                end
+                y, um
+            end
         end
         ut0 = reshape(repeat(um, parphi.n_tau), parphi.size_vect, parphi.n_tau) + y
         return new(parphi, order, ut0, u0)
