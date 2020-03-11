@@ -30,8 +30,8 @@ function fctmain(n_tau, prec)
     t_max = big"1.0"
     epsilon=big"1e-6"
     println("epsilon=$epsilon")
-    nbmaxtest=12
-    ordmax=17
+    nbmaxtest=10
+    ordmax=12
     debord=3
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
@@ -43,7 +43,7 @@ function fctmain(n_tau, prec)
     nm = NaN
     ordmax += 1
     ordprep=undef
-    nb = 100*2^(nbmaxtest)
+    nb = 20*2^(nbmaxtest)
     solref=undef
     while isnan(nm)
         ordmax -= 1
@@ -72,7 +72,7 @@ diff_fft=false
     for order=debord:pasord:ordmax
         ordprep=order+2
         println("eps=$epsilon solRef=$solref order=$order")
-        nb = 100
+        nb = 10
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
         resnorm=0
