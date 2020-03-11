@@ -121,13 +121,13 @@ diff_fft=false
                         xaxis=:log,
                         ylabel="error",
                         yaxis=:log,
-                        legend=:bottomright,
+                        legend=:topleft,
                         label=labels,
                         marker=2
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/r_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_fct3.pdf")
+        Plots.savefig(p,"out/r2_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_fct3.pdf")
         if resnorm > resnormprec
             break
         end
