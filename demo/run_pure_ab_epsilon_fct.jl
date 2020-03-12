@@ -53,9 +53,10 @@ function fctMain(n_tau)
     y = ones(Float64, nbmaxtest, size(tab_eps,1) )
     x=zeros(Float64,nbmaxtest)
     ind=1
+    A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        fct = u -> [ u[2]^2,1/(1+u[3]^2),0.5-u[4],0.8u[1] ]
-        parphi = PreparePhi(epsilon, n_tau, [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0], fct)
+        fct = u -> [ u[2]^2, 0.5-u[3]*u[4], 1/(1+u[4]^2), u[1]*u[3] ]
+        parphi = PreparePhi(epsilon, n_tau, A, fct)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
         nb=10
         @time par_u0 = PrepareU0(parphi, ordprep, u0, precision(BigFloat)*4)
