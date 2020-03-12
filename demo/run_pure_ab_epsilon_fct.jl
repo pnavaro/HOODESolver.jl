@@ -47,20 +47,14 @@ function fctMain(n_tau)
         nb=10
         @time par_u0 = PrepareU0(parphi, ordprep, u0, precision(BigFloat)*4)
         @time pargen = PrepareTwoScalePureAB(nb*2^nbmaxtest, t_max, order, par_u0)
-        @time result, tabdf, tabu = twoscales_pure_ab(
-pargen,
-only_end=false,
-diff_fft=true,
-res_fft=true
-)
-        solref = result[:, end]
+        @time solref = twoscales_pure_ab(pargen)
         eps_v = convert(Float32,epsilon)
         println("epsilon = $eps_v solref=$solref")
         indc =1
         labels=Array{String,2}(undef, 1, ind)  
         while indc <= nbmaxtest
             @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
-            @time sol_ref= twoscales_pure_ab(pargen)
+            @time sol= twoscales_pure_ab(pargen)
              println("solref=$solref")
             println("nb=$nb sol=$sol")
              diff=solref-sol
