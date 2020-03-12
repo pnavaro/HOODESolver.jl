@@ -22,9 +22,8 @@ end
 
 struct HiOscDESolution{T} <:DiffEqBase.DESolution
     sol::Vector{Vector{T}}
-    sol_u_chap::Vector{Array{Complex{T},2}}
+    sol_u_caret::Vector{Array{Complex{T},2}}
     t::Vector{T}
-    fftsol::Vector{Array{Complex{T},2}}
 end
 function DiffEqBase.build_solution{T}(prob::HiOscDEProblem{T}, 
     sol::Vector{Vector{T}}, 

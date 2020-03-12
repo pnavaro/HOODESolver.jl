@@ -28,7 +28,7 @@ function fctmain(n_tau, prec)
     u0=rand(BigFloat,4)
 
     t_max = big"1.0"
-    epsilon=big"1e-6"
+    epsilon=big"1e-3"
     println("epsilon=$epsilon")
     nbmaxtest=10
     ordmax=12
