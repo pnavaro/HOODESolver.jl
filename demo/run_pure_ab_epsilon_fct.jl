@@ -77,6 +77,7 @@ function fctMain(n_tau)
             push!(tabsol, sol)
             res_gen[indc] = sol
             diff=solref-sol
+            println("tabsol=$tabsol")
             (a, b), nm = getmindif(tabsol)
             if a != indref
                 println("New solref !!!! a=$a, b=$b nm=$nm")
