@@ -25,8 +25,7 @@ function fctMain(n_tau)
     seed=123456
     Random.seed!(seed)
     u0=rand(BigFloat,4)
-    B = 2rand(BigFloat, 4, 4) - ones(BigFloat, 4, 4)
-    println("seed = $seed B=$B")
+    println("seed = $seed")
     tab_eps = zeros(BigFloat,15)
     epsilon=big"0.8"
     for i=1:15
