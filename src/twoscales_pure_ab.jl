@@ -10,6 +10,7 @@ include("coefexp_ab.jl")
 
 struct PrepareTwoScalePureAB
     n_max
+    t_begin
     t_max
     dt
     order
@@ -18,15 +19,16 @@ struct PrepareTwoScalePureAB
     p_coef::CoefExpAB
     exptau
     exptau_inv   
-    function PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0)
+    function PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0; t_begin=0)
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
-        dt = T(t_max)/n_max
+        dt = T(t_max-t_begin)/n_max
         p_coef = CoefExpAB(order, parphi.epsilon, parphi.n_tau, dt)
         exptau = collect(transpose(exp.(-im*dt / parphi.epsilon * parphi.tau_list)))
         exptau_inv = collect(transpose(exp.(im*dt / parphi.epsilon * parphi.tau_list)))
         return new(
-    n_max, 
+    n_max,
+    t_begin, 
     t_max, 
     dt, 
     order, 
