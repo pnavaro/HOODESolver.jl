@@ -25,9 +25,15 @@ struct HiOscDESolution{T} <:DiffEqBase.DESolution
     sol_u_caret::Vector{Array{Complex{T},2}}
     t::Vector{T}
     dense::Bool
+    order::Integer
+    parphi::PreparePhi
 end
 function (sol::HiOscDESolution)(t)
-
+    if sol.dense
+        return _getresult(sol.sol_u_caret, t, sol.parphi, t[1], t[end], sol.order)
+    else
+        return undef
+    end
 end
 function DiffEqBase.build_solution{T}(prob::HiOscDEProblem{T}, 
     sol::Vector{Vector{T}}, 
@@ -49,9 +55,20 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
     pargen = PrepareTwoScalePureAB(nb_t, prob.tspan[2], order, par_u0;
     t_begin=prob.tspan[1])
     if dense
-        
-
-  return DiffEqBase.build_solution(sol )
+        sol, sol_u_caret = twoscales_pure_ab(pargen, res_fft=true)
+        return HiOscDESolution(sol, sol_u_caret, 
+        collect(0:nb_t)*prob.tspan[2]/big(nb_t)+prob.tspan[1],
+        dense,
+        order,
+        parphi)
+    else
+        sol = twoscales_pure_ab(pargen)
+        return HiOscDESolution(sol, undef, 
+        collect(0:nb_t)*prob.tspan[2]/big(nb_t)+prob.tspan[1],
+        dense,
+        order,
+        parphi)
+    end
 end
 
 
