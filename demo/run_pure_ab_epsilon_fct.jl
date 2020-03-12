@@ -18,6 +18,20 @@ function twoscales_solve( par_u0::PrepareU0, order, t, nb)
 
 end
 
+function getmindif(tab::Vector{Vector{BigFloat}})
+    nmmin = Inf
+    ret = (0, 0)
+    for i=1:size(tab,1)
+        for j=(i+1):size(tab,1)
+            nm = norm(tab[i]-tab[j], Inf)
+            if nm < nmmin
+                nmmin = nm
+                ret = i, j
+            end
+        end
+    end
+    return ret, nmmin
+end
 
 function fctMain(n_tau)
 
@@ -47,6 +61,11 @@ function fctMain(n_tau)
         @time par_u0 = PrepareU0(parphi, ordprep, u0, precision(BigFloat)*4)
         @time pargen = PrepareTwoScalePureAB(nb*2^nbmaxtest, t_max, order, par_u0)
         @time solref = twoscales_pure_ab(pargen, only_end=true)
+        tabsol = Array{Array{BigFloat,1},1}(undef,1)
+        res_gen = Array{ Array{BigFloat,1}, 1}(undef, nbmaxtest)
+
+        tabsol[1] = solref
+        indref = 1   
         eps_v = convert(Float32,epsilon)
         println("epsilon = $eps_v solref=$solref")
         indc =1
@@ -54,12 +73,25 @@ function fctMain(n_tau)
         while indc <= nbmaxtest
             @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
             @time sol= twoscales_pure_ab(pargen, only_end=true)
+            push!(tabsol, sol)
+            res_gen[indc] = sol
+            diff=solref-sol
+            (a, b), nm = getmindif(tabsol)
+            if a != indref
+                println("New solref !!!! a=$a, b=$b nm=$nm")
+                indref = a
+                solref = tabsol[a]
+                for i=1:indc
+                    nm2 = min( norm(res_gen[i] - solref, Inf), 1.1)
+                    y[i, ind] = nm2 == 0 ? nm : nm2
+                end
+            else
+                diff=solref-sol
+                y[indc,ind] = min(norm(diff,Inf), 1.1)
+            end
             println("solref=$solref")
             println("nb=$nb sol=$sol")
-            diff=solref-sol
             x[indc] = 1.0/nb
-            println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
-            y[indc,ind] = norm(diff,Inf)
             println("epsilon=$epsilon result=$y")
             println("epsilon=$epsilon reslog2=$(log2.(y))")
             nb *= 2
