@@ -41,14 +41,14 @@ function fctMain(n_tau)
     u0=rand(BigFloat,4)
     println("seed = $seed")
     tab_eps = zeros(BigFloat,15)
-    epsilon=big"0.8"
+    epsilon=big"0.2"
     for i=1:15
         tab_eps[i] = epsilon
         epsilon /= 8
     end
     nbmaxtest=8
     order=4
-    ordprep=6
+    ordprep=10
     t_max = big"1.0"
     y = ones(Float64, nbmaxtest, size(tab_eps,1) )
     x=zeros(Float64,nbmaxtest)
@@ -59,7 +59,7 @@ function fctMain(n_tau)
         parphi = PreparePhi(epsilon, n_tau, A, fct)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
         nb=10
-        @time par_u0 = PrepareU0(parphi, ordprep, u0, precision(BigFloat)*4)
+        @time par_u0 = PrepareU0(parphi, ordprep, u0)
         @time pargen = PrepareTwoScalePureAB(nb*2^nbmaxtest, t_max, order, par_u0)
         @time solref = twoscales_pure_ab(pargen, only_end=true)
         tabsol = Array{Array{BigFloat,1},1}(undef,1)
@@ -116,7 +116,7 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_fct.pdf")
+        Plots.savefig(p,"out/r_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
         ind+= 1
     end
 end
