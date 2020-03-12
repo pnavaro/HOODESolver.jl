@@ -60,47 +60,10 @@ res_fft=true
         labels=Array{String,2}(undef, 1, ind)  
         while indc <= nbmaxtest
             @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
-            @time result, tabdf, tabu, tabdf2, nm, nm2 = twoscales_pure_ab(
-    pargen,
-    only_end=false,
-    diff_fft=true,
-    res_fft=true
-)
-            sol = result[:, end]
-            println("solref=$solref")
+            @time sol_ref= twoscales_pure_ab(pargen)
+             println("solref=$solref")
             println("nb=$nb sol=$sol")
-            pasaff=div(nb,100)
-            for i=1:50
-                diff = norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb))
-                println("i=$i/$nb diff=$diff")
-             end
-             for i=51:pasaff:(nb-50)
-                diff = norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb))
-                println("i=$i/$nb diff=$diff")
-            end
-            for i=(nb-50):nb
-                diff = norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb))
-                println("i=$i/$nb diff=$diff")
-            end
-            for i=1:50
-                println("i=$i/$nb difffftInf=$(tabdf[i])")
-            end
-            for i=51:pasaff:(nb-50)
-                println("i=$i/$nb difffftInf=$(tabdf[i])")
-            end
-            for i=(nb-50):nb
-                println("i=$i/$nb difffftInf=$(tabdf[i])")
-            end
-            for i=1:50
-                println("i=$i/$nb difffft2=$(tabdf2[i])")
-            end
-            for i=51:pasaff:(nb-50)
-                println("i=$i/$nb difffft2=$(tabdf2[i])")
-            end
-            for i=(nb-50):nb
-                println("i=$i/$nb difffft2=$(tabdf2[i])")
-            end
-            diff=solref-sol
+             diff=solref-sol
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
             y[indc,ind] = norm(diff,Inf)
