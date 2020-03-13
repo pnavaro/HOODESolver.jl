@@ -27,6 +27,8 @@ struct HiOscDESolution{T} <:DiffEqBase.DESolution
     dense::Bool
     order::Integer
     parphi::PreparePhi
+    absprec
+    relprec
 end
 function (sol::HiOscDESolution)(t)
     if sol.dense
@@ -48,27 +50,44 @@ end
 # end
 
 function DiffEqBase.solve(prob::HiOscDEProblem{T}; 
-    nb_tau=32, order=4, order_prep=order+2, dense=true, nb_t=100
-) where T<:AbstractFloat    
+    nb_tau=32, order=4, order_prep=order+2, dense=true, 
+    nb_t=100, getprecision=true
+) where T<:AbstractFloat
+    if getprecision
+        s1=DiffEqBase.solve(prob; 
+    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t, getprecision=false)
+        s2=DiffEqBase.solve(prob; 
+    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t+1, getprecision=false)
+        absprec = norm(s1.sol[end] - s2.sol[end])
+        relprec = absprec/max( norm(s1.sol[end]), norm(s2.sol[end]))
+        if dense
+            for i = 1:10
+                t = rand(typeof(prob.epsilon)) * (prob.tspan[2]-prob.tspan[1]) 
+                    + prob.tspan[1]
+                a, b = s1(t), s2(t)
+                ap = norm(a-b)
+                rp = ap/max(norm(a),norm(b))
+                absprec = max(absprec,ap)
+                relprec = max(relprec,rp)
+            end
+        end
+        return HiOscDESolution(s1.sol, s1.sol_u_caret, s1.t, dense, order,
+                s1.parphi, absprec, relprec)
+    end 
     parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f)
     par_u0 = PrepareU0(parphi, prob.u0, order_prep)
     pargen = PrepareTwoScalePureAB(nb_t, prob.tspan[2], order, par_u0;
     t_begin=prob.tspan[1])
-    if dense
-        sol, sol_u_caret = twoscales_pure_ab(pargen, res_fft=true)
-        return HiOscDESolution(sol, sol_u_caret, 
-        collect(0:nb_t)*prob.tspan[2]/big(nb_t)+prob.tspan[1],
-        dense,
-        order,
-        parphi)
+    sol, sol_u_caret = if dense
+         twoscales_pure_ab(pargen, res_fft=true)
     else
-        sol = twoscales_pure_ab(pargen)
-        return HiOscDESolution(sol, undef, 
+        twoscales_pure_ab(pargen), undef
+    end
+    sol = HiOscDESolution(sol, sol_u_caret, 
         collect(0:nb_t)*prob.tspan[2]/big(nb_t)+prob.tspan[1],
         dense,
         order,
-        parphi)
-    end
+        parphi, undef, undef)
 end
 
 
