@@ -55,9 +55,9 @@ function fctMain(n_tau)
     ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        fct = u -> [ u[2]^2+u[4]^3+u[3]^4, 
+        fct = u -> [ 1.11u[2]^2+0.8247u[4]^3+0.12647u[3]^4, 
         0.4356789141u[1]-0.87u[3]*u[4], 
-        1.9898985/(1+u[4]^3), 0.97u[1]*u[3]+u[2]^2 ]
+        1.9898985/(1+1.1237u[4]^3), 0.97u[1]*u[3]+0.8111u[2]^2 ]
         parphi = PreparePhi(epsilon, n_tau, A, fct)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
         nb=10
@@ -118,7 +118,7 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r2_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
+        Plots.savefig(p,"out/r3_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
         ind+= 1
     end
 end
