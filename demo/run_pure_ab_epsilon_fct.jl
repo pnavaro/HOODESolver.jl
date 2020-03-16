@@ -55,7 +55,9 @@ function fctMain(n_tau)
     ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        fct = u -> [ u[2]^2, 0.5-u[3]*u[4], 1/(1+u[4]^2), u[1]*u[3] ]
+        fct = u -> [ u[2]^2+u[4]^3+u[3]^4, 
+        0.4356789141u[1]-0.87u[3]*u[4], 
+        1.9898985/(1+u[4]^3), 0.97u[1]*u[3]+u[2]^2 ]
         parphi = PreparePhi(epsilon, n_tau, A, fct)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
         nb=10
