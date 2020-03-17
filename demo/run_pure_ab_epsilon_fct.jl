@@ -41,86 +41,89 @@ function fctMain(n_tau)
     u0=rand(BigFloat,4)
     println("seed = $seed")
     tab_eps = zeros(BigFloat,15)
-    epsilon=big"0.2"
-    for i=1:15
+    epsilon=big"0.1"
+    for i=1:7
         tab_eps[i] = epsilon
-        epsilon /= 8
+        epsilon /= 100
     end
     nbmaxtest=8
     order=4
-    ordprep=order+2
     t_max = big"1.0"
-    y = ones(Float64, nbmaxtest, size(tab_eps,1) )
-    x=zeros(Float64,nbmaxtest)
-    ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    for epsilon in tab_eps
-#        fct = u -> [ 1.11u[2]^2+0.8247u[4]^3+0.12647u[3]^4, 
- #       0.4356789141u[1]-0.87u[3]*u[4], 
- #       1.9898985/(1+1.1237u[4]^3), 0.97u[1]*u[3]+0.8111u[2]^2 ]
-        fct = u -> [u[3]^3, u[4]+u[2], u[1]*u[2], u[2]-u[2]^2+1/(1+u[4]^2) ]
-        parphi = PreparePhi(epsilon, n_tau, A, fct)
-        println("prepareU0 eps=$epsilon n_tau=$n_tau")
-        nb=10
-        @time par_u0 = PrepareU0(parphi, ordprep, u0)
-        @time pargen = PrepareTwoScalePureAB(nb*2^nbmaxtest, t_max, order, par_u0)
-        @time solref = twoscales_pure_ab(pargen, only_end=true)
-        tabsol = Array{Array{BigFloat,1},1}(undef,1)
-        res_gen = Array{ Array{BigFloat,1}, 1}(undef, nbmaxtest)
+    for order=5:17
+        ordprep=order+2
+        y = ones(Float64, nbmaxtest, size(tab_eps,1) )
+        x=zeros(Float64,nbmaxtest)
+        ind=1    
+        for epsilon in tab_eps
+    #        fct = u -> [ 1.11u[2]^2+0.8247u[4]^3+0.12647u[3]^4, 
+    #       0.4356789141u[1]-0.87u[3]*u[4], 
+    #       1.9898985/(1+1.1237u[4]^3), 0.97u[1]*u[3]+0.8111u[2]^2 ]
+            fct = u -> [u[3]^3, u[4]+u[2], u[1]*u[2], u[2]-u[2]^2+1/(1+u[4]^2) ]
+            parphi = PreparePhi(epsilon, n_tau, A, fct)
+            println("prepareU0 eps=$epsilon n_tau=$n_tau")
+            nb=10
+            @time par_u0 = PrepareU0(parphi, ordprep, u0)
+            @time pargen = PrepareTwoScalePureAB(nb*2^nbmaxtest, t_max, order, par_u0)
+            @time solref = twoscales_pure_ab(pargen, only_end=true)
+            tabsol = Array{Array{BigFloat,1},1}(undef,1)
+            res_gen = Array{ Array{BigFloat,1}, 1}(undef, nbmaxtest)
 
-        tabsol[1] = solref
-        indref = 1   
-        eps_v = convert(Float32,epsilon)
-        println("epsilon = $eps_v solref=$solref")
-        indc =1
-        labels=Array{String,2}(undef, 1, ind)  
-        while indc <= nbmaxtest
-            @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
-            @time sol= twoscales_pure_ab(pargen, only_end=true)
-            push!(tabsol, sol)
-            res_gen[indc] = sol
-            diff=solref-sol
-            println("tabsol=$tabsol")
-            (a, b), nm = getmindif(tabsol)
-            if a != indref
-                println("New solref !!!! a=$a, b=$b nm=$nm")
-                indref = a
-                solref = tabsol[a]
-                for i=1:indc
-                    nm2 = min( norm(res_gen[i] - solref, Inf), 1.1)
-                    y[i, ind] = nm2 == 0 ? nm : nm2
-                end
-            else
+            tabsol[1] = solref
+            indref = 1   
+            eps_v = convert(Float32,epsilon)
+            println("epsilon = $eps_v solref=$solref")
+            indc =1
+            labels=Array{String,2}(undef, 1, ind)  
+            while indc <= nbmaxtest
+                @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+                @time sol= twoscales_pure_ab(pargen, only_end=true)
+                push!(tabsol, sol)
+                res_gen[indc] = sol
                 diff=solref-sol
-                y[indc,ind] = min(norm(diff,Inf), 1.1)
+                println("tabsol=$tabsol")
+                (a, b), nm = getmindif(tabsol)
+                if a != indref
+                    println("New solref !!!! a=$a, b=$b nm=$nm")
+                    indref = a
+                    solref = tabsol[a]
+                    for i=1:indc
+                        nm2 = min( norm(res_gen[i] - solref, Inf), 1.1)
+                        y[i, ind] = nm2 == 0 ? nm : nm2
+                    end
+                else
+                    diff=solref-sol
+                    y[indc,ind] = min(norm(diff,Inf), 1.1)
+                end
+                println("solref=$solref")
+                println("nb=$nb sol=$sol")
+                x[indc] = 1.0/nb
+                println("epsilon=$epsilon result=$y")
+                println("epsilon=$epsilon reslog2=$(log2.(y))")
+                nb *= 2
+                indc += 1
             end
-            println("solref=$solref")
-            println("nb=$nb sol=$sol")
-            x[indc] = 1.0/nb
-            println("epsilon=$epsilon result=$y")
-            println("epsilon=$epsilon reslog2=$(log2.(y))")
-            nb *= 2
-            indc += 1
+            if ind == size(tab_eps,1)
+            for i=1:ind
+                labels[1,i] = " epsilon,order=$(convert(Float32,tab_eps[i])),$order "
+            end
+            gr()
+            p=Plots.plot(
+        x,
+        view(y,:,1:ind),
+        xlabel="delta t",
+        xaxis=:log,
+        ylabel="error",
+        yaxis=:log,
+        legend=:topleft,
+        label=labels,
+        marker=2
+    )
+            
+            prec_v = precision(BigFloat)
+            Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
+            ind+= 1
         end
-        for i=1:ind
-            labels[1,i] = " epsilon,order=$(convert(Float32,tab_eps[i])),$order "
-        end
-        gr()
-        p=Plots.plot(
-    x,
-    view(y,:,1:ind),
-    xlabel="delta t",
-    xaxis=:log,
-    ylabel="error",
-    yaxis=:log,
-    legend=:topleft,
-    label=labels,
-    marker=2
-)
-        
-        prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
-        ind+= 1
     end
 end
 
