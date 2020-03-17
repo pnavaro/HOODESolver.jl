@@ -53,6 +53,7 @@ function fctMain(n_tau)
     for order=5:17
         ordprep=order+2
         y = ones(Float64, nbmaxtest, size(tab_eps,1) )
+        y_big = ones(BigFloat, nbmaxtest, size(tab_eps,1) )
         x=zeros(Float64,nbmaxtest)
         ind=1    
         for epsilon in tab_eps
@@ -90,16 +91,20 @@ function fctMain(n_tau)
                     for i=1:indc
                         nm2 = min( norm(res_gen[i] - solref, Inf), 1.1)
                         y[i, ind] = nm2 == 0 ? nm : nm2
+                        y_big[i, ind] = nm2 == 0 ? nm : nm2
                     end
                 else
                     diff=solref-sol
                     y[indc,ind] = min(norm(diff,Inf), 1.1)
+                    y_big[indc,ind] = min(norm(diff,Inf), 1.1)
                 end
                 println("solref=$solref")
                 println("nb=$nb sol=$sol")
                 x[indc] = 1.0/nb
                 println("epsilon=$epsilon result=$y")
                 println("epsilon=$epsilon reslog2=$(log2.(y))")
+                println("epsilon=$epsilon result=$y_big")
+                println("epsilon=$epsilon reslog2=$(log2.(y_big))")
                 nb *= 2
                 indc += 1
             end
