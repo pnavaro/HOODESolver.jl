@@ -40,7 +40,7 @@ function fctMain(n_tau)
     Random.seed!(seed)
     u0=rand(BigFloat,4)
     println("seed = $seed")
-    tab_eps = zeros(BigFloat,15)
+    tab_eps = zeros(BigFloat,7)
     epsilon=big"0.1"
     for i=1:7
         tab_eps[i] = epsilon
