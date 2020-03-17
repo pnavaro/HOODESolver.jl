@@ -104,24 +104,25 @@ function fctMain(n_tau)
                 indc += 1
             end
             if ind == size(tab_eps,1)
-            for i=1:ind
-                labels[1,i] = " epsilon,order=$(convert(Float32,tab_eps[i])),$order "
+                for i=1:ind
+                    labels[1,i] = " epsilon,order=$(convert(Float32,tab_eps[i])),$order "
+                end
+                gr()
+                p=Plots.plot(
+            x,
+            view(y,:,1:ind),
+            xlabel="delta t",
+            xaxis=:log,
+            ylabel="error",
+            yaxis=:log,
+            legend=:topleft,
+            label=labels,
+            marker=2
+        )
+                
+                prec_v = precision(BigFloat)
+                Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
             end
-            gr()
-            p=Plots.plot(
-        x,
-        view(y,:,1:ind),
-        xlabel="delta t",
-        xaxis=:log,
-        ylabel="error",
-        yaxis=:log,
-        legend=:topleft,
-        label=labels,
-        marker=2
-    )
-            
-            prec_v = precision(BigFloat)
-            Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
             ind+= 1
         end
     end
