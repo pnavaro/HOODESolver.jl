@@ -202,18 +202,18 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
         result_fft = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
         res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
 #        res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+par.order)
-        for i=1:par.order
+        for i=1:min(par.order,par.n_max+1)
             result_fft[i] = memfft[i]
         end
         # for i=1:(2par.order-1)
         #     res_u_chap[i] = fft_u[i]
         # end
-        for i=1:par.order
+        for i=1:min(par.order,par.n_max+1)
             res_u_chap[i] = fft_u[i+par.order-1]
         end
     end
     if !only_end
-        for i=2:par.order
+        for i=2:min(par.order,par.n_max+1)
             result[:,i] = _getresult(fft_u[par.order+i-1], (i-1)*par.dt, par.parphi)
         end
     end
@@ -233,7 +233,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
      # ring permutation where the beginning becomes the end and the rest is shifted by one
     permut = collect(Iterators.flatten((2:par.order,1:1)))
 
-    ut0_fft = fft_u[end]
+    ut0_fft = fft_u[par.order-1+min(par.order,par.n_max+1)]
     println("")
     norm_delta_fft = 0
     norm_delta_fft_2 = 0
