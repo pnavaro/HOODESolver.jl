@@ -20,7 +20,7 @@ end
 
 function getmindif(tab::Vector{Vector{BigFloat}})
     nmmin = Inf
-    ret = (0, 0)
+    ret = (1, 2)
     for i=1:size(tab,1)
         for j=(i+1):size(tab,1)
             nm = norm(tab[i]-tab[j], Inf)
