@@ -51,7 +51,7 @@ function fctMain(n_tau)
     order=4
     t_max = big"1.0"
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    for order=5:17
+    for order=2:17
         ordprep=order+2
         y = ones(Float64, nbmaxtest, size(tab_eps,1) )
         y_big = ones(BigFloat, nbmaxtest, size(tab_eps,1) )
