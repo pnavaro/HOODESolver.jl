@@ -41,11 +41,12 @@ function fctMain(n_tau)
     u0=rand(BigFloat,4)
     println("seed = $seed")
     tab_eps = zeros(BigFloat,7)
-    epsilon=big"0.1"
-    for i=1:7
-        tab_eps[i] = epsilon
-        epsilon /= 100
-    end
+    tab_eps= [big"0.5", big"0.2", big"0.1",big"0.05", big"0.02", big"0.01",big"0.005", big"0.002", big"0.001",big"0.0005", big"0.0002", big"0.0001"]
+    # epsilon=big"0.1"
+    # for i=1:7
+    #     tab_eps[i] = epsilon
+    #     epsilon /= 100
+    # end
     nbmaxtest=8
     order=4
     t_max = big"1.0"

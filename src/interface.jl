@@ -20,7 +20,7 @@ struct HiOscDEProblem{T} <:DiffEqBase.DEProblem
 end
 
 
-struct HiOscDESolution{T} <:DiffEqBase.DESolution
+struct HiOscDESolution{T} <:DiffEqBase.AbstractTimeseriesSolution
     sol::Vector{Vector{T}}
     sol_u_caret::Vector{Array{Complex{T},2}}
     t::Vector{T}
