@@ -5,19 +5,19 @@ using Test
 
 # these 3 functions come from old version with sin and cos computation
 # to test the new version
-function filtredfct( u, s, c )
+function reffltfct( u, s, c )
     a = c*u[1] + s*u[3]
     b = 2 * u[2] * a
     return [ s*b, u[4], -c*b, -u[2] - a^2 + u[2]^2 ]
 end
-function filtredfctgen2( u::Array{Array{T,1},1}, s, c, n_tau ) where T <: Number
-    f = filtredfct.( u, s, c)
+function reffltfctgen2( u::Array{Array{T,1},1}, s, c, n_tau ) where T <: Number
+    f = reffltfct.( u, s, c)
     # convert an array of vector to a matrix
     f = collect(transpose(reshape(collect(Iterators.flatten(f)), 4, n_tau)))
     return f
 end
-function filtredfctgen( uMat::Array{T,2}, s, c, n_tau ) where T <: Number
-    return filtredfctgen2(reshape(mapslices(x->[x],uMat,dims = (2,)), n_tau), s, c, n_tau)
+function reffltfctgen( uMat::Array{T,2}, s, c, n_tau ) where T <: Number
+    return reffltfctgen2(reshape(mapslices(x->[x],uMat,dims = (2,)), n_tau), s, c, n_tau)
 end
 
 function test_tau_A()
@@ -56,8 +56,8 @@ function test_fct()
                 sin(v), cos(v)
             end
             u0 = rand(BigFloat,4)
-            res_ref = filtredfct(u0, s, c)
-            res = filtred_f(u0,parphi.tau_A_inv[i],henon_heiles, parphi.tau_A[i])
+            res_ref = reffltfct(u0, s, c)
+            res = filtred_f(u0,parphi.tau_A_inv[i],henon_heiles, parphi.tau_A[i], big"0.0",big"0.0")
             @test isapprox(res_ref, res, atol=tol)
         end
     end
@@ -80,8 +80,8 @@ function testpreparephi0()
         tau = LinRange(zero(BigFloat), one(BigFloat), n_tau + 1)[1:end - 1]
         s = sinpi.(2tau)
         c = cospi.(2tau)
-        old_m = collect(transpose(filtredfctgen(u_mat_tr, s, c, n_tau)))
-        new_m = filtredfct(parphi,u_mat)
+        old_m = collect(transpose(reffltfctgen(u_mat_tr, s, c, n_tau)))
+        new_m = filtredfct(parphi,u_mat,big"0.0")
         println("norm=$(norm(old_m-new_m))")
         @test isapprox(old_m, new_m, atol=tol)
     end
@@ -155,11 +155,7 @@ function test_exact()
 
     @test  isapprox(exp(t*C)*u0, getexactsol(parphi, u0, t), atol=1e-77,rtol=1e-77)
 
-end
-
-
-
-     
+end   
 
 test_tau_A()
 test_fct()

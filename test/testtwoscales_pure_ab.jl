@@ -93,7 +93,7 @@ function testtwoscales_pure_ab3()
 
     sol_ref = exp(t_max*C)*u0
 
-    fct = u -> B*u
+    fct = (u,p,t) -> B*u
 
     parphi = PreparePhi( 
         epsilon, 
@@ -125,7 +125,7 @@ function testtwoscales_pure_ab_epsilon()
     println("u0=$u0")
     B = 2rand(BigFloat,4,4)-ones(BigFloat,4,4)
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    fct = u -> B*u
+    fct = (u,p,t) -> B*u
     order = 5
     for i=1:5
         epsilon = big"1.0"/big"10"^(i*3)
@@ -169,7 +169,7 @@ function testtwoscales_interpolate()
         u0=rand(BigFloat,4)
         println("u0=$u0")
         B = 2rand(BigFloat,4,4)-ones(BigFloat,4,4)
-        fct = u -> B*u
+        fct = (u,p,t) -> B*u
         epsilon = big"0.4"/2.0^i
         eps_v = convert(Float32, epsilon)
         t_max = big"1.0"
@@ -200,7 +200,7 @@ function testtwoscales_short()
         u0=rand(BigFloat,4)
         println("u0=$u0")
         B = 2rand(BigFloat,4,4)-ones(BigFloat,4,4)
-        fct = u -> B*u
+        fct = (u,p,t) -> B*u
         epsilon = big"0.00004"/2.0^i
         eps_v = convert(Float32, epsilon)
         t_max = big"0.1"

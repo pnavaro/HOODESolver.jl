@@ -38,6 +38,7 @@ struct PreparePhi
     tau_A_inv
     par_fft
     fct
+    paramfct
     size_vect
     matrix_B::Union{Matrix,Missing} # for debug only (linear function)
     mode
@@ -47,12 +48,13 @@ struct PreparePhi
     matrix_A::Matrix, 
     fct::Function,
     matrix_B::Union{Matrix,Missing};
-    mode=1
+    mode=1,
+    paramfct=0
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
-        @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}}) 
-        "function fct is not correct"
+#        @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}}) 
+#        "function fct is not correct"
         sparse_A = sparse(matrix_A)
         tau_A = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
         tau_A_inv = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
@@ -92,6 +94,7 @@ struct PreparePhi
     tau_A_inv, 
     par_fft,
     fct,
+    paramfct,
     size_vect,
     matrix_B,
     mode
@@ -102,9 +105,11 @@ struct PreparePhi
         n_tau::Integer, 
         matrix_A::Matrix, 
         fct::Function;
-        mode=1
+        mode=1,
+        paramfct=0
     )
-        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode=mode)
+    
+        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode=mode,paramfct=paramfct)
     end
 end
 isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
@@ -113,10 +118,10 @@ function getexactsol(par::PreparePhi, u0, t)
     return exp(t*(1/par.epsilon*par.sparse_A+par.matrix_B))*u0
 end
 
-filtred_f(u, mat_inv, fct, mat)= mat_inv * fct(mat*u)
-function filtredfct(par::PreparePhi, u_mat::Array{T,2}) where T <: Number
+filtred_f(u, mat_inv, fct, mat, p, t)= mat_inv * fct(mat*u, p, t)
+function filtredfct(par::PreparePhi, u_mat::Array{T,2}, t::T) where T <: Number
     return reshape(
-    collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_A_inv, par.fct, par.tau_A))),
+    collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_A_inv, par.fct, par.tau_A, par.paramfct, t))),
     par.size_vect,
     par.n_tau
 )
@@ -126,9 +131,12 @@ function phi( par::PreparePhi, u, order)
     @assert 2 <= order <= 20 "the order is $order, it must be between 2 and 20"
     f = undef
     if  order == 2
-        f = filtredfct(par, reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau))
+        f = filtredfct(
+    par, 
+    reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau), 
+    zero(par.epsilon)
+)    
     else
-
         coef = if par.mode == 1
             par.epsilon^(order - 2)
         elseif par.mode == 2
@@ -138,7 +146,7 @@ function phi( par::PreparePhi, u, order)
 #        coef = eps(typeof(par.epsilon))^0.2
         resPhi_u = phi(par, u, order - 1)
         f = resPhi_u + reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau)
-        f = filtredfct(par, f)
+        f = filtredfct(par, f, zero(par.epsilon))
  #       f11 = coef * real(fftGen(par.par_fft, f)[:, 1]) / par.n_tau
         f11 = coef * mean(f, dims=2)
         f .-= (phi(par, u + f11, order - 1) - resPhi_u) / coef

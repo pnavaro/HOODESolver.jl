@@ -1,6 +1,7 @@
-module HiOscDiffEq
-using Reexport
-@reexport using DiffEqBase
+# module HiOscDiffEq
+#using Reexport
+# @reexport using DiffEqBase
+using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
@@ -10,7 +11,7 @@ struct HiOscDEProblem{T} <:DiffEqBase.DEProblem
     """The initial condition is `u(tspan[1]) = u0`."""
     u0::Vector{T}
     """The solution `u(t)` will be computed for `tspan[1] ≤ t ≤ tspan[2]`."""
-    tspan::Vector{T}
+    tspan::Tuple{T,T}
     """Constant parameters to be supplied as the second argument of `f`."""
     p
     """Periodic Matrix of the problem"""
@@ -19,14 +20,16 @@ struct HiOscDEProblem{T} <:DiffEqBase.DEProblem
     epsilon::T
 end
 
+abstract type AbstractHiOscSolution{T,N,S} <: DiffEqBase.AbstractTimeseriesSolution{T,N,S} end
 
-struct HiOscDESolution{T} <:DiffEqBase.AbstractTimeseriesSolution
-    sol::Vector{Vector{T}}
+struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T,T}
+    u::Vector{Vector{T}}
     sol_u_caret::Vector{Array{Complex{T},2}}
     t::Vector{T}
     dense::Bool
     order::Integer
     parphi::PreparePhi
+    prob::HiOscDEProblem{T}
     absprec
     relprec
 end
@@ -48,6 +51,9 @@ end
 #     t::Vector{T}) where T<:AbstractFloat
 #     return HiOscDESolution(sol, t, undef)
 # end
+
+
+
 
 function DiffEqBase.solve(prob::HiOscDEProblem{T}; 
     nb_tau=32, order=4, order_prep=order+2, dense=true, 
@@ -72,10 +78,10 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
             end
         end
         return HiOscDESolution(s1.sol, s1.sol_u_caret, s1.t, dense, order,
-                s1.parphi, absprec, relprec)
+                s1.parphi, prob, absprec, relprec)
     end 
     parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f)
-    par_u0 = PrepareU0(parphi, prob.u0, order_prep)
+    par_u0 = PrepareU0(parphi, order_prep, prob.u0)
     pargen = PrepareTwoScalePureAB(nb_t, prob.tspan[2], order, par_u0;
     t_begin=prob.tspan[1])
     sol, sol_u_caret = if dense
@@ -87,8 +93,8 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
         collect(0:nb_t)*prob.tspan[2]/big(nb_t)+prob.tspan[1],
         dense,
         order,
-        parphi, undef, undef)
+        parphi, prob, undef, undef)
 end
 
 
-end
+# end
