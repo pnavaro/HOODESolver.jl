@@ -51,7 +51,7 @@ function fctMain(n_tau)
     nbmaxtest=14
     t_max = big"1.0"
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    tabtabsol = Vector{Any}(undef,size(tab_eps,1))
+    tabtabsol = Vector{Vector{Number}}()
     for order=2:12
         ordprep=order+2
         y = ones(Float64, nbmaxtest, size(tab_eps,1) )
@@ -70,14 +70,11 @@ function fctMain(n_tau)
             @time par_u0 = PrepareU0(parphi, ordprep, u0)
             @time pargen = PrepareTwoScalePureAB(nb*2^nbmaxtest, t_max, order, par_u0)
             @time solref = twoscales_pure_ab(pargen, only_end=true)
-            if tabtabsol[ind] == undef
-                tabtabsol[ind] = Array{Array{BigFloat,1},1}(undef,1)
-                tabsol = tabtabsol[ind]
-                tabsol[1]  = solref
-            else
-                tabsol = tabtabsol[ind]
-                push!(tabsol, solref)
+            if size(tabtabsol,1) < ind
+                push!(tabtabsol,Vector{Number}())
             end
+            tabsol = tabtabsol[ind]
+            push!(tabsol, solref)
             res_gen = Array{ Array{BigFloat,1}, 1}(undef, nbmaxtest)
             indref = 1   
             eps_v = convert(Float32,epsilon)
