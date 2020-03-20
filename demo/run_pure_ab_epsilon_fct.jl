@@ -36,7 +36,7 @@ end
 function fctMain(n_tau)
 
  #   u0 =[big"0.12345678", big"0.1209182736", big"0.1290582671", big"0.1239681094" ]
-    seed=126
+    seed=12996
     Random.seed!(seed)
     u0=rand(BigFloat,4)
     println("seed = $seed")
@@ -48,11 +48,10 @@ function fctMain(n_tau)
     #     tab_eps[i] = epsilon
     #     epsilon /= 100
     # end
-    nbmaxtest=8
-    order=4
+    nbmaxtest=14
     t_max = big"1.0"
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    for order=2:17
+    for order=2:12
         ordprep=order+2
         y = ones(Float64, nbmaxtest, size(tab_eps,1) )
         y_big = ones(BigFloat, nbmaxtest, size(tab_eps,1) )
@@ -129,7 +128,7 @@ function fctMain(n_tau)
         )
                 
                 prec_v = precision(BigFloat)
-                Plots.savefig(p,"out/r9_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
+                Plots.savefig(p,"out/r10_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
             end
             ind+= 1
         end

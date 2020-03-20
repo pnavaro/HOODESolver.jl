@@ -19,7 +19,8 @@ struct PrepareTwoScalePureAB
     p_coef::CoefExpAB
     exptau
     exptau_inv   
-    function PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0; t_begin=0)
+    function PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0; 
+        t_begin=convert(typeof(par_u0.parphi.epsilon),0) )
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
         dt = T(t_max-t_begin)/n_max
@@ -41,8 +42,8 @@ struct PrepareTwoScalePureAB
     end
 end
 
-function _calculfft(parphi::PreparePhi, resfft)
-    f = filtredfct(parphi, real(ifftgen(parphi.par_fft, resfft)))
+function _calculfft(parphi::PreparePhi, resfft, t)
+    f = filtredfct(parphi, real(ifftgen(parphi.par_fft, resfft)), t)
     return fftgen(parphi.par_fft, f)
 end
 solJul = zeros(BigFloat,4)
@@ -59,7 +60,8 @@ function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
         resfft .+= transpose(tab_coef[:, k, ord]).*fftfct[indice]
     end
     fft_u[dec] = resfft
-    fftfct[dec] = _calculfft(par.parphi, resfft)
+    t = par.t_begin+(dec-par.order)*par.dt
+    fftfct[dec] = _calculfft(par.parphi, resfft, t)
 
     # if isexactsol(par.parphi)
     #     u = _getresult(fft_u[dec], (dec-par.order)*par.dt, par.parphi)
@@ -118,14 +120,14 @@ end
 #     return res, f
 # end
 
-function _tr_ab(par::PrepareTwoScalePureAB, fftfct, u_chap)
+function _tr_ab(par::PrepareTwoScalePureAB, fftfct, u_chap, t)
     resfft = par.exptau.* u_chap
     bound = par.order-1
     for k =0:bound
 #        println("k=$k coef[1,2]=$(par.p_coef.tab_coef[k+1,par.order,1:2])")
         resfft .+= transpose(par.p_coef.tab_coef[:, k+1, par.order]).*fftfct[end-k]
     end
-    f = _calculfft(par.parphi, resfft)
+    f = _calculfft(par.parphi, resfft, t)
     return f, resfft
 end
 function _getresult(u_chap, t, par::PreparePhi)
@@ -174,7 +176,10 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
     res_u = par.par_u0.ut0
     u0 = par.par_u0.u0
    
-    fftfct[par.order] = fftgen(par.parphi.par_fft, filtredfct(par.parphi, res_u))
+    fftfct[par.order] = fftgen(
+    par.parphi.par_fft, 
+    filtredfct(par.parphi, res_u, par.t_begin)
+    )
 
     println("twoscales_pure_ab epsilon/dt=$(par.parphi.epsilon/par.dt)")
     println("twoscales_pure_ab dt/epsilon=$(par.dt/par.parphi.epsilon)")
@@ -244,7 +249,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
         if i%10000 == 1
             println(" $(i-1)/$(par.n_max)")
         end
-        resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft)
+        resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft, par.t_begin+i*par.dt)
         if res_fft
             result_fft[i] = resfft
 #            res_u_chap[i+par.order] = ut0_fft
