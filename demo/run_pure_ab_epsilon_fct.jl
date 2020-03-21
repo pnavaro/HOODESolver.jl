@@ -42,7 +42,7 @@ function fctMain(n_tau)
     println("seed = $seed")
  #   tab_eps = zeros(BigFloat,7)
  #   tab_eps= [big"0.5", big"0.2", big"0.1",big"0.05", big"0.02", big"0.01",big"0.005", big"0.002", big"0.001",big"0.0005", big"0.0002", big"0.0001"]
-    tab_eps= [big"0.5",big"0.05", big"0.005",big"0.0005", big"0.00005"]
+    tab_eps= [big"0.1",big"0.05", big"0.005",big"0.0005", big"0.00005"]
     # epsilon=big"0.1"
     # for i=1:7
     #     tab_eps[i] = epsilon
@@ -131,7 +131,7 @@ function fctMain(n_tau)
         )
                 
                 prec_v = precision(BigFloat)
-                Plots.savefig(p,"out/r11_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
+                Plots.savefig(p,"out/r12_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
             end
             ind+= 1
         end
