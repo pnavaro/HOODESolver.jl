@@ -1,9 +1,9 @@
-include("../src/twoscales_pure_ab.jl")
-include("../src/henon_heiles.jl")
 using DifferentialEquations
 using LinearAlgebra
 using Random
 using Test
+include("../src/twoscales_pure_ab.jl")
+include("../src/henon_heiles.jl")
 
 function testtwoscales_pure_ab()
 
@@ -140,11 +140,11 @@ function testtwoscales_pure_ab_epsilon()
         )    
         sol_ref = getexactsol(parphi, u0, t_max)
         println("epsilon=$eps_v sol_ref=$sol_ref")
-        nb = 1000
+        nb = 100
         par_u0 = PrepareU0(parphi, order+2, u0)
         res_err = zeros(BigFloat,5)
         ind = 1
-        while nb <= 10000
+        while nb <= 1000
             pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
             result = twoscales_pure_ab(pargen)
             res_err[ind] = norm(result[:,end]-sol_ref,Inf)
@@ -163,7 +163,7 @@ function testtwoscales_interpolate()
     order = 6
     nb = 100
     t_max = big"1.0"
-    for i=1:10
+    for i=1:1
         seed += 10
         Random.seed!(seed)
         u0=rand(BigFloat,4)
@@ -179,7 +179,7 @@ function testtwoscales_interpolate()
         @time result, tfft, tabu = twoscales_pure_ab(pargen, 
     only_end=false, res_fft=true)
         reftol=norm(getexactsol(parphi, u0, t_max)-result[:,end], Inf)*10
-        for j=1:100
+        for j=1:10
             t=rand(BigFloat)
             res_ex=getexactsol(parphi, u0, t)
             res_ap=_getresult(tabu, t, parphi, 0, t_max, order)
@@ -191,10 +191,9 @@ end
 function testtwoscales_short()
     seed=981885
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    order = 12
-    nb = 10
-    t_max = big"1.0"
-    for i=1:10
+    order = 7
+    nb = 5
+     for i=1:1
         seed += 10
         Random.seed!(seed)
         u0=rand(BigFloat,4)
@@ -203,7 +202,7 @@ function testtwoscales_short()
         fct = (u,p,t) -> B*u
         epsilon = big"0.00004"/2.0^i
         eps_v = convert(Float32, epsilon)
-        t_max = big"0.1"
+        t_max = big"0.01"
         parphi = PreparePhi(epsilon, 32, A, fct, B)
         par_u0 = PrepareU0(parphi, order+2, u0)
         pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
@@ -213,9 +212,52 @@ function testtwoscales_short()
         @test resnorm < 1e-10
     end
 end
+function tts_time(t_begin, t_end)
+    @time @testset "test twoscales from $t_begin to $t_end" begin
+        A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+        B =  2rand(BigFloat,4,4)-ones(BigFloat,4,4)
+        u0 = rand(BigFloat, 4)
+        fct = (u,p,t) -> B*u
+        epsilon=big"0.00345"
+        nb = 100
+        order = 4
+        ordprep= order+2
+        parphi = PreparePhi(epsilon, 32, A, fct, B)
+        par_u0 = PrepareU0(parphi, order+2, u0)
+        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0, t_begin=t_begin)
+        sol = twoscales_pure_ab(pargen, only_end=true)
+        solref = getexactsol(parphi, u0, t_end-t_begin)
+        println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")
+        @test isapprox(sol, solref,atol=1e-7, rtol=1e-6)
+        result, tfft, tabu = twoscales_pure_ab(pargen, only_end=false, res_fft=true)
+        for i=1:10
+            t = rand(BigFloat)*(t_end-t_begin) + t_begin
+            res_ex=getexactsol(parphi, u0, t-t_begin)
+            res_ap=_getresult(tabu, t, parphi, t_begin, t_end, order)
+            @test isapprox(res_ex, res_ap, atol=1e-6, rtol=1e-5)
+        end
+    end
+end
+function testtwoscales_time()
+    seed=7887
+    A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+    order = 5
+    nb = 10
+    t_max = big"1.0"
+    tts_time(big"0.0",big"1.0")
+    tts_time(big"0.0",big"1.4565656565")
+    tts_time(big"1.234566",big"3.45766790123")
+    tts_time(-big"0.8457676",big"0.56716")
+    tts_time(-big"1.8111457676",-big"0.345456716")
+    tts_time(big"1.8457676",big"0.56716")
+    tts_time(-big"0.8457676",-big"1.56716")
+    tts_time(-big"0.845722676",-big"0.56716")
+end
+
+testtwoscales_time()
 testtwoscales_short()
 testtwoscales_interpolate()
-testtwoscales_pure_ab()
+# testtwoscales_pure_ab()
 # testtwoscales_pure_ab2()
-testtwoscales_pure_ab3()
+#testtwoscales_pure_ab3()
 testtwoscales_pure_ab_epsilon()

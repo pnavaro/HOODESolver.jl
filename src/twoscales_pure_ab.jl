@@ -20,7 +20,7 @@ struct PrepareTwoScalePureAB
     exptau
     exptau_inv   
     function PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0; 
-        t_begin=convert(typeof(par_u0.parphi.epsilon),0) )
+    t_begin=convert(typeof(par_u0.parphi.epsilon),0) )
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
         dt = T(t_max-t_begin)/n_max
@@ -46,8 +46,8 @@ function _calculfft(parphi::PreparePhi, resfft, t)
     f = filtredfct(parphi, real(ifftgen(parphi.par_fft, resfft)), t)
     return fftgen(parphi.par_fft, f)
 end
-solJul = zeros(BigFloat,4)
-solJul_neg = zeros(BigFloat,4)
+# solJul = zeros(BigFloat,4)
+# solJul_neg = zeros(BigFloat,4)
 
 function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
  # println("_calcul_ab par.order=$(par.order) ord=$ord dec=$dec sens=$sens dt=$(par.dt) xxxx")
@@ -130,6 +130,8 @@ function _tr_ab(par::PrepareTwoScalePureAB, fftfct, u_chap, t)
     f = _calculfft(par.parphi, resfft, t)
     return f, resfft
 end
+
+# for this function only, t is the time from the beginning
 function _getresult(u_chap, t, par::PreparePhi)
     # matlab : u1=real(sum(fft(ut)/Ntau.*exp(1i*Ltau*T/ep)));
     u1 = real(u_chap * exp.(1im * par.tau_list * t / par.epsilon)) / par.n_tau
@@ -158,11 +160,11 @@ function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     t1 = t_int_begin+1
     # println("t1=$t1 t_ex=$t_ex")
     u_chap = interpolate(tab_u_chap[t1:(t1+order)], order, t_ex)
-    return _getresult( u_chap, t, par)
+    return _getresult( u_chap, t-t_begin, par)
 end
-function getresultfromfft(rfft, t, par::PreparePhi)
-    return _getresult(_calculfft(par, rfft), t, par)
-end
+# function getresultfromfft(rfft, t, par::PreparePhi)
+#     return _getresult(_calculfft(par, rfft), t, par)
+# end
 
 
 function twoscales_pure_ab(par::PrepareTwoScalePureAB; 
@@ -275,7 +277,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
 
     println("norm diff fft = $norm_delta_fft")
 
-    ret =  only_end ? _getresult(ut0_fft, par.t_max, par.parphi) : result
+    ret =  only_end ? _getresult(ut0_fft, par.t_max-par.t_begin, par.parphi) : result
 
     if res_fft
         if diff_fft 
