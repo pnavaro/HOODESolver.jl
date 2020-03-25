@@ -3,11 +3,11 @@
     - master
     - devel
   script:
-    - env OPENBLAS_CORETYPE=haswell julia -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("HighlyOscillatoryProblems"); Pkg.test("HighlyOscillatoryProblems"; coverage = true)'
+    - env OPENBLAS_CORETYPE=haswell julia --compiled-modules=no -e 'using Pkg; Pkg.add(PackageSpec(path=pwd())); Pkg.test("HighlyOscillatoryProblems"; coverage = true)'
     
 
 test:1.3:
-  image: julia:1.3
+  image: julia:1.4
   <<: *test_definition
 
 pages:
