@@ -30,7 +30,7 @@ function fctMain(n_tau)
         tab_eps[i] = epsilon
         epsilon /= 10
     end
-    nbMaxTest=10
+    nbMaxTest=14
     order=7
     ordprep=order+2
     t_max = big"3.0"
