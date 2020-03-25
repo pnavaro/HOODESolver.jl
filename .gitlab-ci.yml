@@ -3,7 +3,7 @@
     - master
     - devel
   script:
-    - env OPENBLAS_CORETYPE=haswell julia --compiled-modules=no -e 'using Pkg; Pkg.add(PackageSpec(url="git@gitlab.inria.fr:UniformlyAccurates/HighlyOscillatoryProblems.jl.git")); Pkg.test("HighlyOscillatoryProblems"; coverage = true)'
+    - env OPENBLAS_CORETYPE=haswell julia --compiled-modules=no -e 'using Pkg; Pkg.add(PackageSpec(url="git@gitlab.inria.fr:ua/HighlyOscillatoryProblems.jl.git")); Pkg.test("HighlyOscillatoryProblems"; coverage = true)'
     
 
 test:1.3:
