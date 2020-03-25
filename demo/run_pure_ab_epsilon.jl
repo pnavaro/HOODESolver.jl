@@ -24,11 +24,6 @@ function fctMain(n_tau)
  #   u0 =[big"0.12345678", big"0.1209182736", big"0.1290582671", big"0.1239681094" ]
     seed=1293456
     Random.seed!(seed)
-    u0=rand(BigFloat,4)
-    B = 2rand(BigFloat, 4, 4) - ones(BigFloat, 4, 4)
-    paramfct = (2rand(BigFloat, 4) - ones(BigFloat, 4),
-    2rand(BigFloat, 4) - ones(BigFloat, 4))
-    println("seed = $seed B=$B")
     tab_eps = zeros(BigFloat,6)
     epsilon=big"0.1"
     for i=1:6
@@ -47,6 +42,7 @@ function fctMain(n_tau)
         u0=rand(BigFloat,4)
         B = 2rand(BigFloat, 4, 4) - ones(BigFloat, 4, 4)
         paramfct = (2rand(BigFloat, 4) - ones(BigFloat, 4),
+                        2rand(BigFloat, 4) - ones(BigFloat, 4))
         fct = (u, p, t) -> B*u + t*p[1]+p[2]
         parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct )
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
