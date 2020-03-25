@@ -238,6 +238,34 @@ function tts_time(t_begin, t_end)
         end
     end
 end
+function tts_time_time(t_begin, t_end)
+    @time @testset "test twoscales time time from $t_begin to $t_end" begin
+        A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+        B =  2rand(BigFloat,4,4)-ones(BigFloat,4,4)
+        u0 = 2rand(BigFloat, 4)-ones(BigFloat,4)
+        fct = (u,p,t) -> B*u +t*p[1] +p[2]
+        tuple_p = (2rand(BigFloat,4)-ones(BigFloat,4),
+    2rand(BigFloat,4)-ones(BigFloat,4))
+        epsilon=big"0.03467"
+        nb = 1000
+        order = 4
+        ordprep= order+2
+        parphi = PreparePhi(epsilon, 32, A, fct, B, paramfct=tuple_p)
+        par_u0 = PrepareU0(parphi, order+2, u0)
+        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0, t_begin=t_begin)
+        sol = twoscales_pure_ab(pargen, only_end=true)
+        solref = getexactsol(pargen, u0, t_end)
+        println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")
+        @test isapprox(sol, solref,atol=1e-8, rtol=1e-7)
+        result, tfft, tabu = twoscales_pure_ab(pargen, only_end=false, res_fft=true)
+        for i=1:10
+            t = rand(BigFloat)*(t_end-t_begin) + t_begin
+            res_ex=getexactsol(pargen, u0, t)
+            res_ap=_getresult(tabu, t, parphi, t_begin, t_end, order)
+            @test isapprox(res_ex, res_ap, atol=1e-7, rtol=1e-6)
+        end
+    end
+end
 function testtwoscales_time()
     seed=7887
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
@@ -253,7 +281,63 @@ function testtwoscales_time()
     tts_time(-big"0.8457676",-big"1.56716")
     tts_time(-big"0.845722676",-big"0.56716")
 end
+function testtwoscales_time_time()
+    seed=788227
+    A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+    order = 5
+    nb = 10
+    t_max = big"1.0"
+    tts_time_time(big"0.0",big"1.0")
+    tts_time_time(big"0.0",big"1.4565656565")
+    tts_time_time(big"11.234566",big"12.45766790123")
+    tts_time_time(-big"0.8457676",big"0.56716")
+    tts_time_time(-big"1.8111457676",-big"0.345456716")
+    tts_time_time(big"1.8457676",big"0.56716")
+    tts_time_time(-big"0.8457676",-big"1.56716")
+    tts_time_time(-big"0.845722676",-big"0.56716")
+end
+function test_exact()
+    A = [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0]
 
+    epsilon = big"0.1"
+    n_tau = 32
+    parphi = PreparePhi(
+        epsilon, 
+        n_tau, 
+        A,
+        henon_heiles
+    )
+    @test !isexactsol(parphi)
+
+    u0=[big"0.12345678", big"0.13787878", big"0.120099999001", big"0.12715124"]
+
+    B = [ big"-0.12984599677" big"-0.9277" big"0.32984110099677" big"0.142984599677"
+    big"-0.4294599677" big"0.127337" big"0.4298411009977" big"0.99484599677"
+    big"0.2298499677" big"0.327667" big"0.1298410099677" big"-0.342984599677"
+    big"0.7298459677" big"-0.027887" big"0.7294110099677" big"-0.66294599677"
+    ]
+
+    fct = u -> B*u
+
+    parphi = PreparePhi(
+        epsilon, 
+        n_tau, 
+        A,
+        fct,
+        B
+    )
+    @test isexactsol(parphi)
+
+    C = 1/epsilon * A + B
+
+    t = big"0.12347171717"
+
+    @test  isapprox(exp(t*C)*u0, getexactsol(parphi, u0, t), atol=1e-77,rtol=1e-77)
+
+end   
+test_exact()
+
+testtwoscales_time_time()
 testtwoscales_time()
 testtwoscales_short()
 testtwoscales_interpolate()

@@ -49,7 +49,7 @@ struct PreparePhi
     fct::Function,
     matrix_B::Union{Matrix,Missing};
     mode=1,
-    paramfct=0
+    paramfct=missing
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
@@ -106,22 +106,27 @@ struct PreparePhi
         matrix_A::Matrix, 
         fct::Function;
         mode=1,
-        paramfct=0
+        paramfct=missing
     )
     
         return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode=mode,paramfct=paramfct)
     end
 end
-isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
-function getexactsol(par::PreparePhi, u0, t)
-    @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
-    return exp(t*(1/par.epsilon*par.sparse_A+par.matrix_B))*u0
-end
 
-filtred_f(u, mat_inv, fct, mat, p, t)= mat_inv * fct(mat*u, p, t)
+# filtred_f(u, mat_inv, fct, mat, p, t)= mat_inv * fct(mat*u, p, t)
+# function filtredfct(par::PreparePhi, u_mat::Array{T,2}, t::T) where T <: Number
+#  #   println("size=$(size(u_mat)) paramfct=$(par.paramfct)")
+#     return reshape(
+#     collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_A_inv, par.fct, par.tau_A, par.paramfct, t))),
+#     par.size_vect,
+#     par.n_tau
+# )
+filtred_f(u, mat_inv, mat, par, t)= mat_inv * par.fct(mat*u, par.paramfct, t)
 function filtredfct(par::PreparePhi, u_mat::Array{T,2}, t::T) where T <: Number
+ #   println("size=$(size(u_mat)) paramfct=$(par.paramfct)")
     return reshape(
-    collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_A_inv, par.fct, par.tau_A, par.paramfct, t))),
+    collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_A_inv, par.tau_A, 
+            (par,), t))),
     par.size_vect,
     par.n_tau
 )

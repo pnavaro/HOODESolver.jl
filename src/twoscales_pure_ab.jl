@@ -130,6 +130,31 @@ function _tr_ab(par::PrepareTwoScalePureAB, fftfct, u_chap, t)
     f = _calculfft(par.parphi, resfft, t)
     return f, resfft
 end
+isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
+# for this function the time begins at par.t_begin
+function getexactsol(par::PrepareTwoScalePureAB, u0, t)
+    parphi = par.parphi
+    @assert !ismissing(parphi.matrix_B) "The debug matrix is not defined"
+    if ismissing(parphi.paramfct)
+        return getexactsol(parphi, u0, t-par.t_begin)
+    end
+    a, b = parphi.paramfct
+    t0 = par.t_begin
+    m = (1/parphi.epsilon)*parphi.sparse_A+parphi.matrix_B
+    mm1 = m^(-1)
+    mm2 = mm1^2
+    e_t0 = exp(-t0*m)
+    C = e_t0*u0 + mm1*e_t0*(t0*a+b)+mm2*e_t0*a
+    e_inv = exp(-t*m)
+    e = exp(t*m)
+    C_t = -mm1*e_inv*(t*a+b)-mm2*e_inv*a
+    return e*C+e*C_t
+end
+# for this function the time begins at zero
+function getexactsol(par::PreparePhi, u0, t)
+    @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
+    return exp(t*(1/par.epsilon*par.sparse_A+par.matrix_B))*u0
+end
 
 # for this function only, t is the time from the beginning
 function _getresult(u_chap, t, par::PreparePhi)

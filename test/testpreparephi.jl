@@ -57,7 +57,7 @@ function test_fct()
             end
             u0 = rand(BigFloat,4)
             res_ref = reffltfct(u0, s, c)
-            res = filtred_f(u0,parphi.tau_A_inv[i],henon_heiles, parphi.tau_A[i], big"0.0",big"0.0")
+            res = filtred_f(u0,parphi.tau_A_inv[i], parphi.tau_A[i], parphi, big"0.0")
             @test isapprox(res_ref, res, atol=tol)
         end
     end
@@ -117,48 +117,8 @@ function testpreparephi()
         end
     end
 end
-function test_exact()
-    A = [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0]
-
-    epsilon = big"0.1"
-    n_tau = 32
-    parphi = PreparePhi(
-        epsilon, 
-        n_tau, 
-        A,
-        henon_heiles
-    )
-    @test !isexactsol(parphi)
-
-    u0=[big"0.12345678", big"0.13787878", big"0.120099999001", big"0.12715124"]
-
-    B = [ big"-0.12984599677" big"-0.9277" big"0.32984110099677" big"0.142984599677"
-    big"-0.4294599677" big"0.127337" big"0.4298411009977" big"0.99484599677"
-    big"0.2298499677" big"0.327667" big"0.1298410099677" big"-0.342984599677"
-    big"0.7298459677" big"-0.027887" big"0.7294110099677" big"-0.66294599677"
-    ]
-
-    fct = u -> B*u
-
-    parphi = PreparePhi(
-        epsilon, 
-        n_tau, 
-        A,
-        fct,
-        B
-    )
-    @test isexactsol(parphi)
-
-    C = 1/epsilon * A + B
-
-    t = big"0.12347171717"
-
-    @test  isapprox(exp(t*C)*u0, getexactsol(parphi, u0, t), atol=1e-77,rtol=1e-77)
-
-end   
 
 test_tau_A()
 test_fct()
 testpreparephi0()
 testpreparephi()
-test_exact()
