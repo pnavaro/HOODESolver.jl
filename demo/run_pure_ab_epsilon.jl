@@ -124,7 +124,7 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_v3.pdf")
+        Plots.savefig(p,"out/r2_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
         ind+= 1
     end
 end
