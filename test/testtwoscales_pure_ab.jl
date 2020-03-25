@@ -222,17 +222,17 @@ function tts_time(t_begin, t_end)
         nb = 100
         order = 4
         ordprep= order+2
-        parphi = PreparePhi(epsilon, 32, A, fct, B)
+        parphi = PreparePhi(epsilon, 32, A, fct, B, t_0=t_begin)
         par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0, t_begin=t_begin)
+        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0)
         sol = twoscales_pure_ab(pargen, only_end=true)
-        solref = getexactsol(parphi, u0, t_end-t_begin)
+        solref = getexactsol(parphi, u0, t_end)
         println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")
         @test isapprox(sol, solref,atol=1e-7, rtol=1e-6)
         result, tfft, tabu = twoscales_pure_ab(pargen, only_end=false, res_fft=true)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
-            res_ex=getexactsol(parphi, u0, t-t_begin)
+            res_ex=getexactsol(parphi, u0, t)
             res_ap=_getresult(tabu, t, parphi, t_begin, t_end, order)
             @test isapprox(res_ex, res_ap, atol=1e-6, rtol=1e-5)
         end
@@ -246,21 +246,21 @@ function tts_time_time(t_begin, t_end)
         fct = (u,p,t) -> B*u +t*p[1] +p[2]
         tuple_p = (2rand(BigFloat,4)-ones(BigFloat,4),
     2rand(BigFloat,4)-ones(BigFloat,4))
-        epsilon=big"0.03467"
-        nb = 1000
+        epsilon=big"0.0003467"
+        nb = 100
         order = 4
         ordprep= order+2
-        parphi = PreparePhi(epsilon, 32, A, fct, B, paramfct=tuple_p)
+        parphi = PreparePhi(epsilon, 32, A, fct, B, paramfct=tuple_p, t_0=t_begin)
         par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0, t_begin=t_begin)
+        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0)
         sol = twoscales_pure_ab(pargen, only_end=true)
-        solref = getexactsol(pargen, u0, t_end)
+        solref = getexactsol(parphi, u0, t_end)
         println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")
         @test isapprox(sol, solref,atol=1e-8, rtol=1e-7)
         result, tfft, tabu = twoscales_pure_ab(pargen, only_end=false, res_fft=true)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
-            res_ex=getexactsol(pargen, u0, t)
+            res_ex=getexactsol(parphi, u0, t)
             res_ap=_getresult(tabu, t, parphi, t_begin, t_end, order)
             @test isapprox(res_ex, res_ap, atol=1e-7, rtol=1e-6)
         end
@@ -268,6 +268,7 @@ function tts_time_time(t_begin, t_end)
 end
 function testtwoscales_time()
     seed=7887
+    Random.seed!(seed)
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     order = 5
     nb = 10
@@ -283,6 +284,7 @@ function testtwoscales_time()
 end
 function testtwoscales_time_time()
     seed=788227
+    Random.seed!(seed)
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     order = 5
     nb = 10

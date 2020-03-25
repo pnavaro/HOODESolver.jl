@@ -10,7 +10,6 @@ include("coefexp_ab.jl")
 
 struct PrepareTwoScalePureAB
     n_max
-    t_begin
     t_max
     dt
     order
@@ -19,17 +18,15 @@ struct PrepareTwoScalePureAB
     p_coef::CoefExpAB
     exptau
     exptau_inv   
-    function PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0; 
-    t_begin=convert(typeof(par_u0.parphi.epsilon),0) )
+    function PrepareTwoScalePureAB(n_max, t_max, order, par_u0::PrepareU0)
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
-        dt = T(t_max-t_begin)/n_max
+        dt = T(t_max-parphi.t_0)/n_max
         p_coef = CoefExpAB(order, parphi.epsilon, parphi.n_tau, dt)
         exptau = collect(transpose(exp.(-im*dt / parphi.epsilon * parphi.tau_list)))
         exptau_inv = collect(transpose(exp.(im*dt / parphi.epsilon * parphi.tau_list)))
         return new(
     n_max,
-    t_begin, 
     t_max, 
     dt, 
     order, 
@@ -60,7 +57,7 @@ function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
         resfft .+= transpose(tab_coef[:, k, ord]).*fftfct[indice]
     end
     fft_u[dec] = resfft
-    t = par.t_begin+(dec-par.order)*par.dt
+    t = par.parphi.t_0+(dec-par.order)*par.dt
     fftfct[dec] = _calculfft(par.parphi, resfft, t)
 
     # if isexactsol(par.parphi)
@@ -130,31 +127,6 @@ function _tr_ab(par::PrepareTwoScalePureAB, fftfct, u_chap, t)
     f = _calculfft(par.parphi, resfft, t)
     return f, resfft
 end
-isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
-# for this function the time begins at par.t_begin
-function getexactsol(par::PrepareTwoScalePureAB, u0, t)
-    parphi = par.parphi
-    @assert !ismissing(parphi.matrix_B) "The debug matrix is not defined"
-    if ismissing(parphi.paramfct)
-        return getexactsol(parphi, u0, t-par.t_begin)
-    end
-    a, b = parphi.paramfct
-    t0 = par.t_begin
-    m = (1/parphi.epsilon)*parphi.sparse_A+parphi.matrix_B
-    mm1 = m^(-1)
-    mm2 = mm1^2
-    e_t0 = exp(-t0*m)
-    C = e_t0*u0 + mm1*e_t0*(t0*a+b)+mm2*e_t0*a
-    e_inv = exp(-t*m)
-    e = exp(t*m)
-    C_t = -mm1*e_inv*(t*a+b)-mm2*e_inv*a
-    return e*C+e*C_t
-end
-# for this function the time begins at zero
-function getexactsol(par::PreparePhi, u0, t)
-    @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
-    return exp(t*(1/par.epsilon*par.sparse_A+par.matrix_B))*u0
-end
 
 # for this function only, t is the time from the beginning
 function _getresult(u_chap, t, par::PreparePhi)
@@ -205,7 +177,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
    
     fftfct[par.order] = fftgen(
     par.parphi.par_fft, 
-    filtredfct(par.parphi, res_u, par.t_begin)
+    filtredfct(par.parphi, res_u, par.parphi.t_0)
     )
 
     println("twoscales_pure_ab epsilon/dt=$(par.parphi.epsilon/par.dt)")
@@ -276,7 +248,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
         if i%10000 == 1
             println(" $(i-1)/$(par.n_max)")
         end
-        resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft, par.t_begin+i*par.dt)
+        resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft, par.parphi.t_0+i*par.dt)
         if res_fft
             result_fft[i] = resfft
 #            res_u_chap[i+par.order] = ut0_fft
@@ -302,7 +274,7 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
 
     println("norm diff fft = $norm_delta_fft")
 
-    ret =  only_end ? _getresult(ut0_fft, par.t_max-par.t_begin, par.parphi) : result
+    ret =  only_end ? _getresult(ut0_fft, par.t_max-par.parphi.t_0, par.parphi) : result
 
     if res_fft
         if diff_fft 

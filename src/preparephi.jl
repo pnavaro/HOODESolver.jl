@@ -42,6 +42,7 @@ struct PreparePhi
     size_vect
     matrix_B::Union{Matrix,Missing} # for debug only (linear function)
     mode
+    t_0
     function  PreparePhi(
     epsilon::AbstractFloat, 
     n_tau::Integer, 
@@ -49,7 +50,8 @@ struct PreparePhi
     fct::Function,
     matrix_B::Union{Matrix,Missing};
     mode=1,
-    paramfct=missing
+    paramfct=missing,
+    t_0=zero(epsilon)
 )
         T = typeof(epsilon)
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
@@ -97,7 +99,8 @@ struct PreparePhi
     paramfct,
     size_vect,
     matrix_B,
-    mode
+    mode,
+    t_0
 )
     end
     function  PreparePhi(
@@ -106,10 +109,11 @@ struct PreparePhi
         matrix_A::Matrix, 
         fct::Function;
         mode=1,
-        paramfct=missing
+        paramfct=missing,
+        t_0=zero(epsilon)
     )
     
-        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode=mode,paramfct=paramfct)
+        return PreparePhi(epsilon, n_tau, matrix_A,fct, missing, mode=mode,paramfct=paramfct, t_0=t_0)
     end
 end
 
@@ -132,6 +136,27 @@ function filtredfct(par::PreparePhi, u_mat::Array{T,2}, t::T) where T <: Number
 )
 # return filtred_f.(eachcol(u_mat), par.tau_A_inv, par.fct, par.tau_A)
 end
+isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
+# for this function the time begins at par.t_begin
+function getexactsol(par::PreparePhi, u0, t)
+    @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
+    m = (1/par.epsilon)*par.sparse_A+par.matrix_B
+    t0 = par.t_0
+    if ismissing(par.paramfct)
+        return exp((t-t0)*m)*u0
+    end
+    a, b = par.paramfct
+    m = (1/par.epsilon)*par.sparse_A+par.matrix_B
+    mm1 = m^(-1)
+    mm2 = mm1^2
+    e_t0 = exp(-t0*m)
+    C = e_t0*u0 + mm1*e_t0*(t0*a+b)+mm2*e_t0*a
+    e_inv = exp(-t*m)
+    e = exp(t*m)
+    C_t = -mm1*e_inv*(t*a+b)-mm2*e_inv*a
+    return e*C+e*C_t
+end
+
 function phi( par::PreparePhi, u, order)
     @assert 2 <= order <= 20 "the order is $order, it must be between 2 and 20"
     f = undef
@@ -139,7 +164,7 @@ function phi( par::PreparePhi, u, order)
         f = filtredfct(
     par, 
     reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau), 
-    zero(par.epsilon)
+    par.t_0
 )    
     else
         coef = if par.mode == 1
@@ -151,7 +176,7 @@ function phi( par::PreparePhi, u, order)
 #        coef = eps(typeof(par.epsilon))^0.2
         resPhi_u = phi(par, u, order - 1)
         f = resPhi_u + reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau)
-        f = filtredfct(par, f, zero(par.epsilon))
+        f = filtredfct(par, f, par.t_0)
  #       f11 = coef * real(fftGen(par.par_fft, f)[:, 1]) / par.n_tau
         f11 = coef * mean(f, dims=2)
         f .-= (phi(par, u + f11, order - 1) - resPhi_u) / coef
