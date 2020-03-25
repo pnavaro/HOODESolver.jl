@@ -95,7 +95,7 @@ function fctMain(n_tau)
             #     println("i=$i/$nb difffft2=$(tabdf2[i])")
             # end
             diff=solref-sol
-            x[indc] = 1.0/nb
+            x[indc] = t_max/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
             y[indc,ind] = min(norm(diff,Inf),big"1.0")
             println("epsilon=$epsilon result=$y")
