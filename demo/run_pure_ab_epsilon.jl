@@ -30,7 +30,7 @@ function fctMain(n_tau)
         tab_eps[i] = epsilon
         epsilon /= 10
     end
-    nbMaxTest=14
+    nbMaxTest=9
     order=7
     ordprep=order+2
     t_max = big"3.0"
@@ -122,7 +122,7 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r2_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
+        Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
         ind+= 1
     end
 end
