@@ -23,7 +23,7 @@ function print_for_test(
     
     prec=precision(BigFloat)
     setprecision(1024)
-    coef_tau = [collect(0:n_tau÷2 - 1); collect(-n_tau÷2:-1)]
+    coef_tau = [collect(0:n_tau/2 - 1); collect(-n_tau/2:-1)] # the result must be real
     par = CoefExpABRational(order, float(epsilon), coef_tau, float(dt) )
     ordp1=order+1
     println("# CoefExpAB order=$order epsilon=$epsilon n_tau =$n_tau dt=$dt")
