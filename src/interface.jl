@@ -20,17 +20,31 @@ struct HiOscDEProblem{T} <:DiffEqBase.DEProblem
     epsilon::T
 end
 
+# struct HiOscInterpolation{T} <: AbstractDiffEqInterpolation
+#     t::T
+#     u_caret::T
+#     parphi::PreparePhi
+#     order
+# end
+# function (interp::HiOscInterpolation)(t)
+#     return _getresult(interp.u_caret, t, 
+#     interp.parphi, 
+#     interp.t[1], interp.t[end], 
+#     interp.order)
+# end
+
 abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
 
 struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
-    sol_u_caret::Vector{Array{Complex{T},2}}
+    sol_u_caret::Union{Vector{Array{Complex{T},2}}, Missing}
     t::Vector{T}
     dense::Bool
     order::Integer
     parphi::PreparePhi
     prob::HiOscDEProblem{T}
     retcode
+#    interp::HiOscInterpolation
     interp
     absprec
     relprec
@@ -59,7 +73,7 @@ end
 
 function DiffEqBase.solve(prob::HiOscDEProblem{T}; 
     nb_tau=32, order=4, order_prep=order+2, dense=true, 
-    nb_t=100, getprecision=true
+    nb_t=100, getprecision=dense
 ) where T<:AbstractFloat
     retcode = :Success
     if getprecision
@@ -81,15 +95,15 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
             end
         end
         return HiOscDESolution(s1.u, s1.sol_u_caret, s1.t, dense, order,
-                s1.parphi, prob, retcode, nothing, absprec, relprec)
+                s1.parphi, prob, retcode, nothing, absprec*nb_t, relprec*nb_t)
     end 
-    parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f, t_0=prob.tspan[1])
+    parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f, t_0=prob.tspan[1], paramfct=prob.p)
     par_u0 = PrepareU0(parphi, order_prep, prob.u0)
     pargen = PrepareTwoScalePureAB(nb_t, prob.tspan[2], order, par_u0)
     sol, _, sol_u_caret = if dense
-         twoscales_pure_ab(pargen, res_fft=true)
+        twoscales_pure_ab(pargen, res_fft=true)
     else
-        twoscales_pure_ab(pargen), undef, undef
+        twoscales_pure_ab(pargen), undef, missing
     end
     return HiOscDESolution(
         reshape(mapslices(x->[x], sol, dims=1),size(sol,2)), 

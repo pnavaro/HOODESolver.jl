@@ -43,10 +43,10 @@ function fctMain(n_tau)
         B = 2rand(BigFloat, 4, 4) - ones(BigFloat, 4, 4)
         paramfct = (2rand(BigFloat, 4) - ones(BigFloat, 4),
                         2rand(BigFloat, 4) - ones(BigFloat, 4))
-        fct = (u, p, t) -> B*u + t*p[1]+p[2]
-        parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct )
-#       fct = (u, p, t) -> B*u
-#       parphi = PreparePhi(epsilon, n_tau, A , fct, B)
+        # fct = (u, p, t) -> B*u + t*p[1]+p[2]
+        # parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct )
+       fct = (u, p, t) -> B*u
+       parphi = PreparePhi(epsilon, n_tau, A , fct, B)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
         @time par_u0 = PrepareU0(parphi, ordprep, u0)
         solref = getexactsol(parphi, u0, t_max)
@@ -122,7 +122,7 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
+        Plots.savefig(p,"out/r5_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
         ind+= 1
     end
 end
