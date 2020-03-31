@@ -32,9 +32,11 @@ end
 #     interp.t[1], interp.t[end], 
 #     interp.order)
 # end
-
-abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
-
+if VERSION >= v"1.3.1"
+    abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
+else
+    abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,T} end
+end
 struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
     sol_u_caret::Union{Vector{Array{Complex{T},2}}, Missing}
