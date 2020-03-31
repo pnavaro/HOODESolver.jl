@@ -234,6 +234,10 @@ function tts_time(t_begin, t_end)
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=getexactsol(parphi, u0, t)
             res_ap=_getresult(tabu, t, parphi, t_begin, t_end, order)
+            println("i=$i")
+            println("t=$t")
+            println("res_ex=$res_ex")
+            println("res_ap=$res_ap")
             @test isapprox(res_ex, res_ap, atol=1e-6, rtol=1e-5)
         end
     end
@@ -275,7 +279,7 @@ function testtwoscales_time()
     t_max = big"1.0"
     tts_time(big"0.0",big"1.0")
     tts_time(big"0.0",big"1.4565656565")
-    tts_time(big"1.234566",big"3.45766790123")
+    tts_time(big"2.234566",big"3.45766790123")
     tts_time(-big"0.8457676",big"0.56716")
     tts_time(-big"1.8111457676",-big"0.345456716")
     tts_time(big"1.8457676",big"0.56716")
