@@ -52,7 +52,9 @@ struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     relprec
 end
 function (sol::HiOscDESolution)(t)
+    println("TRACE XXXXXXXXXX")
     if sol.dense
+        println("TRACE YYYYYYYYYYYYYY")
         return _getresult(sol.sol_u_caret, t, sol.parphi, sol.t[1], sol.t[end], sol.order)
     else
         return undef
