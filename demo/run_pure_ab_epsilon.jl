@@ -30,7 +30,7 @@ function fctMain(n_tau)
         tab_eps[i] = epsilon
         epsilon /= 10
     end
-    nbMaxTest=14
+    nbMaxTest=9
     order=7
     ordprep=order+2
     t_max = big"3.0"
@@ -44,7 +44,7 @@ function fctMain(n_tau)
         paramfct = (2rand(BigFloat, 4) - ones(BigFloat, 4),
                         2rand(BigFloat, 4) - ones(BigFloat, 4))
         fct = (u, p, t) -> B*u + t*p[1]+p[2]
-        parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct, mode=4 )
+        parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct, mode=5 )
         # fct = (u, p, t) -> B*u
         # parphi = PreparePhi(epsilon, n_tau, A , fct, B)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
@@ -122,7 +122,7 @@ function fctMain(n_tau)
 )
         
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r7_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
+        Plots.savefig(p,"out/r8_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
         ind+= 1
     end
 end

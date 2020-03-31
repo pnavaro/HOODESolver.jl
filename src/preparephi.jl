@@ -167,10 +167,10 @@ function phi( par::PreparePhi, u, order)
     par.t_0
 )    
     else
-        coef = if par.mode == 1 || par.mode == 4
-            par.epsilon^(order - 2)
-        elseif par.mode == 2
+        coef = if par.mode == 2
             eps(BigFloat)^0.5
+        else
+            par.epsilon^(order - 2)
         end
 #        coef = par.epsilon^(order/1.9117569711) #just to try
 #        coef = eps(typeof(par.epsilon))^0.2
@@ -180,6 +180,10 @@ function phi( par::PreparePhi, u, order)
  #       f11 = coef * real(fftGen(par.par_fft, f)[:, 1]) / par.n_tau
         f11 = coef * mean(f, dims=2)
         f .-= (phi(par, u + f11, order - 1) - resPhi_u) / coef
+        if par.mode == 5
+            f .+=par.epsilon^2*reshape(collect(Iterators.flatten((par.tau_A .- (I,)).* (par.paramfct[1],))),par.size_vect,par.n_tau)
+        end
+
     end
     f = fftgen(par.par_fft, f)
     f = par.epsilon*real(ifftgen(par.par_fft, f .* par.tau_int))

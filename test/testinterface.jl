@@ -214,10 +214,10 @@ function tts_time(t_begin, t_end)
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=exp((t-t_begin)*m)*u0
             res_ap=sol(t)
-            println("i=$i")
-            println("t=$t")
-            println("res_ex=$res_ex")
-            println("res_ap=$res_ap")
+            # println("i=$i")
+            # println("t=$t")
+            # println("res_ex=$res_ex")
+            # println("res_ap=$res_ap")
             @test isapprox(res_ex, res_ap, atol=1e-6, rtol=1e-5)
         end
     end

@@ -137,12 +137,12 @@ function _getresult(u_chap, t, par::PreparePhi)
     return res
 end
 function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
-    println("_getresult tab_u_chap=$(tab_u_chap[1])")
-    println("t=$t")
-    println("par.epsilon=$(par.epsilon)")
-    println("t_begin=$t_begin")
-    println("t_max=$t_max")
-    println("order=$order")
+    # println("_getresult tab_u_chap=$(tab_u_chap[1])")
+    # println("t=$t")
+    # println("par.epsilon=$(par.epsilon)")
+    # println("t_begin=$t_begin")
+    # println("t_max=$t_max")
+    # println("order=$order")
     nb = size(tab_u_chap,1)-1
     dt = (t_max-t_begin)/nb
     t_ex = (t-t_begin)/dt
