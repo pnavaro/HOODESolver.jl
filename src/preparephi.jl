@@ -181,7 +181,7 @@ function phi( par::PreparePhi, u, order)
         f11 = coef * mean(f, dims=2)
         f .-= (phi(par, u + f11, order - 1) - resPhi_u) / coef
         if par.mode == 5
-            f .+=par.epsilon^2*reshape(collect(Iterators.flatten((par.tau_A .- (I,)).* (par.paramfct[1],))),par.size_vect,par.n_tau)
+            f .-=par.epsilon^2*reshape(collect(Iterators.flatten((par.tau_A .- (I,)).* (par.paramfct[1],))),par.size_vect,par.n_tau)
         end
 
     end
