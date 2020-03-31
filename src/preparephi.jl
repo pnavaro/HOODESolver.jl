@@ -167,7 +167,7 @@ function phi( par::PreparePhi, u, order)
     par.t_0
 )    
     else
-        coef = if par.mode == 1
+        coef = if par.mode == 1 || par.mode == 4
             par.epsilon^(order - 2)
         elseif par.mode == 2
             eps(BigFloat)^0.5
