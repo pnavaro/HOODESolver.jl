@@ -224,6 +224,9 @@ struct PrepareU0
             end
         end
         ut0 = reshape(repeat(um, parphi.n_tau), parphi.size_vect, parphi.n_tau) + y
+        if parphi.mode == 4
+            ut0 +=parphi.epsilon^2*reshape(collect(Iterators.flatten((parphi.tau_A - (I,)).* (parphi.paramfct[1],))),parphi.size_vect,parphi.n_tau)
+        end
         return new(parphi, order, ut0, u0)
     end
     PrepareU0(parphi::PreparePhi, order, u0)=PrepareU0(parphi, order, u0, 0)

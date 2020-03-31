@@ -338,9 +338,9 @@ function test_exact()
 
 end   
 test_exact()
+testtwoscales_time()
 
 testtwoscales_time_time()
-testtwoscales_time()
 testtwoscales_short()
 testtwoscales_interpolate()
 # testtwoscales_pure_ab()

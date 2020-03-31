@@ -159,7 +159,8 @@ function testtwoscales_interpolate()
             eps_v = convert(Float32, epsilon)
             t_max = big"1.0"
             prob = HiOscDEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
-            sol = solve(prob, getprecision=false)
+   #         sol = solve(prob, getprecision=false)
+            sol = solve(prob)
             m = 1/epsilon*A+B
             reftol=norm(exp(t_max*m)*u0-sol[end], Inf)*10
             for j=1:10
@@ -203,21 +204,16 @@ function tts_time(t_begin, t_end)
         u0 = rand(BigFloat, 4)
         fct = (u,p,t) -> B*u
         epsilon=big"0.00345"
-        nb = 100
-        order = 4
-        ordprep= order+2
-        parphi = PreparePhi(epsilon, 32, A, fct, B, t_0=t_begin)
-        par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0)
-        sol = twoscales_pure_ab(pargen, only_end=true)
-        solref = getexactsol(parphi, u0, t_end)
-        println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")
-        @test isapprox(sol, solref,atol=1e-7, rtol=1e-6)
-        result, tfft, tabu = twoscales_pure_ab(pargen, only_end=false, res_fft=true)
+        prob = HiOscDEProblem(fct, u0, (t_begin,t_end), missing, A, epsilon)
+        sol = solve(prob, getprecision=false)
+        m = 1/epsilon*A+B
+        solref = exp((t_end-t_begin)*m)*u0
+        println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
+        @test isapprox(sol[end], solref,atol=1e-7, rtol=1e-6)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
-            res_ex=getexactsol(parphi, u0, t)
-            res_ap=_getresult(tabu, t, parphi, t_begin, t_end, order)
+            res_ex=exp((t-t_begin)*m)*u0
+            res_ap=sol(t)
             @test isapprox(res_ex, res_ap, atol=1e-6, rtol=1e-5)
         end
     end
@@ -250,7 +246,7 @@ function tts_time_time(t_begin, t_end)
         end
     end
 end
-function testtwoscales_time()
+function testinterface_time()
     seed=7887
     Random.seed!(seed)
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
@@ -259,7 +255,7 @@ function testtwoscales_time()
     t_max = big"1.0"
     tts_time(big"0.0",big"1.0")
     tts_time(big"0.0",big"1.4565656565")
-    tts_time(big"1.234566",big"3.45766790123")
+    tts_time(big"2.234566",big"3.45766790123")
     tts_time(-big"0.8457676",big"0.56716")
     tts_time(-big"1.8111457676",-big"0.345456716")
     tts_time(big"1.8457676",big"0.56716")
@@ -284,13 +280,13 @@ function testtwoscales_time_time()
 end
 
 
-testtwoscales_time()
+testinterface_time()
 
-testtwoscales_time_time()
+# testtwoscales_time_time()
 
 
 testinterface_epsilon()
-testtwoscales_interpolate()
+testinterface_interpolate()
 # testtwoscales_short()
 # testtwoscales_pure_ab()
 # testtwoscales_pure_ab2()
