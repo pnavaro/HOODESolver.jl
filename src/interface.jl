@@ -112,7 +112,7 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
     return HiOscDESolution(
         reshape(mapslices(x->[x], sol, dims=1),size(sol,2)), 
         sol_u_caret, 
-        collect(0:nb_t)*prob.tspan[2]/big(nb_t).+prob.tspan[1],
+        collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/big(nb_t).+prob.tspan[1],
         dense,
         order,
         parphi, prob, retcode, nothing, undef, undef)
