@@ -18,7 +18,8 @@ function getpolylagrange(k::Int64, j::Int64, N::DataType)
     return result
 end
 function interpolate(tab, order, value, N::DataType)
-    res=zeros(Complex{BigFloat},size(tab[1]))
+    T = (N == BigInt) ? BigFloat : Float64
+    res=zeros(Complex{T},size(tab[1]))
     for i=0:order
         res .+= getpolylagrange(i,order,N)(-value)*tab[i+1] 
     end

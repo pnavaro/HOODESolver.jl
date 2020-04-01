@@ -162,7 +162,8 @@ function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     t_ex -= t_int_begin
     t1 = t_int_begin+1
     # println("t1=$t1 t_ex=$t_ex")
-    u_chap = interpolate(tab_u_chap[t1:(t1+order)], order, t_ex)
+    N = (typeof(par.epsilon)==BigFloat) ? BigInt : Int64
+    u_chap = interpolate(tab_u_chap[t1:(t1+order)], order, t_ex, N)
     return _getresult( u_chap, t-t_begin, par)
 end
 # function getresultfromfft(rfft, t, par::PreparePhi)
