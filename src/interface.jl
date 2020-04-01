@@ -20,18 +20,18 @@ struct HiOscDEProblem{T} <:DiffEqBase.DEProblem
     epsilon::T
 end
 
-# struct HiOscInterpolation{T} <: AbstractDiffEqInterpolation
-#     t::T
-#     u_caret::T
-#     parphi::PreparePhi
-#     order
-# end
-# function (interp::HiOscInterpolation)(t)
-#     return _getresult(interp.u_caret, t, 
-#     interp.parphi, 
-#     interp.t[1], interp.t[end], 
-#     interp.order)
-# end
+struct HiOscInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
+    t::T
+    u_caret::T
+    parphi::PreparePhi
+    order
+end
+function (interp::HiOscInterpolation)(t)
+    return _getresult(interp.u_caret, t, 
+    interp.parphi, 
+    interp.t[1], interp.t[end], 
+    interp.order)
+end
 if VERSION >= v"1.3.1"
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
 else
@@ -46,7 +46,7 @@ struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     parphi::PreparePhi
     prob::HiOscDEProblem{T}
     retcode
-#    interp::HiOscInterpolation
+    interp::HiOscInterpolation
     interp
     absprec
     relprec
@@ -107,6 +107,8 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
     else
         twoscales_pure_ab(pargen), undef, missing
     end
+    t = HiOscInterpolation 
+    interp = dense ? HiOscInterpolation()
     return HiOscDESolution(
         reshape(mapslices(x->[x], sol, dims=1),size(sol,2)), 
         sol_u_caret, 

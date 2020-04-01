@@ -17,15 +17,26 @@ These data can be used elsewhere for example in twoscale function.
 - `fct::Function` : function of the system
 - `[matrix_B::Matrix]` : matrix representing the linear function for debug
 
-# Implementation :
+# Keywords
+- `mode=1` : possibility of addionnal modes for optional behavior
+- `paramfct=missing,` : middle parameter of function fct
+- `t_0=zero(epsilon)` : beginning of the time
+
+# Fields :
 - epsilon : epsilon of the system.
 - n_tau : number of values for fft
-- list_tau : list of value around the unit disk
+- tau_list : list of values around the unit disk (0 ... n_tau/2 -n_tau/2-1 ... -1 )
+- tau_int : list of values to integrate FFT
 - matrix_A : sparse matrix
 - tau_A : for each angular ``\tau`` around the unit disk the matrix ``e^{(\tau \time A)}```
-- par_fft : fft parameters.
-- fct : function of differential equation.
+- tau_A_inv : inverse of tau_A
+- par_fft : fft parameters
+- fct : function of differential equation
+- paramfct : middle parameter of function fct
 - size_vect : size of vector that is the size of the matrix
+- matrix_B : B matrix for the linear case
+- mode : for optional behavior
+- t_0 : beginning of the time
 
 """
 struct PreparePhi
@@ -195,8 +206,26 @@ function get_tab_rand( T::DataType, s, n)
     tab .-= correct
     return tab
 end
+"""
+    PrepareU0(parphi::PreparePhi, order, u0, newprec)
+
+    Preparation of the original data
+
+    # Arguments
+    - `parphi::PreparePhi` : phi prepared parameters
+    - `order` : order of the preparation
+    - 'u0' : initial data
+    - `[newprec]` : precision for the compute, if no given a default value is computed as a function of epsilon
+    
+    # Fields
+    - parphi : phi prepared parameters
+    - `order` : order of the preparation
+    - 'ut0' : formated initial data
+    - 'u0' :initial data
+
+"""
 struct PrepareU0
-    parphi
+    parphi::PreparePhi
     order # it is the order of preparation at less one more than the order of AB process
     ut0  # formated initial data
     u0 # initial data

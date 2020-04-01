@@ -309,14 +309,14 @@ function testinterface_time_time()
 end
 
 testinterface_interpolate_float()
-# testinterface_time()
+testinterface_time()
 
-# testinterface_time_time()
+testinterface_time_time()
 
 
-# testinterface_epsilon()
-# testinterface_interpolate()
-# testinterface_short()
+testinterface_epsilon()
+testinterface_interpolate()
+testinterface_short()
 # testtwoscales_pure_ab()
 # testtwoscales_pure_ab2()
 #testtwoscales_pure_ab3()
