@@ -173,9 +173,11 @@ end
 function twoscales_pure_ab(par::PrepareTwoScalePureAB; 
     only_end=false, diff_fft=false, res_fft=false)
 
-    fftfct = Vector{Array{Complex{BigFloat}, 2}}(undef, 2par.order-1)
+    T = typeof(par.parphi.epsilon)
 
-    fft_u = Vector{Array{Complex{BigFloat}, 2}}(undef, 2par.order-1)
+    fftfct = Vector{Array{Complex{T}, 2}}(undef, 2par.order-1)
+
+    fft_u = Vector{Array{Complex{T}, 2}}(undef, 2par.order-1)
 
     
     res_u = par.par_u0.ut0
@@ -209,8 +211,8 @@ function twoscales_pure_ab(par::PrepareTwoScalePureAB;
     memfft = fftfct[par.order:(2par.order-1)]
 
     if res_fft
-        result_fft = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
-        res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+1)
+        result_fft = Vector{Array{Complex{T}, 2}}(undef, par.n_max+1)
+        res_u_chap = Vector{Array{Complex{T}, 2}}(undef, par.n_max+1)
 #        res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.n_max+par.order)
         for i=1:min(par.order,par.n_max+1)
             result_fft[i] = memfft[i]

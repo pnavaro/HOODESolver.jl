@@ -33,9 +33,9 @@ end
 #     interp.order)
 # end
 if VERSION >= v"1.3.1"
-    abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
-else
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
+else
+    abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
 end
 struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
@@ -87,7 +87,7 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
         relprec = absprec/max( norm(s1.u[end]), norm(s2.u[end]))
         if dense
             for i = 1:10
-                t = rand(typeof(prob.epsilon)) * (prob.tspan[2]-prob.tspan[1]) 
+                t = rand(T) * (prob.tspan[2]-prob.tspan[1]) 
                     + prob.tspan[1]
                 a, b = s1(t), s2(t)
                 ap = norm(a-b)
@@ -110,7 +110,7 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
     return HiOscDESolution(
         reshape(mapslices(x->[x], sol, dims=1),size(sol,2)), 
         sol_u_caret, 
-        collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/big(nb_t).+prob.tspan[1],
+        collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/nb_t .+ prob.tspan[1],
         dense,
         order,
         parphi, prob, retcode, nothing, undef, undef)

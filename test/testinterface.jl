@@ -173,6 +173,40 @@ function testinterface_interpolate()
         end
     end
 end
+function testinterface_interpolate_float()
+    @time @testset "test interface for interpolation" begin
+        seed=124333
+        A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+        order = 6
+        nb = 100
+        t_max = 1.0
+        for i=1:5
+            seed = seed*1341+6576123
+            Random.seed!(seed)
+            u0=rand(4)
+            println("u0=$u0")
+            B = 2rand(4,4)-ones(4,4)
+            fct = (u,p,t) -> B*u
+            epsilon = 0.4/2.0^i
+            eps_v = convert(Float32, epsilon)
+            t_max = 1.0
+            prob = HiOscDEProblem(fct, u0, (0.0,t_max), missing, A, epsilon)
+   #         sol = solve(prob, getprecision=false)
+            sol = solve(prob)
+            m = 1/epsilon*A+B
+            reftol=norm(exp(t_max*m)*u0-sol[end], Inf)*10
+            @test reftol < 1e-6
+            for j=1:10
+                t=rand()
+                res_ex=exp(t*m)*u0
+                res_ap=sol(t)
+                println("type ex=$(typeof(res_ex)) type ap=$(typeof(res_ap))")
+                println("t=$t norm=$(norm(res_ex-res_ap, Inf))")
+                @test isapprox(res_ex, res_ap, atol=reftol, rtol=reftol*10)
+            end
+        end
+    end
+end
 function testinterface_short()
     seed=981885
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
@@ -190,7 +224,7 @@ function testinterface_short()
         t_max = big"0.01"
         prob = HiOscDEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
         sol = solve(prob, getprecision=false, order=order, nb_t=nb)
-        resnorm=norm(exp(t_max(1/epsilon*A+B))*u0-sol[end], Inf)
+        resnorm=norm(exp(t_max*(1/epsilon*A+B))*u0-sol[end], Inf)
         println("resnorm=$resnorm")
         @test resnorm < 1e-10
     end
@@ -274,7 +308,7 @@ function testinterface_time_time()
     tts_time_time(-big"0.845722676",-big"0.56716")
 end
 
-
+# testinterface_interpolate_float()
 testinterface_time()
 
 testinterface_time_time()
@@ -282,7 +316,7 @@ testinterface_time_time()
 
 testinterface_epsilon()
 testinterface_interpolate()
-testtwoscales_short()
+testinterface_short()
 # testtwoscales_pure_ab()
 # testtwoscales_pure_ab2()
 #testtwoscales_pure_ab3()
