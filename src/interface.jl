@@ -35,7 +35,7 @@ end
 if VERSION >= v"1.3.1"
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
 else
-    abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,T} end
+    abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
 end
 struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
@@ -52,10 +52,8 @@ struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     relprec
 end
 function (sol::HiOscDESolution)(t)
-    println("TRACE XXXXXXXXXX")
     if sol.dense
-        println("TRACE YYYYYYYYYYYYYY")
-        return _getresult(sol.sol_u_caret, t, sol.parphi, sol.t[1], sol.t[end], sol.order)
+       return _getresult(sol.sol_u_caret, t, sol.parphi, sol.t[1], sol.t[end], sol.order)
     else
         return undef
     end

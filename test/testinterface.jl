@@ -141,7 +141,7 @@ function testinterface_epsilon()
         end
     end
 end
-function testtwoscales_interpolate()
+function testinterface_interpolate()
     @time @testset "test interface for interpolation" begin
         seed=123871
         A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
@@ -173,12 +173,12 @@ function testtwoscales_interpolate()
         end
     end
 end
-function testtwoscales_short()
+function testinterface_short()
     seed=981885
     A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     order = 7
     nb = 5
-     for i=1:1
+     for i=1:10
         seed += 10
         Random.seed!(seed)
         u0=rand(BigFloat,4)
@@ -188,11 +188,9 @@ function testtwoscales_short()
         epsilon = big"0.00004"/2.0^i
         eps_v = convert(Float32, epsilon)
         t_max = big"0.01"
-        parphi = PreparePhi(epsilon, 32, A, fct, B)
-        par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
-        @time sol = twoscales_pure_ab(pargen, only_end=true)
-        resnorm=norm(getexactsol(parphi, u0, t_max)-sol, Inf)
+        prob = HiOscDEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+        sol = solve(prob, getprecision=false, order=order, nb_t=nb)
+        resnorm=norm(exp(t_max(1/epsilon*A+B))*u0-sol[end], Inf)
         println("resnorm=$resnorm")
         @test resnorm < 1e-10
     end
@@ -214,10 +212,6 @@ function tts_time(t_begin, t_end)
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=exp((t-t_begin)*m)*u0
             res_ap=sol(t)
-            # println("i=$i")
-            # println("t=$t")
-            # println("res_ex=$res_ex")
-            # println("res_ap=$res_ap")
             @test isapprox(res_ex, res_ap, atol=1e-6, rtol=1e-5)
         end
     end
@@ -233,19 +227,24 @@ function tts_time_time(t_begin, t_end)
         epsilon=big"0.0003467"
         nb = 100
         order = 4
-        ordprep= order+2
-        parphi = PreparePhi(epsilon, 32, A, fct, B, paramfct=tuple_p, t_0=t_begin)
-        par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0)
-        sol = twoscales_pure_ab(pargen, only_end=true)
+        prob = HiOscDEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon)
+        sol = solve(prob, getprecision=false)
+        parphi = PreparePhi(
+    epsilon, 
+    sol.parphi.n_tau,
+    A,
+    fct,
+    B,
+    t_0=t_begin,
+    paramfct=tuple_p
+)
         solref = getexactsol(parphi, u0, t_end)
-        println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")
-        @test isapprox(sol, solref,atol=1e-8, rtol=1e-7)
-        result, tfft, tabu = twoscales_pure_ab(pargen, only_end=false, res_fft=true)
+        println("sol=$sol[end] solref=$solref norm=$(norm(sol[end]-solref,Inf))")
+        @test isapprox(sol[end], solref,atol=1e-8, rtol=1e-7)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=getexactsol(parphi, u0, t)
-            res_ap=_getresult(tabu, t, parphi, t_begin, t_end, order)
+            res_ap=sol(t)
             @test isapprox(res_ex, res_ap, atol=1e-7, rtol=1e-6)
         end
     end
@@ -253,10 +252,6 @@ end
 function testinterface_time()
     seed=7887
     Random.seed!(seed)
-    A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    order = 5
-    nb = 10
-    t_max = big"1.0"
     tts_time(big"0.0",big"1.0")
     tts_time(big"0.0",big"1.4565656565")
     tts_time(big"2.234566",big"3.45766790123")
@@ -266,13 +261,9 @@ function testinterface_time()
     tts_time(-big"0.8457676",-big"1.56716")
     tts_time(-big"0.845722676",-big"0.56716")
 end
-function testtwoscales_time_time()
+function testinterface_time_time()
     seed=788227
     Random.seed!(seed)
-    A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    order = 5
-    nb = 10
-    t_max = big"1.0"
     tts_time_time(big"0.0",big"1.0")
     tts_time_time(big"0.0",big"1.4565656565")
     tts_time_time(big"11.234566",big"12.45766790123")
@@ -286,12 +277,12 @@ end
 
 testinterface_time()
 
-# testtwoscales_time_time()
+testinterface_time_time()
 
 
 testinterface_epsilon()
 testinterface_interpolate()
-# testtwoscales_short()
+testtwoscales_short()
 # testtwoscales_pure_ab()
 # testtwoscales_pure_ab2()
 #testtwoscales_pure_ab3()
