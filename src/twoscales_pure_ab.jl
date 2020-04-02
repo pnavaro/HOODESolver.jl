@@ -2,8 +2,7 @@
 include("preparephi.jl")
 include("coefexp_ab.jl")
 """
-    PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0; 
-only_end=false, diff_fft=false, res_fft=false)
+    PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0; only_end=false, diff_fft=false, res_fft=false)
 
 Immutable structure, to share calculations, needed for the twoscale function
 

@@ -19,7 +19,7 @@ These data can be used elsewhere for example in twoscale function.
 
 # Keywords
 - `mode=1` : possibility of addionnal modes for optional behavior
-- `paramfct=missing,` : middle parameter of function fct
+- `paramfct=missing` : middle parameter of function fct
 - `t_0=zero(epsilon)` : beginning of the time
 
 # Fields :
@@ -214,14 +214,14 @@ Preparation of the original data
 # Arguments
 - `parphi::PreparePhi` : phi prepared parameters
 - `order` : order of the preparation
-- 'u0' : initial data
+- `u0` : initial data
 - `[newprec]` : precision for the compute, if no given a default value is computed as a function of epsilon
 
 # Fields
 - parphi : phi prepared parameters
 - `order` : order of the preparation
-- 'ut0' : formated initial data
-- 'u0' :initial data
+- `ut0` : formated initial data
+- `u0` :initial data
 
 """
 struct PrepareU0

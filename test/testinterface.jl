@@ -148,7 +148,7 @@ function tts_time(t_begin, t_end)
     end
 end
 function tts_time_time(t_begin, t_end)
-    @time @testset "test twoscales time time from $t_begin to $t_end" begin
+    @time @testset "test interface time time from $t_begin to $t_end" begin
         A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
         B =  2rand(BigFloat,4,4)-ones(BigFloat,4,4)
         u0 = 2rand(BigFloat, 4)-ones(BigFloat,4)

@@ -1,7 +1,8 @@
-module HighlyOscilatoryProblems
+using DiffEqBase
+
+
 #using Reexport
 # @reexport using DiffEqBase
-using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
@@ -65,8 +66,9 @@ end
 
 
 
+# function DiffEqBase.solve(prob::HiOscDEProblem{T};
 function DiffEqBase.solve(prob::HiOscDEProblem{T}; 
-    nb_tau=32, order=4, order_prep=order+2, dense=true, 
+        nb_tau=32, order=4, order_prep=order+2, dense=true, 
     nb_t=100, getprecision=dense
 ) where T<:AbstractFloat
     retcode = :Success
@@ -107,7 +109,4 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
         dense,
         order,
         parphi, prob, retcode, interp, undef, undef)
-end
-
-
 end
