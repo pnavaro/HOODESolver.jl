@@ -28,7 +28,7 @@ function testinterface_epsilon()
             while nb <= 1000
                 sol = solve(prob, nb_t=nb, order=5, dense=false)
                 res_err[ind] = norm(sol[end]-sol_ref,Inf)
-                println("\nnb=$nb epsilon=$eps_v err=$(res_err[ind])")
+ #               println("\nnb=$nb epsilon=$eps_v err=$(res_err[ind])")
                 nb *= 10
                 ind += 1
             end
@@ -97,8 +97,8 @@ function testinterface_interpolate_float()
                 t=rand()
                 res_ex=exp(t*m)*u0
                 res_ap=sol(t)
-                println("type ex=$(typeof(res_ex)) type ap=$(typeof(res_ap))")
-                println("t=$t norm=$(norm(res_ex-res_ap, Inf))")
+#                println("type ex=$(typeof(res_ex)) type ap=$(typeof(res_ap))")
+#                println("t=$t norm=$(norm(res_ex-res_ap, Inf))")
                 @test isapprox(res_ex, res_ap, atol=reftol, rtol=reftol*10)
             end
         end
