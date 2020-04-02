@@ -93,7 +93,7 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
     end 
     parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f, t_0=prob.tspan[1], paramfct=prob.p)
     par_u0 = PrepareU0(parphi, order_prep, prob.u0)
-    pargen = PrepareTwoScalePureAB(nb_t, prob.tspan[2], order, par_u0)
+    pargen = PrepareTwoScalesPureAB(nb_t, prob.tspan[2], order, par_u0)
     u_mat, _, u_caret = if dense
         twoscales_pure_ab(pargen, res_fft=true)
     else

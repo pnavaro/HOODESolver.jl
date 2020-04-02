@@ -209,19 +209,19 @@ end
 """
     PrepareU0(parphi::PreparePhi, order, u0, newprec)
 
-    Preparation of the original data
+Preparation of the original data
 
-    # Arguments
-    - `parphi::PreparePhi` : phi prepared parameters
-    - `order` : order of the preparation
-    - 'u0' : initial data
-    - `[newprec]` : precision for the compute, if no given a default value is computed as a function of epsilon
-    
-    # Fields
-    - parphi : phi prepared parameters
-    - `order` : order of the preparation
-    - 'ut0' : formated initial data
-    - 'u0' :initial data
+# Arguments
+- `parphi::PreparePhi` : phi prepared parameters
+- `order` : order of the preparation
+- 'u0' : initial data
+- `[newprec]` : precision for the compute, if no given a default value is computed as a function of epsilon
+
+# Fields
+- parphi : phi prepared parameters
+- `order` : order of the preparation
+- 'ut0' : formated initial data
+- 'u0' :initial data
 
 """
 struct PrepareU0

@@ -28,7 +28,7 @@ function testtwoscales_pure_ab()
         res_err = zeros(BigFloat,5)
         ind = 1
         while nb <= 1000
-            pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+            pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
             result = twoscales_pure_ab(pargen)
             res_err[ind] = norm(result[:,end]-sol_ref,Inf)
             println("\nnb=$nb order=$order err=$(res_err[ind])")
@@ -108,7 +108,7 @@ function testtwoscales_pure_ab3()
         res_err = zeros(BigFloat,5)
         ind = 1
         while nb <= 10000
-            pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+            pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
             result = twoscales_pure_ab(pargen)
             res_err[ind] = norm(result[:,end]-sol_ref,Inf)
             println("\nnb=$nb order=$order err=$(res_err[ind])")
@@ -145,7 +145,7 @@ function testtwoscales_pure_ab_epsilon()
         res_err = zeros(BigFloat,5)
         ind = 1
         while nb <= 1000
-            pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+            pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
             result = twoscales_pure_ab(pargen)
             res_err[ind] = norm(result[:,end]-sol_ref,Inf)
             println("\nnb=$nb epsilon=$eps_v err=$(res_err[ind])")
@@ -175,7 +175,7 @@ function testtwoscales_interpolate()
         t_max = big"1.0"
         parphi = PreparePhi(epsilon, 32, A, fct, B)
         par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+        pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
         @time result, tfft, tabu = twoscales_pure_ab(pargen, 
     only_end=false, res_fft=true)
         reftol=norm(getexactsol(parphi, u0, t_max)-result[:,end], Inf)*10
@@ -205,7 +205,7 @@ function testtwoscales_short()
         t_max = big"0.01"
         parphi = PreparePhi(epsilon, 32, A, fct, B)
         par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+        pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
         @time sol = twoscales_pure_ab(pargen, only_end=true)
         resnorm=norm(getexactsol(parphi, u0, t_max)-sol, Inf)
         println("resnorm=$resnorm")
@@ -224,7 +224,7 @@ function tts_time(t_begin, t_end)
         ordprep= order+2
         parphi = PreparePhi(epsilon, 32, A, fct, B, t_0=t_begin)
         par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0)
+        pargen = PrepareTwoScalesPureAB(nb, t_end, order, par_u0)
         sol = twoscales_pure_ab(pargen, only_end=true)
         solref = getexactsol(parphi, u0, t_end)
         println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")
@@ -256,7 +256,7 @@ function tts_time_time(t_begin, t_end)
         ordprep= order+2
         parphi = PreparePhi(epsilon, 32, A, fct, B, paramfct=tuple_p, t_0=t_begin)
         par_u0 = PrepareU0(parphi, order+2, u0)
-        pargen = PrepareTwoScalePureAB(nb, t_end, order, par_u0)
+        pargen = PrepareTwoScalesPureAB(nb, t_end, order, par_u0)
         sol = twoscales_pure_ab(pargen, only_end=true)
         solref = getexactsol(parphi, u0, t_end)
         println("sol=$sol solref=$solref norm=$(norm(sol-solref,Inf))")

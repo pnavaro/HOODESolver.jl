@@ -2,29 +2,29 @@
 include("preparephi.jl")
 include("coefexp_ab.jl")
 """
-    PrepareTwoScalePureAB(nb_t, t_max, order, par_u0::PrepareU0; 
-    only_end=false, diff_fft=false, res_fft=false)
+    PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0; 
+only_end=false, diff_fft=false, res_fft=false)
 
-    Immutable structure, to share calculations, needed for the twoscale function
+Immutable structure, to share calculations, needed for the twoscale function
 
-    # Arguments :
-    - `nb_t::Int` : number of time slices
-    - `t_max`: end of the time
-    - `order` : order for compute the coefficients
-    - `par_u0::PrepareU0` : prepared initial data
-    
-    # Fields :
-    - nb_t : number of time slices
-    - t_max : end of the time
-    - order : order for compute the coefficients
-    - parphi : prepared parameters for phi (from par_u0)
-    - par_u0 : prepared initial data
-    - p_coef : computed coefficients
-    - exptau : exp( -im*dt*'\tau'/epsilon) for all '\tau' values
-    - exptau_inv : inverse of exptau
+# Arguments :
+- `nb_t::Int` : number of time slices
+- `t_max`: end of the time
+- `order` : order for compute the coefficients
+- `par_u0::PrepareU0` : prepared initial data
+
+# Fields :
+- nb_t : number of time slices
+- t_max : end of the time
+- order : order for compute the coefficients
+- parphi : prepared parameters for phi (from par_u0)
+- par_u0 : prepared initial data
+- p_coef : computed coefficients
+- exptau : exp( -im*dt*'\tau'/epsilon) for all '\tau' values
+- exptau_inv : inverse of exptau
 
 """
-struct PrepareTwoScalePureAB
+struct PrepareTwoScalesPureAB
     nb_t
     t_max
     dt
@@ -34,7 +34,7 @@ struct PrepareTwoScalePureAB
     p_coef::CoefExpAB
     exptau
     exptau_inv   
-    function PrepareTwoScalePureAB(nb_t, t_max, order, par_u0::PrepareU0)
+    function PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0)
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
         dt = T(t_max-parphi.t_0)/nb_t
@@ -60,7 +60,7 @@ function _calculfft(parphi::PreparePhi, resfft, t)
     return fftgen(parphi.par_fft, f)
 end
 
-function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
+function _calcul_ab(par::PrepareTwoScalesPureAB, ord, fftfct, fft_u, dec, sens)
      resfft = fft_u[dec-sens] .* ((sens==1) ? par.exptau : par.exptau_inv)
     tab_coef = (sens == 1) ? par.p_coef.tab_coef : par.p_coef.tab_coef_neg
     for k=1:ord
@@ -72,7 +72,7 @@ function _calcul_ab(par::PrepareTwoScalePureAB, ord, fftfct, fft_u, dec, sens)
     fftfct[dec] = _calculfft(par.parphi, resfft, t)
 end
 
-function _init_ab(par::PrepareTwoScalePureAB, fftfct, fft_u)
+function _init_ab(par::PrepareTwoScalesPureAB, fftfct, fft_u)
     println("_init_ab order=$(par.order)")
     if par.order != 1
         for new_ord=2:par.order
@@ -87,7 +87,7 @@ function _init_ab(par::PrepareTwoScalePureAB, fftfct, fft_u)
     end
 end
 
-function _tr_ab(par::PrepareTwoScalePureAB, fftfct, u_chap, t)
+function _tr_ab(par::PrepareTwoScalesPureAB, fftfct, u_chap, t)
     resfft = par.exptau.* u_chap
     bound = par.order-1
     for k =0:bound
@@ -123,15 +123,22 @@ function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     return _getresult( u_chap, t-t_begin, par)
 end
 """
-    twoscales_pure_ab(par::PrepareTwoScalePureAB; 
-    only_end=false, diff_fft=false, res_fft=false)
+    twoscales_pure_ab(par::PrepareTwoScalesPureAB; 
+only_end=false, diff_fft=false, res_fft=false)
 
-    compute the data to get solution of the differential equation
+compute the data to get solution of the differential equation
 
-    ICI
+    # Parameters :
+    - `par::PrepareTwoScalesPureAB` : contains all the parameters and prepared data
+
+    # Keywords :
+    - `only_end=false` : if true return only the result for t_end
+    - `diff_fft::Bool=false` : if true return data about diff
+    - `res_fft::Bool=false` : if true return u_caret data indispensable for interpolation
+
 """
-function twoscales_pure_ab(par::PrepareTwoScalePureAB; 
-    only_end=false, diff_fft=false, res_fft=false)
+function twoscales_pure_ab(par::PrepareTwoScalesPureAB; 
+    only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false)
 
     T = typeof(par.parphi.epsilon)
 
