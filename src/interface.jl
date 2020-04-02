@@ -21,8 +21,8 @@ struct HiOscDEProblem{T} <:DiffEqBase.DEProblem
 end
 
 struct HiOscInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
-    t::T
-    u_caret::T
+    t::Vector{T}
+    u_caret::Vector{Array{Complex{T},2}}
     parphi::PreparePhi
     order
 end
@@ -32,32 +32,24 @@ function (interp::HiOscInterpolation)(t)
     interp.t[1], interp.t[end], 
     interp.order)
 end
-if VERSION >= v"1.3.1"
+if VERSION >= v"1.4.0"
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
 else
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
 end
 struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
-    sol_u_caret::Union{Vector{Array{Complex{T},2}}, Missing}
     t::Vector{T}
     dense::Bool
     order::Integer
     parphi::PreparePhi
     prob::HiOscDEProblem{T}
     retcode
-    interp::HiOscInterpolation
-    interp
+    interp::Union{HiOscInterpolation, Nothing}
     absprec
     relprec
 end
-function (sol::HiOscDESolution)(t)
-    if sol.dense
-       return _getresult(sol.sol_u_caret, t, sol.parphi, sol.t[1], sol.t[end], sol.order)
-    else
-        return undef
-    end
-end
+(sol::HiOscDESolution)(t) = sol.dense ? sol.interp(t) : undef
 # function DiffEqBase.build_solution{T}(prob::HiOscDEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
 #     t::Vector{T}, 
@@ -96,26 +88,25 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
                 relprec = max(relprec,rp)
             end
         end
-        return HiOscDESolution(s1.u, s1.sol_u_caret, s1.t, dense, order,
-                s1.parphi, prob, retcode, nothing, absprec*nb_t, relprec*nb_t)
+        return HiOscDESolution(s1.u, s1.t, dense, order,
+                s1.parphi, prob, retcode, s1.interp, absprec*nb_t, relprec*nb_t)
     end 
     parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f, t_0=prob.tspan[1], paramfct=prob.p)
     par_u0 = PrepareU0(parphi, order_prep, prob.u0)
     pargen = PrepareTwoScalePureAB(nb_t, prob.tspan[2], order, par_u0)
-    sol, _, sol_u_caret = if dense
+    u_mat, _, u_caret = if dense
         twoscales_pure_ab(pargen, res_fft=true)
     else
-        twoscales_pure_ab(pargen), undef, missing
+        twoscales_pure_ab(pargen), undef, undef
     end
-    t = HiOscInterpolation 
-    interp = dense ? HiOscInterpolation()
+    t = collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/nb_t .+ prob.tspan[1]
+    interp = dense ? HiOscInterpolation{T}(t, u_caret, parphi, order) : nothing
     return HiOscDESolution(
-        reshape(mapslices(x->[x], sol, dims=1),size(sol,2)), 
-        sol_u_caret, 
-        collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/nb_t .+ prob.tspan[1],
+        reshape(mapslices(x->[x], u_mat, dims=1),size(u_mat,2)), 
+         t,
         dense,
         order,
-        parphi, prob, retcode, nothing, undef, undef)
+        parphi, prob, retcode, interp, undef, undef)
 end
 
 
