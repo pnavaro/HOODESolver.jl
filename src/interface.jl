@@ -1,4 +1,4 @@
-# module HiOscDiffEq
+module HighlyOscilatoryProblems
 #using Reexport
 # @reexport using DiffEqBase
 using DiffEqBase
@@ -110,4 +110,4 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
 end
 
 
-# end
+end
