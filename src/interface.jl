@@ -33,7 +33,8 @@ function (interp::HiOscInterpolation)(t)
     interp.t[1], interp.t[end], 
     interp.order)
 end
-if VERSION >= v"1.3.1"
+
+if typeof(DiffEqBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == DataType
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
 else
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end

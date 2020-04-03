@@ -2,7 +2,7 @@
 include("preparephi.jl")
 include("coefexp_ab.jl")
 """
-    PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0; only_end=false, diff_fft=false, res_fft=false)
+    PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0)
 
 Immutable structure, to share calculations, needed for the twoscale function
 
@@ -11,6 +11,7 @@ Immutable structure, to share calculations, needed for the twoscale function
 - `t_max`: end of the time
 - `order` : order for compute the coefficients
 - `par_u0::PrepareU0` : prepared initial data
+
 
 # Fields :
 - nb_t : number of time slices
@@ -122,8 +123,7 @@ function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     return _getresult( u_chap, t-t_begin, par)
 end
 """
-    twoscales_pure_ab(par::PrepareTwoScalesPureAB; 
-only_end=false, diff_fft=false, res_fft=false)
+    twoscales_pure_ab(par::PrepareTwoScalesPureAB; only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false)
 
 compute the data to get solution of the differential equation
 
@@ -154,9 +154,9 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
     filtredfct(par.parphi, res_u, par.parphi.t_0)
     )
 
-    println("twoscales_pure_ab epsilon/dt=$(par.parphi.epsilon/par.dt)")
-    println("twoscales_pure_ab dt/epsilon=$(par.dt/par.parphi.epsilon)")
-    println("twoscales_pure_ab order=$(par.order)")
+#    println("twoscales_pure_ab epsilon/dt=$(par.parphi.epsilon/par.dt)")
+#    println("twoscales_pure_ab dt/epsilon=$(par.dt/par.parphi.epsilon)")
+#    println("twoscales_pure_ab order=$(par.order)")
 
   #  dump(par)
 
@@ -246,7 +246,7 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
         end
     end
 
-    println("norm diff fft = $norm_delta_fft")
+#    println("norm diff fft = $norm_delta_fft")
 
     ret =  only_end ? _getresult(ut0_fft, par.t_max-par.parphi.t_0, par.parphi) : result
 

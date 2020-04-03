@@ -10,7 +10,7 @@ function. The exponential is an exponential of an affine function ``a x + b``.
 The polynome is construct from its coefficients `p`, lowest order first.
 
 If ``f = (p_n x^n + \\ldots + p_2 x^2 + p_1 x + p_0)e^{a x + b}``, we construct this through
-`PolyExp([a_0, a_1, ..., a_n], a, b)`. 
+`PolyExp([p_0, p_1, ..., p_n], a, b)`. 
 It is also possible to construct it directly from the polynome.
 
 In the sequels some methods with the same name than for Poly are implemented (`polyder`,

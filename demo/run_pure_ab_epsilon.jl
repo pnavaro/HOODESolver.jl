@@ -12,7 +12,7 @@ using Random
 
 function twoscales_solve( par_u0::PrepareU0, order, t, nb)
     
-    parGen = PrepareTwoScalePureAB(nb, t, order, par_u0)
+    parGen = PrepareTwoScalesPureAB(nb, t, order, par_u0)
 
     return twoscales_pure_ab(parGen, only_end=true)
 
@@ -56,7 +56,7 @@ function fctMain(n_tau)
         indc =1
         labels=Array{String,2}(undef, 1, ind)  
         while indc <= nbMaxTest
-            @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+            @time pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
             @time result, tabdf, tabdf2, nm, nm2 = twoscales_pure_ab(
     pargen,
     only_end=false,
