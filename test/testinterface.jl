@@ -159,7 +159,7 @@ function tts_time_time(t_begin, t_end)
         nb = 100
         order = 4
         prob = HiOscDEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon)
-        sol = solve(prob, getprecision=false)
+        sol = solve(prob, getprecision=false, nb_t=1000, order=7)
         parphi = PreparePhi(
     epsilon, 
     sol.parphi.n_tau,
@@ -171,12 +171,12 @@ function tts_time_time(t_begin, t_end)
 )
         solref = getexactsol(parphi, u0, t_end)
         println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
-        @test isapprox(sol[end], solref,atol=1e-8, rtol=1e-7)
+        @test isapprox(sol[end], solref,atol=1e-17, rtol=1e-16)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=getexactsol(parphi, u0, t)
             res_ap=sol(t)
-            @test isapprox(res_ex, res_ap, atol=1e-7, rtol=1e-6)
+            @test isapprox(res_ex, res_ap, atol=1e-17, rtol=1e-16)
         end
     end
 end
