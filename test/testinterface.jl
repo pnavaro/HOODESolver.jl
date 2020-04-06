@@ -155,7 +155,7 @@ function tts_time_time(t_begin, t_end)
         fct = (u,p,t) -> B*u +t*p[1] +p[2]
         tuple_p = (2rand(BigFloat,4)-ones(BigFloat,4),
     2rand(BigFloat,4)-ones(BigFloat,4))
-        epsilon=big"0.0003467"
+        epsilon=big"0.000003467"
         nb = 100
         order = 4
         prob = HiOscDEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon)
