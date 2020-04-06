@@ -55,8 +55,8 @@ struct PrepareTwoScalesPureAB
     end
 end
 
-function _calculfft(parphi::PreparePhi, resfft, t)
-    f = filtredfct(parphi, real(ifftgen(parphi.par_fft, resfft)), t)
+function _calculfft(parphi::PreparePhi, resfft)
+    f = filtredfct(parphi, real(ifftgen(parphi.par_fft, resfft)))
     return fftgen(parphi.par_fft, f)
 end
 
@@ -69,7 +69,7 @@ function _calcul_ab(par::PrepareTwoScalesPureAB, ord, fftfct, fft_u, dec, sens)
     end
     fft_u[dec] = resfft
     t = par.parphi.t_0+(dec-par.order)*par.dt
-    fftfct[dec] = _calculfft(par.parphi, resfft, t)
+    fftfct[dec] = _calculfft(par.parphi, resfft)
 end
 
 function _init_ab(par::PrepareTwoScalesPureAB, fftfct, fft_u)
@@ -87,13 +87,13 @@ function _init_ab(par::PrepareTwoScalesPureAB, fftfct, fft_u)
     end
 end
 
-function _tr_ab(par::PrepareTwoScalesPureAB, fftfct, u_chap, t)
+function _tr_ab(par::PrepareTwoScalesPureAB, fftfct, u_chap)
     resfft = par.exptau.* u_chap
     bound = par.order-1
     for k =0:bound
         resfft .+= transpose(par.p_coef.tab_coef[:, k+1, par.order]).*fftfct[end-k]
     end
-    f = _calculfft(par.parphi, resfft, t)
+    f = _calculfft(par.parphi, resfft)
     return f, resfft
 end
 
@@ -101,8 +101,8 @@ end
 function _getresult(u_chap, t, par::PreparePhi)
     # matlab : u1=real(sum(fft(ut)/Ntau.*exp(1i*Ltau*T/ep)));
     u1 = real(u_chap * exp.(1im * par.tau_list * t / par.epsilon)) / par.n_tau
-    res = exp( t / par.epsilon *par.sparse_A) * u1
-    return res
+    res = exp( t / par.epsilon *par.sparse_Ap) * u1
+    return res[1:(end-1)]
 end
 function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     nb = size(tab_u_chap,1)-1
@@ -147,11 +147,11 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
 
     
     res_u = par.par_u0.ut0
-    u0 = par.par_u0.u0
+    up0 = par.par_u0.up0
    
     fftfct[par.order] = fftgen(
     par.parphi.par_fft, 
-    filtredfct(par.parphi, res_u, par.parphi.t_0)
+    filtredfct(par.parphi, res_u)
     )
 
 #    println("twoscales_pure_ab epsilon/dt=$(par.parphi.epsilon/par.dt)")
@@ -166,8 +166,8 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
     # println("res[0]=$(convert(Array{Float64,1},_getresult(fft_u[par.order],0,par.parphi)))")
     # println("res[0]bis=$(convert(Array{Float64,1}, _getresult(real(ifftgen(par.parphi.par_fft, par.exptau.*fftgen(par.parphi.par_fft,fft_u[par.order]))),0,par.parphi)))")
 
-    result = zeros(typeof(par.parphi.epsilon), par.parphi.size_vect, par.nb_t+1)
-    result[:,1] = u0
+    result = zeros(typeof(par.parphi.epsilon), par.parphi.size_vect-1, par.nb_t+1)
+    result[:,1] = up0[1:(end-1)]
 
     result_fft = undef
    # println("diff result ori = $(norm(u0-_getresult(fft_u[par.order], 0, par.parphi)))")
@@ -222,7 +222,7 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
         if i%10000 == 1
             println(" $(i-1)/$(par.nb_t)")
         end
-        resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft, par.parphi.t_0+i*par.dt)
+        resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft)
         if res_fft
             result_fft[i] = resfft
 #            res_u_chap[i+par.order] = ut0_fft

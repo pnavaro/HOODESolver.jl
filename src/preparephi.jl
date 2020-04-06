@@ -27,9 +27,9 @@ These data can be used elsewhere for example in twoscale function.
 - n_tau : number of values for fft
 - tau_list : list of values around the unit disk (0 ... n_tau/2 -n_tau/2-1 ... -1 )
 - tau_int : list of values to integrate FFT
-- matrix_A : sparse matrix
-- tau_A : for each angular ``\tau`` around the unit disk the matrix ``e^{(\tau \time A)}```
-- tau_A_inv : inverse of tau_A
+- matrix_Ap : sparse matrix with time dimension
+- tau_Ap : for each angular ``\tau`` around the unit disk the matrix ``e^{(\tau \time Ap)}```
+- tau_Ap_inv : inverse of tau_Ap
 - par_fft : fft parameters
 - fct : function of differential equation
 - paramfct : middle parameter of function fct
@@ -44,9 +44,9 @@ struct PreparePhi
     n_tau
     tau_list
     tau_int
-    sparse_A 
-    tau_A
-    tau_A_inv
+    sparse_Ap 
+    tau_Ap
+    tau_Ap_inv
     par_fft
     fct
     paramfct
@@ -68,28 +68,32 @@ struct PreparePhi
         @assert prevpow(2,n_tau) == n_tau "$n_tau is not a power of 2"
 #        @assert isa(fct, Function) && hasmethod(fct, Tuple{Array{T}}) 
 #        "function fct is not correct"
-        sparse_A = sparse(matrix_A)
-        tau_A = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
-        tau_A_inv = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
+        N = typeof(matrix_A[1,1])
+        size_vect= size(matrix_A,1)+1
+        sparse_Ap = sparse(vcat(
+    hcat(matrix_A,zeros(N,size_vect-1)),
+    transpose(zeros(N,size_vect))
+))
+        tau_Ap = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
+        tau_Ap_inv = Vector{ SparseMatrixCSC{T,Int64}}(undef, n_tau)
         prec= precision(T)
         for i = 1:n_tau
-            tau_A[i] = BigFloat.( setprecision(prec+32) do
+            tau_Ap[i] = BigFloat.( setprecision(prec+32) do
                 round.( 
-    exp((i-1) * 2big(pi) / n_tau * sparse_A), 
+    exp((i-1) * 2big(pi) / n_tau * sparse_Ap), 
     digits=prec+16, 
     base=2 
 )
             end )
-            tau_A_inv[i] = BigFloat.( setprecision(prec+32) do
+            tau_Ap_inv[i] = BigFloat.( setprecision(prec+32) do
                 round.( 
-    exp(-(i-1) * 2big(pi) / n_tau * sparse_A), 
+    exp(-(i-1) * 2big(pi) / n_tau * sparse_Ap), 
     digits=prec+16, 
     base=2 
 )
             end )
         end
-        @assert tau_A[div(n_tau, 2) + 1]^2 == I "The matrix must be periodic"
-        size_vect = size(matrix_A,1)
+        @assert tau_Ap[div(n_tau, 2) + 1]^2 == I "The matrix must be periodic"
         tau_list = [collect(0:(div(n_tau, 2) - 1)); collect(-div(n_tau, 2):-1)]
 #         tau_list_2 = collect(transpose(reshape(repeat(
 #     tau_list,
@@ -102,9 +106,9 @@ struct PreparePhi
     n_tau, 
     tau_list,
     tau_int,
-    sparse_A, 
-    tau_A, 
-    tau_A_inv, 
+    sparse_Ap, 
+    tau_Ap, 
+    tau_Ap_inv, 
     par_fft,
     fct,
     paramfct,
@@ -136,12 +140,15 @@ end
 #     par.size_vect,
 #     par.n_tau
 # )
-filtred_f(u, mat_inv, mat, par, t)= mat_inv * par.fct(mat*u, par.paramfct, t)
-function filtredfct(par::PreparePhi, u_mat::Array{T,2}, t::T) where T <: Number
+function homogeneousfct(par::PreparePhi, u)
+    return vcat(par.fct(u[1:(end-1)], par.paramfct, u[end]), [1])
+end
+filtred_f(u, mat_inv, mat, par)= mat_inv * homogeneousfct(par, mat*u)
+function filtredfct(par::PreparePhi, u_mat::Array{T,2}) where T <: Number
  #   println("size=$(size(u_mat)) paramfct=$(par.paramfct)")
     return reshape(
-    collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_A_inv, par.tau_A, 
-            (par,), t))),
+    collect(Iterators.flatten(filtred_f.(eachcol(u_mat), par.tau_Ap_inv, par.tau_Ap, 
+            (par,)))),
     par.size_vect,
     par.n_tau
 )
@@ -151,13 +158,14 @@ isexactsol(par::PreparePhi) = !ismissing(par.matrix_B)
 # for this function the time begins at par.t_begin
 function getexactsol(par::PreparePhi, u0, t)
     @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
-    m = (1/par.epsilon)*par.sparse_A+par.matrix_B
+    sparse_A = par.sparse_Ap[1:(end-1),1:(end-1)]
+    m = (1/par.epsilon)*sparse_A+par.matrix_B
     t0 = par.t_0
     if ismissing(par.paramfct)
         return exp((t-t0)*m)*u0
     end
     a, b = par.paramfct
-    m = (1/par.epsilon)*par.sparse_A+par.matrix_B
+    m = (1/par.epsilon)*sparse_A+par.matrix_B
     mm1 = m^(-1)
     mm2 = mm1^2
     e_t0 = exp(-t0*m)
@@ -174,12 +182,11 @@ function phi( par::PreparePhi, u, order)
     if  order == 2
         f = filtredfct(
     par, 
-    reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau), 
-    par.t_0
+    reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau)
 )    
     else
         coef = if par.mode == 2
-            eps(BigFloat)^0.5
+            eps(BigFloat)^0.5 # experimental
         else
             par.epsilon^(order - 2)
         end
@@ -187,7 +194,7 @@ function phi( par::PreparePhi, u, order)
 #        coef = eps(typeof(par.epsilon))^0.2
         resPhi_u = phi(par, u, order - 1)
         f = resPhi_u + reshape(repeat(u, par.n_tau), par.size_vect, par.n_tau)
-        f = filtredfct(par, f, par.t_0)
+        f = filtredfct(par, f)
  #       f11 = coef * real(fftGen(par.par_fft, f)[:, 1]) / par.n_tau
         f11 = coef * mean(f, dims=2)
         f .-= (phi(par, u + f11, order - 1) - resPhi_u) / coef
@@ -228,18 +235,20 @@ struct PrepareU0
     parphi::PreparePhi
     order # it is the order of preparation at less one more than the order of AB process
     ut0  # formated initial data
-    u0 # initial data
+    up0 # initial data
     function PrepareU0(parphi::PreparePhi, order, u0, newprec)
         #
         # Numerical preparation (corresponds to formula (2.6), p3 with j=2, and
         # algorithm is given p4).
-        y, um = if parphi.mode == 3
-            tab = transpose(reshape(repeat(get_tab_rand(parphi.n_tau, 
-    typeof(parphi.epsilon)), parphi.size_vect), parphi.n_tau, parphi.size_vect))
-            y = parphi.epsilon*tab
-            um = u0 - y[:,1]
-            y, um
-        else
+        up0 = vcat(u0,[parphi.t_0])
+    #    y, um =
+    #     if parphi.mode == 3
+    #         tab = transpose(reshape(repeat(get_tab_rand(parphi.n_tau, 
+    # typeof(parphi.epsilon)), parphi.size_vect), parphi.n_tau, parphi.size_vect))
+    #         y = parphi.epsilon*tab
+    #         um = up0 - y[:,1]
+    #         y, um
+    #     else
             if newprec == 0
                 prec = precision(BigFloat)
                 newprec = prec + 32 + div(-exponent(parphi.epsilon)*order^2, 3)
@@ -247,20 +256,20 @@ struct PrepareU0
                 println("prec : $prec --> $newprec")
             end
             y, um = setprecision(newprec) do
-                y = phi(parphi, u0, 2)
-                um = u0 - y[:, 1]
+                y = phi(parphi, up0, 2)
+                um = up0 - y[:, 1]
                 for i=3:order
                     y = phi(parphi, um, i)
-                    um = u0 - y[:, 1]
+                    um = up0 - y[:, 1]
                 end
                 y, um
             end
-        end
+  #      end
         ut0 = reshape(repeat(um, parphi.n_tau), parphi.size_vect, parphi.n_tau) + y
-        if parphi.mode == 4
-            ut0 +=parphi.epsilon^2*reshape(collect(Iterators.flatten((parphi.tau_A .- (I,)).* (parphi.paramfct[1],))),parphi.size_vect,parphi.n_tau)
-        end
-        return new(parphi, order, ut0, u0)
+        # if parphi.mode == 4
+        #     ut0 +=parphi.epsilon^2*reshape(collect(Iterators.flatten((parphi.tau_A .- (I,)).* (parphi.paramfct[1],))),parphi.size_vect,parphi.n_tau)
+        # end
+        return new(parphi, order, ut0, up0)
     end
     PrepareU0(parphi::PreparePhi, order, u0)=PrepareU0(parphi, order, u0, 0)
 end
