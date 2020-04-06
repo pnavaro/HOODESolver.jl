@@ -44,7 +44,7 @@ function fctMain(n_tau)
         paramfct = (2rand(BigFloat, 4) - ones(BigFloat, 4),
                         2rand(BigFloat, 4) - ones(BigFloat, 4))
         fct = (u, p, t) -> B*u + t*p[1]+p[2]
-        parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct, mode=5 )
+        parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct)
         # fct = (u, p, t) -> B*u
         # parphi = PreparePhi(epsilon, n_tau, A , fct, B)
         println("prepareU0 eps=$epsilon n_tau=$n_tau")
