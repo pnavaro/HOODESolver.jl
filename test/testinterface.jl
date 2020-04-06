@@ -127,23 +127,23 @@ function testinterface_short()
     end
 end
 function tts_time(t_begin, t_end)
-    @time @testset "test interface from $t_begin to $t_end" begin
+    @time @testset "test interface time from $t_begin to $t_end" begin
         A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
         B =  2rand(BigFloat,4,4)-ones(BigFloat,4,4)
         u0 = rand(BigFloat, 4)
         fct = (u,p,t) -> B*u
-        epsilon=big"0.00345"
+        epsilon=big"0.000000345"
         prob = HiOscDEProblem(fct, u0, (t_begin,t_end), missing, A, epsilon)
-        sol = solve(prob, getprecision=false)
+        sol = solve(prob, getprecision=false, nb_t=1000, order=6)
         m = 1/epsilon*A+B
         solref = exp((t_end-t_begin)*m)*u0
         println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
-        @test isapprox(sol[end], solref,atol=1e-7, rtol=1e-6)
+        @test isapprox(sol[end], solref,atol=1e-17, rtol=1e-16)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=exp((t-t_begin)*m)*u0
             res_ap=sol(t)
-            @test isapprox(res_ex, res_ap, atol=1e-6, rtol=1e-5)
+            @test isapprox(res_ex, res_ap, atol=1e-16, rtol=1e-15)
         end
     end
 end
@@ -170,7 +170,7 @@ function tts_time_time(t_begin, t_end)
     paramfct=tuple_p
 )
         solref = getexactsol(parphi, u0, t_end)
-        println("sol=$sol[end] solref=$solref norm=$(norm(sol[end]-solref,Inf))")
+        println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
         @test isapprox(sol[end], solref,atol=1e-8, rtol=1e-7)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
