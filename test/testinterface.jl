@@ -1,4 +1,3 @@
-using DifferentialEquations
 using LinearAlgebra
 using Random
 using Test

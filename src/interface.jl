@@ -69,10 +69,16 @@ end
 
 # function DiffEqBase.solve(prob::HiOscODEProblem{T};
 """
-    function DiffEqBase.solve(prob::HiOscODEProblem{T}; nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2, dense::Bool=true, nb_t::Integer=100, getprecision::Bool=dense) where T<:AbstractFloat
+    function DiffEqBase.solve(prob::HiOscODEProblem{T}; 
+    nb_tau::Integer=32, 
+    order::Integer=4, 
+    order_prep::Integer=order+2, 
+    dense::Bool=true, 
+    nb_t::Integer=100, 
+    getprecision::Bool=dense) where T<:AbstractFloat
 
 solver for Highly oscillatory problems, that an ODE of this form
-        ``\\frac{\\delta u}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u, t)``
+``\\frac{\\delta u}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u, t)``
 where ``u \\in \\mathbbm{R}^n`` and  ``0 < \\varepsilon < 1``
 
 # Argument :
@@ -86,6 +92,7 @@ where ``u \\in \\mathbbm{R}^n`` and  ``0 < \\varepsilon < 1``
     - `nb_t::Integer=100` : number of period slices
     - `getprecision::Bool=dense` : compute the absolute and relative precision
 
+# Examples :
 """
 function DiffEqBase.solve(prob::HiOscODEProblem{T}; 
     nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2,dense::Bool=true, 
@@ -125,7 +132,7 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
     interp = dense ? HiOscInterpolation{T}(t, u_caret, parphi, order) : nothing
     return HiOscODESolution(
         reshape(mapslices(x->[x], u_mat, dims=1),size(u_mat,2)), 
-         t,
+        t,
         dense,
         order,
         parphi, prob, retcode, interp, undef, undef)
