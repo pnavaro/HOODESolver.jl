@@ -69,10 +69,9 @@ end
 
 # function DiffEqBase.solve(prob::HiOscODEProblem{T};
 """
-    function DiffEqBase.solve(prob::HiOscODEProblem{T}; nb_tau=32, order=4, order_prep=order+2, dense=true, nb_t=100, getprecision=dense
-) where T<:AbstractFloat
+    function DiffEqBase.solve(prob::HiOscODEProblem{T}; nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2, dense::Bool=true, nb_t::Integer=100, getprecision::Bool=dense) where T<:AbstractFloat
 
-    solver for Highly oscillatory problems, that an ODE of this form
+solver for Highly oscillatory problems, that an ODE of this form
         ``\\frac{\\delta u}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u, t)``
 where ``u \\in \\mathbbm{R}^n`` and  ``0 < \\varepsilon < 1``
 
@@ -80,14 +79,17 @@ where ``u \\in \\mathbbm{R}^n`` and  ``0 < \\varepsilon < 1``
     - `prob::HiOscODEProblem{T}` : The problem to solve
 
 # Keywords :
-    - `nb_tau=32` : number of values of FFT transform, must be power of twoscales_pure_ab
-    - `order=4` : order of Adams-Bashforth method, and also of the interpolatation.
-    - C'est pas fini !!!
+    - `nb_tau::Integer=32` : number of values of FFT transform, must be power of twoscales_pure_ab
+    - `order::Integer=4` : order of Adams-Bashforth method, and also of the interpolatation
+    - `order_prep::Integer=order+2` : order of the preparation
+    - `dense::Bool=true` : if true it is possible to compute solution at any time of the interval
+    - `nb_t::Integer=100` : number of period slices
+    - `getprecision::Bool=dense` : compute the absolute and relative precision
 
 """
 function DiffEqBase.solve(prob::HiOscODEProblem{T}; 
-        nb_tau=32, order=4, order_prep=order+2, dense=true, 
-    nb_t=100, getprecision=dense
+    nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2,dense::Bool=true, 
+    nb_t::Integer=100, getprecision::Bool=dense
 ) where T<:AbstractFloat
     retcode = :Success
     if getprecision
