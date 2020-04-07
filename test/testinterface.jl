@@ -20,7 +20,7 @@ function testinterface_epsilon()
             eps_v = convert(Float32, epsilon)
             t_max = big"1.0"
             sol_ref = exp(t_max*(1/epsilon*A+B))*u0
-            prob = HiOscDEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+            prob = HiOscODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
             println("epsilon=$eps_v sol_ref=$sol_ref")
             nb = 100
             res_err = zeros(BigFloat,5)
@@ -55,7 +55,7 @@ function testinterface_interpolate()
             epsilon = big"0.4"/2.0^i
             eps_v = convert(Float32, epsilon)
             t_max = big"1.0"
-            prob = HiOscDEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+            prob = HiOscODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
    #         sol = solve(prob, getprecision=false)
             sol = solve(prob)
             m = 1/epsilon*A+B
@@ -87,7 +87,7 @@ function testinterface_interpolate_float()
             epsilon = 0.4/2.0^i
             eps_v = convert(Float32, epsilon)
             t_max = 1.0
-            prob = HiOscDEProblem(fct, u0, (0.0,t_max), missing, A, epsilon)
+            prob = HiOscODEProblem(fct, u0, (0.0,t_max), missing, A, epsilon)
    #         sol = solve(prob, getprecision=false)
             sol = solve(prob)
             m = 1/epsilon*A+B
@@ -119,7 +119,7 @@ function testinterface_short()
         epsilon = big"0.00004"/2.0^i
         eps_v = convert(Float32, epsilon)
         t_max = big"0.01"
-        prob = HiOscDEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+        prob = HiOscODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
         sol = solve(prob, getprecision=false, order=order, nb_t=nb)
         resnorm=norm(exp(t_max*(1/epsilon*A+B))*u0-sol[end], Inf)
         println("resnorm=$resnorm")
@@ -133,7 +133,7 @@ function tts_time(t_begin, t_end)
         u0 = rand(BigFloat, 4)
         fct = (u,p,t) -> B*u
         epsilon=big"0.000000345"
-        prob = HiOscDEProblem(fct, u0, (t_begin,t_end), missing, A, epsilon)
+        prob = HiOscODEProblem(fct, u0, (t_begin,t_end), missing, A, epsilon)
         sol = solve(prob, getprecision=false, nb_t=1000, order=6)
         m = 1/epsilon*A+B
         solref = exp((t_end-t_begin)*m)*u0
@@ -158,7 +158,7 @@ function tts_time_time(t_begin, t_end)
         epsilon=big"0.000003467"
         nb = 100
         order = 4
-        prob = HiOscDEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon)
+        prob = HiOscODEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon)
         sol = solve(prob, getprecision=false, nb_t=1000, order=7)
         parphi = PreparePhi(
     epsilon, 

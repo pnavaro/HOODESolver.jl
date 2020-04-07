@@ -6,8 +6,8 @@ using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
-struct HiOscDEProblem{T} <:DiffEqBase.DEProblem
-    """The HiOscDE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
+struct HiOscODEProblem{T} <:DiffEqBase.DEProblem
+    """The HiOscODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
     f::Function
     """The initial condition is `u(tspan[1]) = u0`."""
     u0::Vector{T}
@@ -39,36 +39,53 @@ if typeof(DiffEqBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == Dat
 else
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
 end
-struct HiOscDESolution{T} <:AbstractHiOscSolution{T,T}
+struct HiOscODESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
     t::Vector{T}
     dense::Bool
     order::Integer
     parphi::PreparePhi
-    prob::HiOscDEProblem{T}
+    prob::HiOscODEProblem{T}
     retcode
     interp::Union{HiOscInterpolation, Nothing}
     absprec
     relprec
 end
-(sol::HiOscDESolution)(t) = sol.dense ? sol.interp(t) : undef
-# function DiffEqBase.build_solution{T}(prob::HiOscDEProblem{T}, 
+(sol::HiOscODESolution)(t) = sol.dense ? sol.interp(t) : undef
+# function DiffEqBase.build_solution{T}(prob::HiOscODEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
 #     t::Vector{T}, 
 #     fftsol::Vector{Array{T,2}}) where T<:AbstractFloat
-#     return HiOscDESolution(sol, t, fftsol)
+#     return HiOscODESolution(sol, t, fftsol)
 # end
-# function DiffEqBase.build_solution{T}(prob::HiOscDEProblem{T}, 
+# function DiffEqBase.build_solution{T}(prob::HiOscODEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
 #     t::Vector{T}) where T<:AbstractFloat
-#     return HiOscDESolution(sol, t, undef)
+#     return HiOscODESolution(sol, t, undef)
 # end
 
 
 
 
-# function DiffEqBase.solve(prob::HiOscDEProblem{T};
-function DiffEqBase.solve(prob::HiOscDEProblem{T}; 
+# function DiffEqBase.solve(prob::HiOscODEProblem{T};
+"""
+    function DiffEqBase.solve(prob::HiOscODEProblem{T}; nb_tau=32, order=4, order_prep=order+2, dense=true, nb_t=100, getprecision=dense
+) where T<:AbstractFloat
+
+    solver for Highly oscillatory problems, that an ODE of this form
+        ``\\frac{\\delta u}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u, t)``
+where ``u \\in \\mathbbm{R}^n`` and  ``0 < \\varepsilon < 1``
+
+# Argument :
+    - `prob::HiOscODEProblem{T}` : The problem to solve
+
+# Keywords :
+    - `nb_tau=32` : number of values of FFT transform, must be power of twoscales_pure_ab
+    - `order=4` : order of Adams-Bashforth method, and also of the interpolatation.
+    - C'est pas fini !!!
+
+"""
+function DiffEqBase.solve(prob::HiOscODEProblem{T}; 
         nb_tau=32, order=4, order_prep=order+2, dense=true, 
     nb_t=100, getprecision=dense
 ) where T<:AbstractFloat
@@ -91,7 +108,7 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
                 relprec = max(relprec,rp)
             end
         end
-        return HiOscDESolution(s1.u, s1.t, dense, order,
+        return HiOscODESolution(s1.u, s1.t, dense, order,
                 s1.parphi, prob, retcode, s1.interp, absprec*nb_t, relprec*nb_t)
     end 
     parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f, t_0=prob.tspan[1], paramfct=prob.p)
@@ -104,7 +121,7 @@ function DiffEqBase.solve(prob::HiOscDEProblem{T};
     end
     t = collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/nb_t .+ prob.tspan[1]
     interp = dense ? HiOscInterpolation{T}(t, u_caret, parphi, order) : nothing
-    return HiOscDESolution(
+    return HiOscODESolution(
         reshape(mapslices(x->[x], u_mat, dims=1),size(u_mat,2)), 
          t,
         dense,

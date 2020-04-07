@@ -28,7 +28,7 @@ These data can be used elsewhere for example in twoscale function.
 - tau_list : list of values around the unit disk (0 ... n_tau/2 -n_tau/2-1 ... -1 )
 - tau_int : list of values to integrate FFT
 - matrix_Ap : sparse matrix with time dimension
-- tau_Ap : for each angular ``\tau`` around the unit disk the matrix ``e^{(\tau \time Ap)}```
+- tau_Ap : for each angular ``\\tau`` around the unit disk the matrix ``e^{(\\tau \\time Ap)}``
 - tau_Ap_inv : inverse of tau_Ap
 - par_fft : fft parameters
 - fct : function of differential equation
