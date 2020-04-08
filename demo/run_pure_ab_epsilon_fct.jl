@@ -48,7 +48,7 @@ function fctMain(n_tau)
     #     tab_eps[i] = epsilon
     #     epsilon /= 100
     # end
-    nbmaxtest=14
+    nbmaxtest=11
     t_max = big"1.0"
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     tabtabsol = Vector{Vector{Vector{BigFloat}}}()
@@ -62,13 +62,13 @@ function fctMain(n_tau)
     #        fct = u -> [ 1.11u[2]^2+0.8247u[4]^3+0.12647u[3]^4, 
     #       0.4356789141u[1]-0.87u[3]*u[4], 
     #       1.9898985/(1+1.1237u[4]^3), 0.97u[1]*u[3]+0.8111u[2]^2 ]
-            fct = (u,p,t) ->  [ u[3]^3, u[4] + u[1]^2, u[1]*u[2]*u[4], 
-                        u[2] - u[2]^2 + 1/(1+u[4]^2) + u[1]^2 ]
+            fct = (u,p,t) ->  [ u[3]^3 +sin(t^2), u[4] + u[1]^2 + 1/(1+exp(t)), u[1]*u[2]*u[4]*(1+t), 
+                        u[2] - u[2]^2 + 1/(1+u[4]^2) + u[1]^2 + cos(exp(t)) ]
             parphi = PreparePhi(epsilon, n_tau, A, fct)
             println("prepareU0 eps=$epsilon n_tau=$n_tau")
             nb=10
             @time par_u0 = PrepareU0(parphi, ordprep, u0)
-            @time pargen = PrepareTwoScalePureAB(nb*2^nbmaxtest, t_max, order, par_u0)
+            @time pargen = PrepareTwoScalesPureAB(nb*2^nbmaxtest, t_max, order, par_u0)
             @time solref = twoscales_pure_ab(pargen, only_end=true)
             if size(tabtabsol,1) < ind
                 push!(tabtabsol,Vector{Vector{BigFloat}}())
@@ -82,7 +82,7 @@ function fctMain(n_tau)
             indc =1
             labels=Array{String,2}(undef, 1, ind)  
             while indc <= nbmaxtest
-                @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
+                @time pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
                 @time sol= twoscales_pure_ab(pargen, only_end=true)
                 push!(tabsol, sol)
                 res_gen[indc] = sol
@@ -131,7 +131,7 @@ function fctMain(n_tau)
         )
                 
                 prec_v = precision(BigFloat)
-                Plots.savefig(p,"out/r13_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
+                Plots.savefig(p,"out/r20_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_fct.pdf")
             end
             ind+= 1
         end

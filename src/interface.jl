@@ -80,6 +80,7 @@ end
 solver for Highly oscillatory problems, that an ODE of this form
 ``\\frac{\\delta u}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u, t)``
 where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
+``A`` must be a periodic matrix i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
 
 # Argument :
 - `prob::HiOscODEProblem{T}` : The problem to solve
