@@ -253,7 +253,7 @@ struct PrepareU0
                 prec = precision(BigFloat)
                 newprec = prec + 32 + div(-exponent(parphi.epsilon)*order^2, 3)
     #            newprec = prec*4
-                println("prec : $prec --> $newprec")
+    #            println("prec : $prec --> $newprec")
             end
             y, um = setprecision(newprec) do
                 y = phi(parphi, up0, 2)
