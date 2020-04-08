@@ -127,13 +127,13 @@ end
 
 compute the data to get solution of the differential equation
 
-    # Parameters :
-    - `par::PrepareTwoScalesPureAB` : contains all the parameters and prepared data
+# Arguments :
+- `par::PrepareTwoScalesPureAB` : contains all the parameters and prepared data
 
-    # Keywords :
-    - `only_end=false` : if true return only the result for t_end
-    - `diff_fft::Bool=false` : if true return data about diff
-    - `res_fft::Bool=false` : if true return u_caret data indispensable for interpolation
+# Keywords :
+- `only_end=false` : if true return only the result for t_end
+- `diff_fft::Bool=false` : if true return data about diff
+- `res_fft::Bool=false` : if true return u_caret data indispensable for interpolation
 
 """
 function twoscales_pure_ab(par::PrepareTwoScalesPureAB; 
