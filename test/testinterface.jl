@@ -19,7 +19,7 @@ function testinterface_epsilon()
             eps_v = convert(Float32, epsilon)
             t_max = big"1.0"
             sol_ref = exp(t_max*(1/epsilon*A+B))*u0
-            prob = HiOscODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+            prob = HiOscODEProblem(fct, u0, (big"0.0", t_max), missing, A, epsilon)
             println("epsilon=$eps_v sol_ref=$sol_ref")
             nb = 100
             res_err = zeros(BigFloat,5)
