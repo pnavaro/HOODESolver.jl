@@ -62,8 +62,12 @@ function fctMain(n_tau)
     #        fct = u -> [ 1.11u[2]^2+0.8247u[4]^3+0.12647u[3]^4, 
     #       0.4356789141u[1]-0.87u[3]*u[4], 
     #       1.9898985/(1+1.1237u[4]^3), 0.97u[1]*u[3]+0.8111u[2]^2 ]
-            fct = (u,p,t) ->  [ u[3]^3 +sin(t^2), u[4] + u[1]^2 + 1/(1+exp(t)), u[1]*u[2]*u[4]*(1+t), 
-                        u[2] - u[2]^2 + 1/(1+u[4]^2) + u[1]^2 + cos(exp(t)) ]
+            fct = (u,p,t) ->  [ 
+    u[3]^3 + sin(t^2), 
+    u[4] + u[1]^2 + 1/(1+exp(t))-0.35, 
+    u[1]*u[2]*u[4]*(1+t), 
+    u[2] - u[2]^2 + 1/(1+u[4]^2) + u[1]^2 + cos(exp(t))
+]
             parphi = PreparePhi(epsilon, n_tau, A, fct)
             println("prepareU0 eps=$epsilon n_tau=$n_tau")
             nb=10
