@@ -1,5 +1,5 @@
 module HighlyOscillatoryProblems
 include("interface.jl")
-export HiOscDEProblem, HiOscInterpolation, AbstractHiOscSolution, HiOscDESolution
+export HiOscODEProblem, HiOscInterpolation, AbstractHiOscSolution, HiOscODESolution
 export solve
 end # module
