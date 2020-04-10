@@ -40,7 +40,7 @@ function fctmain(n_tau, prec)
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
     res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
-    A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 -1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
+    A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
     u0 = 2rand(BigFloat,6)-ones(BigFloat,6)
     t_0=big"0.0"
     t_max=big"1.0"
