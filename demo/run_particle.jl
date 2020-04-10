@@ -52,19 +52,20 @@ function fctmain(n_tau, prec)
     solref=undef
     while isnan(nm)
         ordmax -= 1
-        solref = solve(prob, nb_t=nb, order=ordmax)
-	    nm = norm(solref[end], Inf)
+        @time sol = solve(prob, nb_t=nb, order=ordmax, getprecision=false)
+        solref = sol[end]
+	    nm = norm(solref, Inf)
     end
 
     tabsol = Array{Array{BigFloat,1},1}(undef,1)
 
-    tabsol[1] = solref[end]
+    tabsol[1] = solref
 
     println("ordmax=$ordmax")
 
     println("solref=$(solref[end])")
 
-    solref_gen = solref[end]
+    solref_gen = solref
     indref = 1
 
     ind=1
@@ -79,9 +80,10 @@ function fctmain(n_tau, prec)
         sol =undef
         println("preparation ordre $order + 2")
         while indc <= nbmaxtest
-            @time sol = solve(prob, nb_t=nb, order=order)
-            push!(tabsol, sol[end])
-            res_gen[indc,ind] = sol 
+            @time solall = solve(prob, nb_t=nb, order=order, getprecision=false)
+            sol = solall[end]
+            push!(tabsol, sol)
+            res_gen[indc,ind] = sol
             (a, b), nm = getmindif(tabsol)
             if a != indref
                 println("New solref !!!! a=$a, b=$b nm=$nm")
@@ -90,12 +92,12 @@ function fctmain(n_tau, prec)
                 for i=1:ind
                     borne = (i <ind) ? size(res_gen,1) : indc
                     for j = 1:borne
-                        nm2 = min( norm(res_gen[j,i] - solref[end], Inf), 1.1)
+                        nm2 = min( norm(res_gen[j,i] - solref, Inf), 1.1)
                         y[j,i] = nm2 == 0 ? nm : nm2
                    end
                 end
             else
-                diff=solref[end]-sol
+                diff=solref-sol
                 y[indc,ind] = min(norm(diff,Inf), 1.1)
             end
             x[indc] = 1.0/nb
