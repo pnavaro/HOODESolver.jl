@@ -52,7 +52,7 @@ function fctmain(n_tau, prec)
     solref=undef
     while isnan(nm)
         ordmax -= 1
-        @time sol = solve(prob, nb_t=nb, order=ordmax, getprecision=false, n_tau=n_tau)
+        @time sol = solve(prob, nb_t=nb, order=ordmax, getprecision=false, nb_tau=n_tau)
         solref = sol[end]
 	    nm = norm(solref, Inf)
     end
@@ -80,7 +80,7 @@ function fctmain(n_tau, prec)
         sol =undef
         println("preparation ordre $order + 2")
         while indc <= nbmaxtest
-            @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, n_tau=n_tau)
+            @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau)
             sol = solall[end]
             push!(tabsol, sol)
             res_gen[indc,ind] = sol
