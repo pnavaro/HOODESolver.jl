@@ -78,7 +78,6 @@ function fctmain(n_tau, prec)
         resnormprec=1
         sol =undef
         println("preparation ordre $order + 2")
-        @time par_u0 = PrepareU0(parphi, ordprep, u0)       
         while indc <= nbmaxtest
             @time sol = solve(prob, nb_t=nb, order=order)
             push!(tabsol, sol[end])
