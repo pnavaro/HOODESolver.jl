@@ -34,7 +34,7 @@ function fctmain(n_tau, prec)
     epsilon=big"1e-7"
     println("epsilon=$epsilon")
     nbmaxtest=10
-    ordmax=15
+    ordmax=13
     debord=3
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
