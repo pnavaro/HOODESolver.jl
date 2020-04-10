@@ -73,7 +73,7 @@ function _calcul_ab(par::PrepareTwoScalesPureAB, ord, fftfct, fft_u, dec, sens)
 end
 
 function _init_ab(par::PrepareTwoScalesPureAB, fftfct, fft_u)
-    println("_init_ab order=$(par.order)")
+#    println("_init_ab order=$(par.order)")
     if par.order != 1
         for new_ord=2:par.order
             _calcul_ab(par, new_ord-1, fftfct, fft_u, par.order+new_ord-1, 1)

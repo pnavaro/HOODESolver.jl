@@ -48,6 +48,7 @@ struct PreparePhi
     tau_Ap
     tau_Ap_inv
     par_fft
+    par_fft_big
     fct
     paramfct
     size_vect
@@ -100,7 +101,8 @@ struct PreparePhi
 #     size_vect
 # ),n_tau,size_vect)))       
         tau_int = collect(transpose(vcat([0], -im ./ tau_list[2:end])))
-        par_fft = T == BigFloat ? PrepareFftBig(n_tau, epsilon) : missing
+        par_fft_big = PrepareFftBig(n_tau, big(epsilon))
+        par_fft = T == BigFloat ? par_fft_big : missing
         return new( 
     epsilon, 
     n_tau, 
@@ -110,6 +112,7 @@ struct PreparePhi
     tau_Ap, 
     tau_Ap_inv, 
     par_fft,
+    par_fft_big,
     fct,
     paramfct,
     size_vect,
@@ -188,7 +191,7 @@ function phi( par::PreparePhi, u, order)
         coef = if par.mode == 2
             eps(BigFloat)^0.5 # experimental
         else
-            par.epsilon^(order - 2)
+            big(par.epsilon)^(order - 2)
         end
 #        coef = par.epsilon^(order/1.9117569711) #just to try
 #        coef = eps(typeof(par.epsilon))^0.2
@@ -203,8 +206,8 @@ function phi( par::PreparePhi, u, order)
         end
 
     end
-    f = fftgen(par.par_fft, f)
-    f = par.epsilon*real(ifftgen(par.par_fft, f .* par.tau_int))
+    f = fftgen(par.par_fft_big, f)
+    f = big(par.epsilon)*real(ifftgen(par.par_fft_big, f .* par.tau_int))
     return f
 end
 function get_tab_rand( T::DataType, s, n)
@@ -241,6 +244,7 @@ struct PrepareU0
         # Numerical preparation (corresponds to formula (2.6), p3 with j=2, and
         # algorithm is given p4).
         up0 = vcat(u0,[parphi.t_0])
+        up0 = big.(up0)
     #    y, um =
     #     if parphi.mode == 3
     #         tab = transpose(reshape(repeat(get_tab_rand(parphi.n_tau, 
@@ -269,6 +273,10 @@ struct PrepareU0
         # if parphi.mode == 4
         #     ut0 +=parphi.epsilon^2*reshape(collect(Iterators.flatten((parphi.tau_A .- (I,)).* (parphi.paramfct[1],))),parphi.size_vect,parphi.n_tau)
         # end
+        if typeof(parphi.epsilon) != BigFloat
+            ut0 = convert.(Float64,ut0)
+            up0 = convert.(Float64,up0)
+        end
         return new(parphi, order, ut0, up0)
     end
     PrepareU0(parphi::PreparePhi, order, u0)=PrepareU0(parphi, order, u0, 0)
