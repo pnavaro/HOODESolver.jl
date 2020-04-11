@@ -136,4 +136,4 @@ end
 # for i=3:9
 #     fctMain(2^i)
 # end
-fctmain(128,256)
+fctmain(32,512)
