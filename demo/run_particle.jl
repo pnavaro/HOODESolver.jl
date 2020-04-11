@@ -29,9 +29,9 @@ end
 function fctmain(n_tau, prec)
 
     setprecision(prec)
-    Random.seed!(5612)
+    Random.seed!(561909)
     t_max = big"1.0"
-    epsilon=big"1e-7"
+    epsilon=big"1e-2"
     println("epsilon=$epsilon")
     nbmaxtest=10
     ordmax=13
@@ -136,4 +136,4 @@ end
 # for i=3:9
 #     fctMain(2^i)
 # end
-fctmain(32,512)
+fctmain(32,256)
