@@ -57,6 +57,18 @@ function HiOscODESolution(retcode::Symbol)
 end
 (sol::HiOscODESolution)(t) = sol.dense ? sol.interp(t) : undef
 
+
+function traceln( refniv, str; verbose=100)::Nothing
+    if verbose >= refniv
+        println(str)
+    end
+end
+function trace( refniv, str; verbose=100)::Nothing
+    if verbose >= refniv
+        print(str)
+    end
+end
+
 # function DiffEqBase.build_solution{T}(prob::HiOscODEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
 #     t::Vector{T}, 
@@ -105,14 +117,11 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
     nb_t::Integer=100, getprecision::Bool=dense, verbose=100
 ) where T<:AbstractFloat
     retcode = :Success
-    if verbose >= 100
-        println("solve function prob=$prob, nb_tau=$nb_tau, order=$order, order_prep=$order_prep, dense=$dense, nb_t=$nb_t, getprecision=$getprecision, verbose=$verbose")
-    end
-    if prevpow(2,nb_tau) != nb_tau 
-        println("nb_tau=$nb_tau is not a power of 2")
-        retcode = :ErrParam
-        return HiOscODESolution(retcode)
-    end
+    nb_tau = prevpow(2,nb_tau)
+    traceln( 100,
+    "solve function prob=$prob, nb_tau=$nb_tau, order=$order, order_prep=$order_prep, dense=$dense, nb_t=$nb_t, getprecision=$getprecision, verbose=$verbose";
+    verbose=verbose,
+)
     if getprecision
         s1=DiffEqBase.solve(prob; 
     nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t, getprecision=false, verbose=90)
@@ -138,9 +147,9 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
     par_u0 = PrepareU0(parphi, order_prep, prob.u0)
     pargen = PrepareTwoScalesPureAB(nb_t, prob.tspan[2], order, par_u0)
     u_mat, _, u_caret = if dense
-        twoscales_pure_ab(pargen, res_fft=true)
+        twoscales_pure_ab(pargen, res_fft=true, verbose=verbose)
     else
-        twoscales_pure_ab(pargen), undef, undef
+        twoscales_pure_ab(pargen, verbose=verbose), undef, undef
     end
     t = collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/nb_t .+ prob.tspan[1]
     interp = dense ? HiOscInterpolation{T}(t, u_caret, parphi, order) : nothing

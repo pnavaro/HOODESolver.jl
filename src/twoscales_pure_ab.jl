@@ -137,55 +137,29 @@ compute the data to get solution of the differential equation
 
 """
 function twoscales_pure_ab(par::PrepareTwoScalesPureAB; 
-    only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false)
-
+    only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false, verbose=100)
+    nivref=90
     T = typeof(par.parphi.epsilon)
-
     fftfct = Vector{Array{Complex{T}, 2}}(undef, 2par.order-1)
-
     fft_u = Vector{Array{Complex{T}, 2}}(undef, 2par.order-1)
-
-    
     res_u = par.par_u0.ut0
     up0 = par.par_u0.up0
-   
     fftfct[par.order] = fftgen(
     par.parphi.par_fft, 
     filtredfct(par.parphi, res_u)
     )
-
-#    println("twoscales_pure_ab epsilon/dt=$(par.parphi.epsilon/par.dt)")
-#    println("twoscales_pure_ab dt/epsilon=$(par.dt/par.parphi.epsilon)")
-#    println("twoscales_pure_ab order=$(par.order)")
-
-  #  dump(par)
-
-  #  println("res_u=$res_u")
     fft_u[par.order] = fftgen(par.parphi.par_fft, res_u)
-
-    # println("res[0]=$(convert(Array{Float64,1},_getresult(fft_u[par.order],0,par.parphi)))")
-    # println("res[0]bis=$(convert(Array{Float64,1}, _getresult(real(ifftgen(par.parphi.par_fft, par.exptau.*fftgen(par.parphi.par_fft,fft_u[par.order]))),0,par.parphi)))")
-
     result = zeros(typeof(par.parphi.epsilon), par.parphi.size_vect-1, par.nb_t+1)
     result[:,1] = up0[1:(end-1)]
-
     result_fft = undef
-   # println("diff result ori = $(norm(u0-_getresult(fft_u[par.order], 0, par.parphi)))")
-
     _init_ab(par, fftfct, fft_u)
-
     memfft = fftfct[par.order:(2par.order-1)]
-
     if res_fft
         result_fft = Vector{Array{Complex{T}, 2}}(undef, par.nb_t+1)
         res_u_chap = Vector{Array{Complex{T}, 2}}(undef, par.nb_t+1)
-#        res_u_chap = Vector{Array{Complex{BigFloat}, 2}}(undef, par.nb_t+par.order)
         for i=1:min(par.order,par.nb_t+1)
             result_fft[i] = memfft[i]
         end
-        # for i=1:(2par.order-1)
-        #     res_u_chap[i] = fft_u[i]
-        # end
         for i=1:min(par.order,par.nb_t+1)
             res_u_chap[i] = fft_u[i+par.order-1]
         end
@@ -205,23 +179,16 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
             tabdifffft_2[i] = norm(memfft[i]-memfft[i+1])
         end
     end
-
-
-
      # ring permutation where the beginning becomes the end and the rest is shifted by one
     permut = collect(Iterators.flatten((2:par.order,1:1)))
-
     ut0_fft = fft_u[par.order-1+min(par.order,par.nb_t+1)]
-    println("")
+    traceln(nivref, "", verbose=verbose)
     norm_delta_fft = 0
     norm_delta_fft_2 = 0
     nbnan = 0
     borne_nm=0
     c_mult=1.1
     for i=par.order:par.nb_t
-        if i%10000 == 1
-            println(" $(i-1)/$(par.nb_t)")
-        end
         resfft, ut0_fft = _tr_ab(par, memfft, ut0_fft)
         if res_fft
             result_fft[i] = resfft
@@ -242,7 +209,10 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
         memfft = memfft[permut]
         memfft[end] = resfft
         if i%100 == 0
-            print("x")
+            trace(nivref, "x", verbose=verbose)
+        end
+        if i%10000 == 0 || i == par.nb_t
+            traceln(nivref, " $i/$(par.nb_t)", verbose=verbose)
         end
     end
 
