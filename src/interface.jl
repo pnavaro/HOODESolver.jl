@@ -51,7 +51,12 @@ struct HiOscODESolution{T} <:AbstractHiOscSolution{T,T}
     absprec
     relprec
 end
+function HiOscODESolution(retcode::Symbol)
+    return HiOscODESolution( undef, undef, undef, undef, undef, undef, 
+    retcode, undef, undef, undef)
+end
 (sol::HiOscODESolution)(t) = sol.dense ? sol.interp(t) : undef
+
 # function DiffEqBase.build_solution{T}(prob::HiOscODEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
 #     t::Vector{T}, 
@@ -97,14 +102,22 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 """
 function DiffEqBase.solve(prob::HiOscODEProblem{T}; 
     nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2,dense::Bool=true, 
-    nb_t::Integer=100, getprecision::Bool=dense
+    nb_t::Integer=100, getprecision::Bool=dense, verbose=100
 ) where T<:AbstractFloat
     retcode = :Success
+    if verbose >= 100
+        println("solve function prob=$prob, nb_tau=$nb_tau, order=$order, order_prep=$order_prep, dense=$dense, nb_t=$nb_t, getprecision=$getprecision, verbose=$verbose")
+    end
+    if prevpow(2,nb_tau) != nb_tau 
+        println("nb_tau=$nb_tau is not a power of 2")
+        retcode = :ErrParam
+        return HiOscODESolution(retcode)
+    end
     if getprecision
         s1=DiffEqBase.solve(prob; 
-    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t, getprecision=false)
+    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t, getprecision=false, verbose=90)
         s2=DiffEqBase.solve(prob; 
-    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t-1, getprecision=false)
+    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t-1, getprecision=false, verbose=90)
         absprec = norm(s1.u[end] - s2.u[end])
         relprec = absprec/max( norm(s1.u[end]), norm(s2.u[end]))
         if dense
