@@ -161,7 +161,7 @@ function tts_time_time(t_begin, t_end)
         sol = solve(prob, getprecision=false, nb_t=1000, order=7)
         parphi = PreparePhi(
     epsilon, 
-    sol.parphi.n_tau,
+    sol.par_u0.parphi.n_tau,
     A,
     fct,
     B,

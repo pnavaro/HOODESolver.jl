@@ -34,11 +34,17 @@ struct PrepareTwoScalesPureAB
     p_coef::CoefExpAB
     exptau
     exptau_inv   
-    function PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0)
+    function PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0;
+    p_coef::Union{CoefExpAB,Missing}=missing
+)
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
         dt = T(t_max-parphi.t_0)/nb_t
-        p_coef = CoefExpAB(order, parphi.epsilon, parphi.n_tau, dt)
+        p_coef = if ismissing(p_coef)
+            CoefExpAB(order, parphi.epsilon, parphi.n_tau, dt)
+        else
+            p_coef
+        end
         exptau = collect(transpose(exp.(-im*dt / parphi.epsilon * parphi.tau_list)))
         exptau_inv = collect(transpose(exp.(im*dt / parphi.epsilon * parphi.tau_list)))
         return new(
@@ -134,11 +140,15 @@ compute the data to get solution of the differential equation
 - `only_end=false` : if true return only the result for t_end
 - `diff_fft::Bool=false` : if true return data about diff
 - `res_fft::Bool=false` : if true return u_caret data indispensable for interpolation
+- `verbose::Integer`: level off traces (0 means no output)
 
 """
-function twoscales_pure_ab(par::PrepareTwoScalesPureAB; 
-    only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false, verbose=100)
-    nivref=90
+function twoscales_pure_ab(
+    par::PrepareTwoScalesPureAB; 
+    only_end::Bool=false, diff_fft::Bool=false, 
+    res_fft::Bool=false, verbose::Integer=100
+)
+    levelref=90
     T = typeof(par.parphi.epsilon)
     fftfct = Vector{Array{Complex{T}, 2}}(undef, 2par.order-1)
     fft_u = Vector{Array{Complex{T}, 2}}(undef, 2par.order-1)
@@ -182,7 +192,7 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
      # ring permutation where the beginning becomes the end and the rest is shifted by one
     permut = collect(Iterators.flatten((2:par.order,1:1)))
     ut0_fft = fft_u[par.order-1+min(par.order,par.nb_t+1)]
-    traceln(nivref, "", verbose=verbose)
+    traceln(levelref, "", verbose=verbose)
     norm_delta_fft = 0
     norm_delta_fft_2 = 0
     nbnan = 0
@@ -209,10 +219,10 @@ function twoscales_pure_ab(par::PrepareTwoScalesPureAB;
         memfft = memfft[permut]
         memfft[end] = resfft
         if i%100 == 0
-            trace(nivref, "x", verbose=verbose)
+            trace(levelref, "x", verbose=verbose)
         end
         if i%10000 == 0 || i == par.nb_t
-            traceln(nivref, " $i/$(par.nb_t)", verbose=verbose)
+            traceln(levelref, " $i/$(par.nb_t)", verbose=verbose)
         end
     end
 
