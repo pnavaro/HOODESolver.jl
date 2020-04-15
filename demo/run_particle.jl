@@ -27,28 +27,30 @@ end
 
 
 function fctmain(n_tau, prec)
-
-    setprecision(prec)
+    setprecision(512)
     Random.seed!(561909)
+    u0 = 2rand(BigFloat,6)-ones(BigFloat,6)
+    setprecision(prec)
+    u0 = convert(BigFloat,u0)
+    println("u0=$u0")
     t_max = big"1.0"
     epsilon=big"1e-7"
     println("epsilon=$epsilon")
     nbmaxtest=10
-    ordmax=13
+    ordmax=9
     debord=3
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
     res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
     A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
-    u0 = 2rand(BigFloat,6)-ones(BigFloat,6)
     t_0=big"0.0"
     t_max=big"1.0"
     prob = HiOscODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
     nm = NaN
     ordmax += 1
     ordprep=undef
-    nb = 20*2^(nbmaxtest)
+    nb = 10*2^(nbmaxtest)
     solref=undef
     while isnan(nm)
         ordmax -= 1
@@ -63,7 +65,6 @@ function fctmain(n_tau, prec)
 
     println("ordmax=$ordmax")
 
-    println("solref=$(solref[end])")
 
     solref_gen = solref
     indref = 1
@@ -71,16 +72,18 @@ function fctmain(n_tau, prec)
     ind=1
     for order=debord:pasord:ordmax
         ordprep=order+2
-        println("eps=$epsilon solRef=$(solref[end]) order=$order")
+        println("eps=$epsilon solRef=$solref order=$order")
         nb = 10
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
         resnorm=0
         resnormprec=1
         sol =undef
+        par_u0=missing
         println("preparation ordre $order + 2")
         while indc <= nbmaxtest
-            @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau)
+            @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0:par_u0)
+            par_u0 = sol.par_u0
             sol = solall[end]
             push!(tabsol, sol)
             res_gen[indc,ind] = sol
@@ -122,7 +125,7 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/r1_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle.pdf")
+        Plots.savefig(p,"out/r2_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle.pdf")
         if resnorm > resnormprec
             break
         end
@@ -130,10 +133,4 @@ function fctmain(n_tau, prec)
         ind+= 1
     end
 end
-
-# testODESolver()
-
-# for i=3:9
-#     fctMain(2^i)
-# end
 fctmain(32,2048)
