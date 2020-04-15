@@ -50,8 +50,8 @@ function fctmain(n_tau, prec)
         prob = HiOscODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
         @time sol = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau)
         solref = sol[end]
-        tabsol = Array{Array{BigFloat,1},1}(undef,1)
-        tabsol[1] = solref
+        # tabsol = Array{Array{BigFloat,1},1}(undef,1)
+        # tabsol[1] = solref
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 10
         indc = 1
@@ -66,24 +66,24 @@ function fctmain(n_tau, prec)
             @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0)
             par_u0 = solall.par_u0
             sol = solall[end]
-            push!(tabsol, sol)
             res_gen[indc,ieps] = sol
-            (a, b), nm = getmindif(tabsol)
-            if a != indref
-                println("New solref !!!! a=$a, b=$b nm=$nm")
-                indref = a
-                solref = tabsol[a]
-                for i=1:ind
-                    borne = (i <ind) ? size(res_gen,1) : indc
-                    for j = 1:borne
-                        nm2 = min( norm(res_gen[j,i] - solref, Inf), 1.1)
-                        y[j,i] = nm2 == 0 ? nm : nm2
-                   end
-                end
-            else
-                diff=solref-sol
-                y[indc,ieps] = min(norm(diff,Inf), 1.1)
-            end
+            # push!(tabsol, sol)
+            # (a, b), nm = getmindif(tabsol)
+            # if a != indref
+            #     println("New solref !!!! a=$a, b=$b nm=$nm")
+            #     indref = a
+            #     solref = tabsol[a]
+            #     for i=1:ind
+            #         borne = (i <ind) ? size(res_gen,1) : indc
+            #         for j = 1:borne
+            #             nm2 = min( norm(res_gen[j,i] - solref, Inf), 1.1)
+            #             y[j,i] = nm2 == 0 ? nm : nm2
+            #        end
+            #     end
+            # else
+            diff=solref-sol
+            y[indc,ieps] = min(norm(diff,Inf), 1.1)
+ #           end
             x[indc] = 1.0/nb
             println("result=$y")
             println("log2(y)=$(log2.(y))")
