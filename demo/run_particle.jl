@@ -31,7 +31,7 @@ function fctmain(n_tau, prec)
     Random.seed!(561909)
     u0 = 2rand(BigFloat,6)-ones(BigFloat,6)
     setprecision(prec)
-    u0 = convert(BigFloat,u0)
+    u0 = convert.(BigFloat,u0)
     println("u0=$u0")
     t_max = big"1.0"
     epsilon=big"1e-7"
