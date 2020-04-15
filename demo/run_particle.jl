@@ -83,7 +83,7 @@ function fctmain(n_tau, prec)
         println("preparation ordre $order + 2")
         while indc <= nbmaxtest
             @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0)
-            par_u0 = sol.par_u0
+            par_u0 = solall.par_u0
             sol = solall[end]
             push!(tabsol, sol)
             res_gen[indc,ind] = sol
