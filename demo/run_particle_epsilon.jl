@@ -41,10 +41,10 @@ function fctmain(n_tau, prec)
     A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
     t_0=big"0.0"
     t_max=big"1.0"
+    y = ones(Float64, nbmaxtest, nbeps )
     for ieps=1:nbeps
         epsilon = epsbase^ieps
-        y = ones(Float64, nbmaxtest, nbeps )
-        res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, nbeps )
+#        res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, nbeps )
         x=zeros(Float64,nbmaxtest)
         nb = 10*2^(nbmaxtest)
         prob = HiOscODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
@@ -66,7 +66,7 @@ function fctmain(n_tau, prec)
             @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0)
             par_u0 = solall.par_u0
             sol = solall[end]
-            res_gen[indc,ieps] = sol
+#            res_gen[indc,ieps] = sol
             # push!(tabsol, sol)
             # (a, b), nm = getmindif(tabsol)
             # if a != indref
