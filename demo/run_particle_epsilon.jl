@@ -109,4 +109,4 @@ function fctmain(n_tau, prec)
         Plots.savefig(p,"out/r1_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle_epsilon.pdf")
     end
 end
-fctmain(32,512)
+fctmain(32,256)
