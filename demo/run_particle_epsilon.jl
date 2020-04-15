@@ -82,7 +82,7 @@ function fctmain(n_tau, prec)
                 end
             else
                 diff=solref-sol
-                y[indc,ind] = min(norm(diff,Inf), 1.1)
+                y[indc,ieps] = min(norm(diff,Inf), 1.1)
             end
             x[indc] = 1.0/nb
             println("result=$y")
