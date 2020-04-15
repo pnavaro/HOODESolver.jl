@@ -60,13 +60,14 @@ function fctmain(n_tau, prec)
         resnormprec=1
         sol =undef
         par_u0=missing
+        indref = 1
         println("preparation ordre $order + 2")
         while indc <= nbmaxtest
             @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0)
             par_u0 = solall.par_u0
             sol = solall[end]
             push!(tabsol, sol)
-            res_gen[indc,ind] = sol
+            res_gen[indc,ieps] = sol
             (a, b), nm = getmindif(tabsol)
             if a != indref
                 println("New solref !!!! a=$a, b=$b nm=$nm")
