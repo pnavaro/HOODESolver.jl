@@ -36,7 +36,7 @@ function fctmain(n_tau, prec)
     t_max = big"1.0"
     epsbase=big"0.1"
     nbeps=9
-    nbmaxtest=10
+    nbmaxtest=14
     order=5
     A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
     t_0=big"0.0"
@@ -44,14 +44,14 @@ function fctmain(n_tau, prec)
     y = ones(Float64, nbmaxtest, nbeps )
     for ieps=1:nbeps
         epsilon = epsbase^ieps
-#        res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, nbeps )
+        res_gen = Array{ Array{BigFloat,1}, 1}(undef, nbmaxtest )
         x=zeros(Float64,nbmaxtest)
         nb = 10*2^(nbmaxtest)
         prob = HiOscODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
         @time sol = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau)
         solref = sol[end]
-        # tabsol = Array{Array{BigFloat,1},1}(undef,1)
-        # tabsol[1] = solref
+        tabsol = Array{Array{BigFloat,1},1}(undef,1)
+        tabsol[1] = solref
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 10
         indc = 1
@@ -66,24 +66,21 @@ function fctmain(n_tau, prec)
             @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0)
             par_u0 = solall.par_u0
             sol = solall[end]
-#            res_gen[indc,ieps] = sol
-            # push!(tabsol, sol)
-            # (a, b), nm = getmindif(tabsol)
-            # if a != indref
-            #     println("New solref !!!! a=$a, b=$b nm=$nm")
-            #     indref = a
-            #     solref = tabsol[a]
-            #     for i=1:ind
-            #         borne = (i <ind) ? size(res_gen,1) : indc
-            #         for j = 1:borne
-            #             nm2 = min( norm(res_gen[j,i] - solref, Inf), 1.1)
-            #             y[j,i] = nm2 == 0 ? nm : nm2
-            #        end
-            #     end
-            # else
-            diff=solref-sol
-            y[indc,ieps] = min(norm(diff,Inf), 1.1)
- #           end
+            res_gen[indc] = sol
+            push!(tabsol, sol)
+            (a, b), nm = getmindif(tabsol)
+            if a != indref
+                println("New solref !!!! a=$a, b=$b nm=$nm")
+                indref = a
+                solref = tabsol[a]
+                for j = 1:indc
+                    nm2 = min( norm(res_gen[j] - solref, Inf), 1.1)
+                    y[j,ieps] = nm2 == 0 ? nm : nm2
+                end
+            else
+                diff=solref-sol
+                y[indc,ieps] = min(norm(diff,Inf), 1.1)
+            end
             x[indc] = 1.0/nb
             println("result=$y")
             println("log2(y)=$(log2.(y))")
