@@ -14,7 +14,7 @@ function testinterface_epsilon()
         A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
         fct = (u,p,t) -> B*u
         order = 5
-        for i=1:5
+        for i=1:1
             epsilon = big"1.0"/big"10"^(i*3)
             eps_v = convert(Float32, epsilon)
             t_max = big"1.0"
@@ -44,7 +44,7 @@ function testinterface_interpolate()
         order = 6
         nb = 100
         t_max = big"1.0"
-        for i=1:5
+        for i=1:1
             seed = seed*1341+6576123
             Random.seed!(seed)
             u0=rand(BigFloat,4)
@@ -76,7 +76,7 @@ function testinterface_interpolate_float()
         order = 6
         nb = 100
         t_max = 1.0
-        for i=1:5
+        for i=1:1
             seed = seed*1341+6576123
             Random.seed!(seed)
             u0=rand(4)
