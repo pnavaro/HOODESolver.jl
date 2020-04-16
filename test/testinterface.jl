@@ -133,16 +133,16 @@ function tts_time(t_begin, t_end)
         fct = (u,p,t) -> B*u
         epsilon=big"0.000000345"
         prob = HiOscODEProblem(fct, u0, (t_begin,t_end), missing, A, epsilon)
-        sol = solve(prob, getprecision=false, nb_t=1000, order=6)
+        sol = solve(prob, getprecision=false, nb_t=100, order=4)
         m = 1/epsilon*A+B
         solref = exp((t_end-t_begin)*m)*u0
         println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
-        @test isapprox(sol[end], solref,atol=1e-17, rtol=1e-16)
+        @test isapprox(sol[end], solref,atol=1e-8, rtol=1e-7)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=exp((t-t_begin)*m)*u0
             res_ap=sol(t)
-            @test isapprox(res_ex, res_ap, atol=1e-16, rtol=1e-15)
+            @test isapprox(res_ex, res_ap, atol=1e-8, rtol=1e-7)
         end
     end
 end
@@ -158,7 +158,7 @@ function tts_time_time(t_begin, t_end)
         nb = 100
         order = 4
         prob = HiOscODEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon)
-        sol = solve(prob, getprecision=false, nb_t=1000, order=7)
+        sol = solve(prob, getprecision=false, nb_t=100, order=4)
         parphi = PreparePhi(
     epsilon, 
     sol.par_u0.parphi.n_tau,
@@ -175,7 +175,7 @@ function tts_time_time(t_begin, t_end)
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=getexactsol(parphi, u0, t)
             res_ap=sol(t)
-            @test isapprox(res_ex, res_ap, atol=1e-17, rtol=1e-16)
+            @test isapprox(res_ex, res_ap, atol=1e-8, rtol=1e-7)
         end
     end
 end
