@@ -170,7 +170,7 @@ function tts_time_time(t_begin, t_end)
 )
         solref = getexactsol(parphi, u0, t_end)
         println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
-        @test isapprox(sol[end], solref,atol=1e-17, rtol=1e-16)
+        @test isapprox(sol[end], solref,atol=1e-8, rtol=1e-7)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=getexactsol(parphi, u0, t)
