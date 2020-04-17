@@ -123,7 +123,8 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
     nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2,dense::Bool=true, 
     nb_t::Integer=100, getprecision::Bool=dense, verbose=100,
     par_u0::Union{PrepareU0,Missing}=missing,
-    p_coef::Union{CoefExpAB,Missing}=missing
+    p_coef::Union{CoefExpAB,Missing}=missing,
+    
 ) where T<:AbstractFloat
     retcode = :Success
     nb_tau = prevpow(2,nb_tau)
@@ -133,9 +134,9 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
 )
     if getprecision
         s1=DiffEqBase.solve(prob; 
-    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t, getprecision=false, verbose=90, par_u0=par_u0)
+    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t, getprecision=false, verbose=verbose-10, par_u0=par_u0)
         s2=DiffEqBase.solve(prob; 
-    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t-1, getprecision=false, verbose=90, par_u0=s1.par_u0)
+    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t-1, getprecision=false, verbose=verbose-10, par_u0=s1.par_u0)
         absprec = norm(s1.u[end] - s2.u[end])
         relprec = absprec/max( norm(s1.u[end]), norm(s2.u[end]))
         if dense
@@ -150,7 +151,8 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
             end
         end
         return HiOscODESolution(s1.u, s1.t, dense, order,
-                s1.par_u0, s1.p_coef, prob, retcode, s1.interp, absprec*nb_t, relprec*nb_t)
+                s1.par_u0, s1.p_coef, prob, retcode, s1.interp, 
+                Float64(absprec*nb_t), Float64(relprec*nb_t))
     end 
 
     par_u0 = if ismissing(par_u0)
@@ -160,7 +162,8 @@ t_0=prob.tspan[1], paramfct=prob.p)
     else
         par_u0
     end
-    pargen = PrepareTwoScalesPureAB(nb_t, prob.tspan[2], order, par_u0, p_coef=p_coef)
+    pargen = PrepareTwoScalesPureAB(nb_t, prob.tspan[2], order, par_u0, 
+p_coef=p_coef, verbose=verbose)
     u_mat, _, u_caret = if dense
         twoscales_pure_ab(pargen, res_fft=true, verbose=verbose)
     else

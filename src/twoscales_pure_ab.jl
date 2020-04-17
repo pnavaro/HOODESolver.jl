@@ -12,6 +12,9 @@ Immutable structure, to share calculations, needed for the twoscale function
 - `order` : order for compute the coefficients
 - `par_u0::PrepareU0` : prepared initial data
 
+# Keywords :
+- `p_coef::Union{CoefExpAB,Missing}=missing` : precomputed coefficients of AB method 
+- `verbose=100` : trace level
 
 # Fields :
 - nb_t : number of time slices
@@ -22,6 +25,7 @@ Immutable structure, to share calculations, needed for the twoscale function
 - p_coef : computed coefficients
 - exptau : exp( -im*dt*'\tau'/epsilon) for all '\tau' values
 - exptau_inv : inverse of exptau
+- verbose : trace level
 
 """
 struct PrepareTwoScalesPureAB
@@ -33,9 +37,11 @@ struct PrepareTwoScalesPureAB
     par_u0::PrepareU0
     p_coef::CoefExpAB
     exptau
-    exptau_inv   
+    exptau_inv
+    verbose   
     function PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0;
-    p_coef::Union{CoefExpAB,Missing}=missing
+    p_coef::Union{CoefExpAB,Missing}=missing,
+    verbose
 )
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
@@ -56,7 +62,8 @@ struct PrepareTwoScalesPureAB
     par_u0,
     p_coef, 
     exptau,
-    exptau_inv
+    exptau_inv,
+    verbose
 )
     end
 end
@@ -67,14 +74,21 @@ function _calculfft(parphi::PreparePhi, resfft)
 end
 
 function _calcul_ab(par::PrepareTwoScalesPureAB, ord, fftfct, fft_u, dec, sens)
-     resfft = fft_u[dec-sens] .* ((sens==1) ? par.exptau : par.exptau_inv)
+    resfft = fft_u[dec-sens] .* ((sens==1) ? par.exptau : par.exptau_inv)
     tab_coef = (sens == 1) ? par.p_coef.tab_coef : par.p_coef.tab_coef_neg
     for k=1:ord
         indice = dec-sens*k
-      resfft .+= transpose(tab_coef[:, k, ord]).*fftfct[indice]
+        resfft .+= transpose(tab_coef[:, k, ord]).*fftfct[indice]
     end
     fft_u[dec] = resfft
-    t = par.parphi.t_0+(dec-par.order)*par.dt
+    if par.verbose >= 200 && isexactsol(par.parphi)
+        t = par.parphi.t_0 + (dec-par.order)*par.dt
+        u_exact = getexactsol(par.parphi, par.par_u0.up0[1:(end-1)], t)
+        u_computed = _getresult( fft_u[dec], t-par.parphi.t_0, par.parphi)
+        err = Float64(norm(u_exact-u_computed, Inf))
+        i=dec-par.order
+        traceln(200, "i=$i err=$err", verbose=par.verbose)
+    end
     fftfct[dec] = _calculfft(par.parphi, resfft)
 end
 
@@ -129,7 +143,7 @@ function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     return _getresult( u_chap, t-t_begin, par)
 end
 """
-    twoscales_pure_ab(par::PrepareTwoScalesPureAB; only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false)
+    twoscales_pure_ab(par::PrepareTwoScalesPureAB; only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false, verbose::Integer=100)
 
 compute the data to get solution of the differential equation
 
