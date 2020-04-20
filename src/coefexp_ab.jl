@@ -5,7 +5,6 @@ polylagrange:
 - Date: 2019-11-25
 =#
 include("polyexp.jl")
-using Polynomials
 function getpolylagrange(k::Int64, j::Int64, N::DataType)
     @assert k <= j "_getpolylagrange(k=$k,j=$j) k must be less or equal to j"
     @assert N<:Signed "the type $N must be an Integer"

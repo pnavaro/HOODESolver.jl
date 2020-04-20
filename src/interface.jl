@@ -146,7 +146,7 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
     retcode = :Success
     nb_tau = prevpow(2,nb_tau)
     traceln( 100,
-    "solve function prob=$prob, nb_tau=$nb_tau, order=$order, order_prep=$order_prep, dense=$dense, nb_t=$nb_t, getprecision=$getprecision, verbose=$verbose";
+    "solve function prob=$prob,\n nb_tau=$nb_tau, order=$order, order_prep=$order_prep, dense=$dense,\n nb_t=$nb_t, getprecision=$getprecision, verbose=$verbose";
     verbose=verbose,
 )
     if getprecision
