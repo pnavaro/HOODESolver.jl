@@ -6,9 +6,14 @@ using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
+struct HiOscODEFunction <: DiffEqBase.AbstractODEFunction{false}
+    f
+end
+(fct::HiOscODEFunction)(u, p, t)=fct.f(u, p, t)
+
 struct HiOscODEProblem{T} <:DiffEqBase.DEProblem
     """The HiOscODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
-    f::Function
+    f::HiOscODEFunction
     """The initial condition is `u(tspan[1]) = u0`."""
     u0::Vector{T}
     """The solution `u(t)` will be computed for `tspan[1] ≤ t ≤ tspan[2]`."""
@@ -19,6 +24,16 @@ struct HiOscODEProblem{T} <:DiffEqBase.DEProblem
     A::Matrix
     """epsilon of the problem"""
     epsilon::T
+    function HiOscODEProblem(
+f, 
+u0::Vector{T}, 
+tspan::Tuple{T,T}, 
+p, 
+A::Matrix, 
+epsilon::T
+)  where {T}
+        return new{T}( HiOscODEFunction(f), u0,tspan,p,A,epsilon)
+    end
 end
 
 struct HiOscInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
@@ -33,6 +48,7 @@ function (interp::HiOscInterpolation)(t)
     interp.t[1], interp.t[end], 
     interp.order)
 end
+(interp::HiOscInterpolation)(vt::Vector)=interp.(vt)
 
 if typeof(DiffEqBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == DataType
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
@@ -49,6 +65,7 @@ struct HiOscODESolution{T} <:AbstractHiOscSolution{T,T}
     prob::HiOscODEProblem{T}
     retcode
     interp::Union{HiOscInterpolation, Nothing}
+    tslocation
     absprec
     relprec
 end
@@ -151,7 +168,7 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
             end
         end
         return HiOscODESolution(s1.u, s1.t, dense, order,
-                s1.par_u0, s1.p_coef, prob, retcode, s1.interp, 
+                s1.par_u0, s1.p_coef, prob, retcode, s1.interp, 0,
                 Float64(absprec*nb_t), Float64(relprec*nb_t))
     end 
 
@@ -176,5 +193,5 @@ p_coef=p_coef, verbose=verbose)
         t,
         dense,
         order,
-        par_u0, pargen.p_coef, prob, retcode, interp, undef, undef)
+        par_u0, pargen.p_coef, prob, retcode, interp, 0, undef, undef)
 end
