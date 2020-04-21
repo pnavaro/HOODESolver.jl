@@ -164,7 +164,6 @@ function getexactsol(par::PreparePhi, u0, t)
         return exp((t-t0)*m)*u0
     end
     a, b = par.paramfct
-    m = (1/par.epsilon)*sparse_A+par.matrix_B
     mm1 = m^(-1)
     mm2 = mm1^2
     e_t0 = exp(-t0*m)

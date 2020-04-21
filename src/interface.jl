@@ -24,18 +24,23 @@ struct HiOscODEProblem{T} <:DiffEqBase.DEProblem
     A::Matrix
     """epsilon of the problem"""
     epsilon::T
+    """Matrix of linear problem to get the exact solution"""
+    B::Union{Matrix,Missing}
     function HiOscODEProblem(
 f, 
 u0::Vector{T}, 
 tspan::Tuple{T,T}, 
 p, 
 A::Matrix, 
-epsilon::T
+epsilon::T,
+B::Union{Matrix, Missing}
 )  where {T}
-        return new{T}( HiOscODEFunction(f), u0,tspan,p,A,epsilon)
+        return new{T}( HiOscODEFunction(f), u0, tspan, p, A, epsilon, B)
     end
 end
-
+function HiOscODEProblem(f, u0, tspan, p, A, epsilon)
+    return HiOscODEProblem(f, u0, tspan, p, A, epsilon, missing)
+end
 struct HiOscInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
     t::Vector{T}
     u_caret::Vector{Array{Complex{T},2}}
@@ -173,7 +178,7 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
     end 
 
     par_u0 = if ismissing(par_u0)
-        parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f;
+        parphi = PreparePhi(prob.epsilon, nb_tau, prob.A, prob.f, prob.B;
 t_0=prob.tspan[1], paramfct=prob.p)
         PrepareU0(parphi, order_prep, prob.u0)
     else
