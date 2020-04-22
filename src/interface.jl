@@ -80,7 +80,6 @@ function HiOscODESolution(retcode::Symbol)
     retcode, undef, undef, undef)
 end
 (sol::HiOscODESolution)(t) = sol.dense ? sol.interp(t) : undef
-plot(sol::HiOscODESolution{BigFloat})=plot(sol.t,sol.u_tr)
 
 
 function traceln( refniv, str; verbose=100)::Nothing

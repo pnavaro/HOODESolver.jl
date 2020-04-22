@@ -1,5 +1,5 @@
 module HighlyOscillatoryProblems
 include("interface.jl")
 export HiOscODEProblem, HiOscInterpolation, AbstractHiOscSolution, HiOscODESolution
-export solve, getexactsol, plot
+export solve, getexactsol
 end # module
