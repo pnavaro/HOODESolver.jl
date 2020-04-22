@@ -53,8 +53,8 @@ function (interp::HiOscInterpolation)(t)
     interp.t[1], interp.t[end], 
     interp.order)
 end
-(interp::HiOscInterpolation)(vt::Vector)=interp.(vt)
-
+(interp::HiOscInterpolation)(vt::Vector{Float64})=interp.(vt)
+(interp::HiOscInterpolation)(vt::Vector{BigFloat})=interp.(vt)
 if typeof(DiffEqBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == DataType
     abstract type AbstractHiOscSolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
 else
@@ -62,6 +62,7 @@ else
 end
 struct HiOscODESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
+    u_tr::Vector{Vector{T}}
     t::Vector{T}
     dense::Bool
     order::Integer
@@ -172,7 +173,7 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
                 relprec = max(relprec,rp)
             end
         end
-        return HiOscODESolution(s1.u, s1.t, dense, order,
+        return HiOscODESolution(s1.u, s1.u_tr, s1.t, dense, order,
                 s1.par_u0, s1.p_coef, prob, retcode, s1.interp, 0,
                 Float64(absprec*nb_t), Float64(relprec*nb_t))
     end 
@@ -195,6 +196,7 @@ p_coef=p_coef, verbose=verbose)
     interp = dense ? HiOscInterpolation{T}(t, u_caret, par_u0.parphi, order) : nothing
     return HiOscODESolution(
         reshape(mapslices(x->[x], u_mat, dims=1),size(u_mat,2)), 
+        reshape(mapslices(x->[x], transpose(u_mat), dims=1),size(u_mat,1)), 
         t,
         dense,
         order,
