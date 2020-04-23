@@ -41,7 +41,7 @@ struct PrepareTwoScalesPureAB
     verbose   
     function PrepareTwoScalesPureAB(nb_t, t_max, order, par_u0::PrepareU0;
     p_coef::Union{CoefExpAB,Missing}=missing,
-    verbose
+    verbose=100
 )
         parphi = par_u0.parphi
         T = typeof(parphi.epsilon)
@@ -115,6 +115,16 @@ function _tr_ab(par::PrepareTwoScalesPureAB, fftfct, u_chap)
     end
     f = _calculfft(par.parphi, resfft)
     return f, resfft
+end
+function traceln( refniv, str; verbose=100)::Nothing
+    if verbose >= refniv
+        println(str)
+    end
+end
+function trace( refniv, str; verbose=100)::Nothing
+    if verbose >= refniv
+        print(str)
+    end
 end
 
 # for this function only, t is the time from the beginning

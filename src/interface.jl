@@ -82,16 +82,6 @@ end
 (sol::HiOscODESolution)(t) = sol.dense ? sol.interp(t) : undef
 
 
-function traceln( refniv, str; verbose=100)::Nothing
-    if verbose >= refniv
-        println(str)
-    end
-end
-function trace( refniv, str; verbose=100)::Nothing
-    if verbose >= refniv
-        print(str)
-    end
-end
 
 # function DiffEqBase.build_solution{T}(prob::HiOscODEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
