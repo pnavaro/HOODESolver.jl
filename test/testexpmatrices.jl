@@ -28,15 +28,15 @@ function testexp()
         end
     end    
     @time @testset "test 3 exp big matrices" begin
+        Random.seed!(8781115)
+
         b = [ 0 0 0 1; 0 0 -1 0; 0 1 0 0; -1 0 0 0]
         for i=1:20
             C=rand(4,4)*i
             B = b*i
             @test isapprox(exp(C), _expm1(C), rtol=1e-13)
-            @test isapprox(exp(21C), _expm1(21C), rtol=1e-12)
-            @test isapprox(exp(22C), _expm1(22C), rtol=1e-12)
-            @test isapprox(exp(23C), _expm1(23C), rtol=1e-11)
-            @test isapprox(exp(24C), _expm1(24C), rtol=1e-10)
+            @test isapprox(exp(0.7C), _expm1(0.7C), rtol=1e-12)
+            @test isapprox(exp(0.89C), _expm1(0.89C), rtol=1e-12)
             @test isapprox(exp(B), _expm1(B), rtol=1e-14)
             @test isapprox(exp(10B), _expm1(10B), rtol=1e-13)
             @test isapprox(exp(100B), _expm1(100B), rtol=1e-12)
@@ -45,6 +45,7 @@ function testexp()
         end
     end    
     @time @testset "test 4 exp big matrices big precision" begin
+        Random.seed!(90908)
         prec_old = prec = precision(BigFloat)
         for i=1:6
             prec *= 2

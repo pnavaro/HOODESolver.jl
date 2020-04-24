@@ -12,13 +12,13 @@ function testPolyExp()
 
         @test [2//3, 5//23, 57//4, 1//5, im//7, 1//10 ] == c_res
 
-        polder = polyder(pol)
+        polder = derivative(pol)
 
         c_resder = coeffs(polder)
 
         @test [2im//21+5//23, 5im//(23*7)+ 57//2, 57im//(4*7)+3//5, 1im//35,  im//7, 1//10 ] == c_resder
 
-        polintder = polyint(polder)
+        polintder = integrate(polder)
         c_resintder = coeffs(polintder)
 
         @test c_res == c_resintder

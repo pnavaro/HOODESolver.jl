@@ -8,10 +8,10 @@ include("polyexp.jl")
 function getpolylagrange(k::Int64, j::Int64, N::DataType)
     @assert k <= j "_getpolylagrange(k=$k,j=$j) k must be less or equal to j"
     @assert N<:Signed "the type $N must be an Integer"
-    result = Poly([one(Complex{Rational{N}})])
+    result = Polynomial([one(Complex{Rational{N}})])
     for l=0:j
         if l != k
-            result *= Poly([l//1,1//1])/(l-k)
+            result *= Polynomial([l//1,1//1])/(l-k)
         end
     end
     return result
@@ -35,7 +35,7 @@ struct CoefExpABRational
         epsilon = rationalize(N,epsilon, tol=epsilon*10*Base.eps(T) )
         dt = rationalize(N,dt, tol=dt*10*Base.eps(T) )
         list_tau = rationalize.(N,list_tau)
-        pol_x = Poly([0//1,1//dt])
+        pol_x = Polynomial([0//1,1//dt])
         for j=0:order
             for k=0:j
                 res = view(tab_coef, :, k+1, j+1)
@@ -46,10 +46,10 @@ struct CoefExpABRational
                     pol3 = undef
                     pol_int = if ell == 0
                         # in this case the exponentiel value is always 1
-                        Polynomials.polyint(pol2)
+                        Polynomials.integrate(pol2)
                     else
                         pol3=PolyExp(pol2, im*ell/epsilon, -im*ell*dt/epsilon)
-                        polyint(pol3)
+                        Polynomial.integrate(pol3)
                     end
                     res[ind] = pol_int(dt)-pol_int(0)
                 end
@@ -72,7 +72,7 @@ struct CoefExpAB
             epsilon = T2(epsilon)
             dt = T2(dt)
             tab_coef = zeros(Complex{T2}, n_tau, order+1, order+1)
-            pol_x = Poly([0, 1/dt])
+            pol_x = Polynomial([0, 1/dt])
             for j=0:order
                 for k=0:j
                     res = view(tab_coef, :, k+1,j+1)
@@ -82,9 +82,9 @@ struct CoefExpAB
                         ell = list_tau[ind]
                         pol_int = if ell == 0
                             # in this case the exponentiel value is always 1
-                            Polynomials.polyint(pol2)
+                            Polynomials.integrate(pol2)
                         else
-                            polyint(PolyExp(pol2, im*ell/epsilon, -im*ell*dt/epsilon))
+                            Polynomials.integrate(PolyExp(pol2, im*ell/epsilon, -im*ell*dt/epsilon))
                         end
                         res[ind] = pol_int(dt)-pol_int(0)
                     end
