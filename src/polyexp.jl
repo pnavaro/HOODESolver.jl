@@ -1,11 +1,7 @@
 using Polynomials
 import Base: show, *, +
 
-if VERSION < v"1.4.0"
-    Polynomial=Poly
-    Polynomials.integrate=Poly.polint
-    Polynomials.derivative=Poly.polyder
-end
+
 
 """
     PolyExp(p::Vector{T}, a::T, b::T)
