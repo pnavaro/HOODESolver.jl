@@ -1,6 +1,12 @@
 using Polynomials
 import Base: show, *, +
 
+if VERSION < v"1.4.0"
+    Polynomial=Poly
+    Polynomial.integrate=Poly.polint
+    Polynomial.derivative=Poly.polyder
+end
+
 """
     PolyExp(p::Vector{T}, a::T, b::T)
     PolyExp(pol::Polynomial{T},a::T,b::T)
