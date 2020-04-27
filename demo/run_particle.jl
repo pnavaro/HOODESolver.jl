@@ -125,7 +125,7 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/r2_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle.pdf")
+        Plots.savefig(p,"out/r3_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle.pdf")
         if resnorm > resnormprec
             break
         end

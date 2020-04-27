@@ -92,21 +92,34 @@ function _calcul_ab(par::PrepareTwoScalesPureAB, ord, fftfct, fft_u, dec, sens)
     fftfct[dec] = _calculfft(par.parphi, resfft)
 end
 
+# function _init_ab(par::PrepareTwoScalesPureAB, fftfct, fft_u)
+# #    println("_init_ab order=$(par.order)")
+#     if par.order != 1
+#         for new_ord=2:par.order
+#             _calcul_ab(par, new_ord-1, fftfct, fft_u, par.order+new_ord-1, 1)
+#             for k = 1:new_ord-1
+#                 _calcul_ab(par, new_ord, fftfct, fft_u, par.order-k, -1)
+#             end
+#             for k = 1:new_ord-1
+#                 _calcul_ab(par, new_ord, fftfct, fft_u, par.order+k, 1)
+#             end
+#         end
+#     end
+# end
 function _init_ab(par::PrepareTwoScalesPureAB, fftfct, fft_u)
-#    println("_init_ab order=$(par.order)")
-    if par.order != 1
-        for new_ord=2:par.order
-            _calcul_ab(par, new_ord-1, fftfct, fft_u, par.order+new_ord-1, 1)
-            for k = 1:new_ord-1
-                _calcul_ab(par, new_ord, fftfct, fft_u, par.order-k, -1)
-            end
-            for k = 1:new_ord-1
-                _calcul_ab(par, new_ord, fftfct, fft_u, par.order+k, 1)
+    #    println("_init_ab order=$(par.order)")
+        if par.order != 1
+            for new_ord=2:par.order
+                for k = 1:new_ord-1
+                    _calcul_ab(par, new_ord-1, fftfct, fft_u, par.order-k, -1)
+                end
+                for k = 1:new_ord-1
+                    _calcul_ab(par, new_ord, fftfct, fft_u, par.order+k, 1)
+                end
             end
         end
     end
-end
-
+    
 function _tr_ab(par::PrepareTwoScalesPureAB, fftfct, u_chap)
     resfft = par.exptau.* u_chap
     bound = par.order-1
