@@ -36,7 +36,7 @@ function fctmain(n_tau, prec)
     t_max = big"1.0"
     epsilon=big"1e-7"
     println("epsilon=$epsilon")
-    nbmaxtest=10
+    nbmaxtest=15
     ordmax=9
     debord=3
     pasord=1
@@ -125,7 +125,7 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/r3_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle.pdf")
+        Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle.pdf")
         if resnorm > resnormprec
             break
         end
