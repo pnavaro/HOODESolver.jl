@@ -3,8 +3,8 @@ import Base: show, *, +
 
 if VERSION < v"1.4.0"
     Polynomial=Poly
-    Polynomial.integrate=Poly.polint
-    Polynomial.derivative=Poly.polyder
+    Polynomials.integrate=Poly.polint
+    Polynomials.derivative=Poly.polyder
 end
 
 """
