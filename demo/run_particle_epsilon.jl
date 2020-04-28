@@ -48,7 +48,7 @@ function fctmain(n_tau, prec)
         x=zeros(Float64,nbmaxtest)
         nb = 10*2^(nbmaxtest)
         prob = HiOscODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
-        @time sol = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau)
+        @time sol = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, dense=false)
         solref = sol[end]
         tabsol = Array{Array{BigFloat,1},1}(undef,1)
         tabsol[1] = solref
@@ -63,7 +63,7 @@ function fctmain(n_tau, prec)
         indref = 1
         println("preparation ordre $order + 2")
         while indc <= nbmaxtest
-            @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0)
+            @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0, dense=false)
             par_u0 = solall.par_u0
             sol = solall[end]
             res_gen[indc] = sol
