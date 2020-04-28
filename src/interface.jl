@@ -62,7 +62,7 @@ else
 end
 struct HiOscODESolution{T} <:AbstractHiOscSolution{T,T}
     u::Vector{Vector{T}}
-    u_tr::Vector{Vector{T}}
+    u_tr::Union{Vector{Vector{T}}, Nothing}
     t::Vector{T}
     dense::Bool
     order::Integer
@@ -148,24 +148,25 @@ function DiffEqBase.solve(prob::HiOscODEProblem{T};
     if getprecision
         s1=DiffEqBase.solve(prob; 
     nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t, getprecision=false, verbose=verbose-10, par_u0=par_u0)
-        s2=DiffEqBase.solve(prob; 
-    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=nb_t-1, getprecision=false, verbose=verbose-10, par_u0=s1.par_u0)
+        n_nb_t = Integer(floor(1.1373*nb_t+1))
+        s2=DiffEqBase.solve(prob;
+    nb_tau=nb_tau, order=order, order_prep=order_prep, dense=dense, nb_t=n_nb_t, getprecision=false, verbose=verbose-10, par_u0=s1.par_u0)
         absprec = norm(s1.u[end] - s2.u[end])
         relprec = absprec/max( norm(s1.u[end]), norm(s2.u[end]))
-        if dense
-            for i = 1:10
-                t = rand(T) * (prob.tspan[2]-prob.tspan[1]) 
-                    + prob.tspan[1]
-                a, b = s1(t), s2(t)
-                ap = norm(a-b)
-                rp = ap/max(norm(a),norm(b))
-                absprec = max(absprec,ap)
-                relprec = max(relprec,rp)
-            end
-        end
+        # if dense
+        #     for i = 1:10
+        #         t = rand(T) * (prob.tspan[2]-prob.tspan[1]) 
+        #             + prob.tspan[1]
+        #         a, b = s1(t), s2(t)
+        #         ap = norm(a-b)
+        #         rp = ap/max(norm(a),norm(b))
+        #         absprec = max(absprec,ap)
+        #         relprec = max(relprec,rp)
+        #     end
+        # end
         return HiOscODESolution(s1.u, s1.u_tr, s1.t, dense, order,
                 s1.par_u0, s1.p_coef, prob, retcode, s1.interp, 0,
-                Float64(absprec*nb_t), Float64(relprec*nb_t))
+                Float64(absprec), Float64(relprec))
     end 
 
     par_u0 = if ismissing(par_u0)
@@ -177,16 +178,23 @@ t_0=prob.tspan[1], paramfct=prob.p)
     end
     pargen = PrepareTwoScalesPureAB(nb_t, prob.tspan[2], order, par_u0, 
 p_coef=p_coef, verbose=verbose)
-    u_mat, _, u_caret = if dense
-        twoscales_pure_ab(pargen, res_fft=true, verbose=verbose)
+    if dense
+        u_mat, _, u_caret = twoscales_pure_ab(pargen, res_fft=true, verbose=verbose)
+        t = collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/nb_t .+ prob.tspan[1]
+        interp = HiOscInterpolation{T}(t, u_caret, par_u0.parphi, order)
+        u = reshape(mapslices(x->[x], u_mat, dims=1),size(u_mat,2))
+        u_tr = reshape(mapslices(x->[x], transpose(u_mat), dims=1),size(u_mat,1))
     else
-        twoscales_pure_ab(pargen, verbose=verbose), undef, undef
+        u = Array{Array{T,1},1}(undef,2)
+        u[1] = copy(prob.u0)
+        u[end] = twoscales_pure_ab(pargen, verbose=verbose, only_end=true)
+        t = [prob.tspan[1], prob.tspan[2]]
+        u_tr = nothing
+        interp = nothing
     end
-    t = collect(0:nb_t)*(prob.tspan[2]-prob.tspan[1])/nb_t .+ prob.tspan[1]
-    interp = dense ? HiOscInterpolation{T}(t, u_caret, par_u0.parphi, order) : nothing
     return HiOscODESolution(
-        reshape(mapslices(x->[x], u_mat, dims=1),size(u_mat,2)), 
-        reshape(mapslices(x->[x], transpose(u_mat), dims=1),size(u_mat,1)), 
+        u,
+        u_tr,
         t,
         dense,
         order,
