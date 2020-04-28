@@ -257,7 +257,7 @@ function twoscales_pure_ab(
         memfft[end] = resfft
         if i%100 == 0
             trace(levelref, "x", verbose=verbose)
-            GC.gc()
+#            GC.gc()
         end
         if i%10000 == 0 || i == par.nb_t
             traceln(levelref, " $i/$(par.nb_t)", verbose=verbose)
