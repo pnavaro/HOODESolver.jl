@@ -34,8 +34,8 @@ function fctmain(n_tau, prec)
     t_max = big"1.0"
     epsilon=big"1e-7"
     println("epsilon=$epsilon")
-    nbmaxtest=13
-    ordmax=13
+    nbmaxtest=15
+    ordmax=15
     debord=3
     pasord=1
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
@@ -74,8 +74,6 @@ function fctmain(n_tau, prec)
         nb = 10
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
-        resnorm=0
-        resnormprec=1
         sol =undef
         par_u0=missing
         println("preparation ordre $order + 2")
@@ -124,10 +122,6 @@ function fctmain(n_tau, prec)
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
         Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
-        if resnorm > resnormprec
-            break
-        end
-        resnormprec = resnorm
         ind+= 1
     end
 end
