@@ -125,4 +125,4 @@ function fctmain(n_tau, prec)
         ind+= 1
     end
 end
-fctmain(32,256)
+fctmain(32,512)
