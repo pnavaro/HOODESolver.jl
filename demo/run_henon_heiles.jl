@@ -115,7 +115,7 @@ function fctmain(n_tau, prec)
                         xaxis=:log,
                         ylabel="error",
                         yaxis=:log,
-                        legend=:topleft,
+                        legend=:bottomright,
                         label=labels,
                         marker=2
                     )
