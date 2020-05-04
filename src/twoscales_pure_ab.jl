@@ -121,13 +121,13 @@ function _init_ab(par::PrepareTwoScalesPureAB, fftfct, fft_u)
     end
     
 function _tr_ab(par::PrepareTwoScalesPureAB, fftfct, u_chap)
-    resfft = par.exptau.* u_chap
+    resu_c = par.exptau.* u_chap
     bound = par.order-1
     for k =0:bound
-        resfft .+= transpose(par.p_coef.tab_coef[:, k+1, par.order]).*fftfct[end-k]
+        resu_c .+= transpose(par.p_coef.tab_coef[:, k+1, par.order]).*fftfct[end-k]
     end
-    f = _calculfft(par.parphi, resfft)
-    return f, resfft
+    resfft = _calculfft(par.parphi, resu_c)
+    return resfft, resu_c
 end
 function traceln( refniv, str; verbose=100)::Nothing
     if verbose >= refniv
