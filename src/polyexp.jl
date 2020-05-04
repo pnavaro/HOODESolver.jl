@@ -38,14 +38,8 @@ struct PolyExp{T}
     p::Polynomial{T}
     a::T
     b::T
-    # PolyExp(v::Vector{T},a::N,b::N) where{T,N<:Number}=new{T,N}(Polynomial{T}(v), a, b)
-    # PolyExp(p::Polynomial{T},a::N,b::N) where{T,N<:Number}=new{T,N}(p, a, b)
-    # PolyExp(n::T,a::N,b::N) where{T,N<:Number}=PolyExp{T}([n], a, b)
-#    PolyExp(p::Vector{T})=new{T}(Poly{T}(p[1:end-2]), a[end-1], b[end])
     PolyExp(p::Vector{T},a::T,b::T) where{T<:Number}=new{T}(Polynomial{T}(p), a, b)
     PolyExp(pol::Polynomial{T},a::T,b::T) where{T<:Number}=new{T}(pol, a, b)
-    # waiting a fix of bug (see issue #208 for Polynomials)
-    PolyExp(n, a::T, b::T) where{T<:Number}=PolyExp([convert(T,n)], a, b) 
 end
 function _printNumberPar(x::Number) 
     return isreal(x) ? "$(real(x))" : (iszero(real(x)) ? "$(imag(x))im" : "($x)")
