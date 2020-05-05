@@ -97,9 +97,6 @@ function Polynomials.integrate(pe::PolyExp)
     end
     return PolyExp( pol, pe.a, pe.b)
 end
-function Polynomials.integrate(v::Number)
-    return Polynomials.integrate(Polynomial([v::Number]))
-end
 (pe::PolyExp)(x) = pe.p(x) * exp(pe.a*x + pe.b)
 coeffs(pe::PolyExp) = vcat(Polynomials.coeffs(pe.p), pe.a, pe.b)
 function Polynomials.integrate(p::PolyExp, v_begin::Number, v_end::Number )
