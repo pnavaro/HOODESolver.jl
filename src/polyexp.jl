@@ -100,9 +100,7 @@ end
 function Polynomials.integrate(v::Number)
     return Polynomials.integrate(Polynomial([v::Number]))
 end
-polyval(pe::PolyExp, v::AbstractArray) = map(x->polyval(pe, x), v)
-polyval(pe::PolyExp, x::Number) = pe.p(x) * exp(pe.a*x + pe.b)
-(pe::PolyExp)(x) = polyval(pe, x)
+(pe::PolyExp)(x) = pe.p(x) * exp(pe.a*x + pe.b)
 coeffs(pe::PolyExp) = vcat(Polynomials.coeffs(pe.p), pe.a, pe.b)
 function Polynomials.integrate(p::PolyExp, v_begin::Number, v_end::Number )
     pol = Polynomials.integrate(p)
