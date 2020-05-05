@@ -68,8 +68,8 @@ struct PrepareTwoScalesPureAB
     end
 end
 
-function _calculfft(parphi::PreparePhi, resfft)
-    f = filtredfct(parphi, real(ifftgen(parphi.par_fft, resfft)))
+function _calculfft(parphi::PreparePhi, u_caret)
+    f = filtredfct(parphi, real(ifftgen(parphi.par_fft, u_caret)))
     return fftgen(parphi.par_fft, f)
 end
 
