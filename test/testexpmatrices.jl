@@ -8,8 +8,8 @@ function testexp()
     A[1,3] = 1
     A[3,1] = -1
     @time @testset "test 1 exp big matrices" begin
-        @test isapprox( one(A), _expm1(0A), atol=1e-16)
-        @test isapprox(exp(0.123*A), _expm1(0.123*A), atol=1e-15)
+        @test isapprox( one(A), _expmat1(0A), atol=1e-16)
+        @test isapprox(exp(0.123*A), _expmat1(0.123*A), atol=1e-15)
     end    
     @time @testset "test 2 exp big matrices" begin
         Abig = convert(Array{BigFloat,2},A)
@@ -17,7 +17,7 @@ function testexp()
         sens=1
         for i = 1:100:100000
             v=rand(BigFloat)*i*sens
-            res = _expm0(v*Abig)
+            res = _expmat0(v*Abig)
             resRef = one(Abig)
             resRef[1,1] = resRef[3,3] = cos(v)
             resRef[1,3] = sin(v)
@@ -34,14 +34,14 @@ function testexp()
         for i=1:20
             C=rand(4,4)*i
             B = b*i
-            @test isapprox(exp(C), _expm1(C), rtol=1e-13)
-            @test isapprox(exp(0.7C), _expm1(0.7C), rtol=1e-12)
-            @test isapprox(exp(0.89C), _expm1(0.89C), rtol=1e-12)
-            @test isapprox(exp(B), _expm1(B), rtol=1e-14)
-            @test isapprox(exp(10B), _expm1(10B), rtol=1e-13)
-            @test isapprox(exp(100B), _expm1(100B), rtol=1e-12)
-            @test isapprox(exp(1000B), _expm1(1000B), rtol=1e-11)
-            @test isapprox(exp(10000B), _expm1(10000B), rtol=1e-10)
+            @test isapprox(exp(C), _expmat1(C), rtol=1e-13)
+            @test isapprox(exp(0.7C), _expmat1(0.7C), rtol=1e-12)
+            @test isapprox(exp(0.89C), _expmat1(0.89C), rtol=1e-12)
+            @test isapprox(exp(B), _expmat1(B), rtol=1e-14)
+            @test isapprox(exp(10B), _expmat1(10B), rtol=1e-13)
+            @test isapprox(exp(100B), _expmat1(100B), rtol=1e-12)
+            @test isapprox(exp(1000B), _expmat1(1000B), rtol=1e-11)
+            @test isapprox(exp(10000B), _expmat1(10000B), rtol=1e-10)
         end
     end    
     @time @testset "test 4 exp big matrices big precision" begin
@@ -50,7 +50,7 @@ function testexp()
         for i=1:6
             prec *= 2
             setprecision(prec)
-            @test isapprox(_expm1(2big(pi)*A)-I,zeros(BigFloat,4,4),atol=eps(BigFloat)*100)
+            @test isapprox(_expmat1(2big(pi)*A)-I,zeros(BigFloat,4,4),atol=eps(BigFloat)*100)
         end
         setprecision(prec_old)
     end
