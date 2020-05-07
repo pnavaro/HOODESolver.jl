@@ -6,11 +6,18 @@ using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
-struct HiOscODEFunction{iip} <: DiffEqBase.AbstractODEFunction{iip}
+struct HiOscODEFunction{iip, N} <: DiffEqBase.AbstractODEFunction{iip}
     f
 end
-(fct::HiOscODEFunction{false})(u, p, t)=fct.f(u, p, t)
-(fct::HiOscODEFunction{true})(du, u, p, t)=fct.f(du, u, p, t)
+(fct::HiOscODEFunction{false,3})(u, p, t)=fct.f(u, p, t)
+(fct::HiOscODEFunction{false,2})(u, p, t)=fct.f(u, p)
+(fct::HiOscODEFunction{false,1})(u, p, t)=fct.f(u)
+function (fct::HiOscODEFunction{true,4})(u, p, t)
+    du = zero(u)
+    fct.f(du, u, p, t)
+    return du
+end    
+
 
 struct HiOscODEProblem{T} <:DiffEqBase.DEProblem
     """The HiOscODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
@@ -36,10 +43,25 @@ A::Matrix,
 epsilon::T,
 B::Union{Matrix, Missing}
 )  where {T}
-        if 
-        return new{T}( HiOscODEFunction(f), u0, tspan, p, A, epsilon, B)
-    end
-end
+        fct = if hasmethod(f, (Vector{T}, Vector{T}, Any, T) )
+            println("trace1")
+            HiOscODEFunction{true,4}(f)
+        elseif hasmethod(f, (Vector{T}, Any, T) )
+            println("trace2")
+            HiOscODEFunction{false,3}(f)
+        elseif hasmethod(f, (Vector{T}, Any) )
+            println("trace4")
+            HiOscODEFunction{false,2}(f)
+        elseif hasmethod(f, (Vector{T},) )
+            println("trace6")
+            HiOscODEFunction{false,1}(f)
+        else
+            println("err !!!!!")
+        end
+        println("trace7")
+        return new{T}(fct, u0, tspan, p, A, epsilon, B)
+    end # end of function
+end # end of struct
 function HiOscODEProblem(f, u0, tspan, p, A, epsilon)
     return HiOscODEProblem(f, u0, tspan, p, A, epsilon, missing)
 end

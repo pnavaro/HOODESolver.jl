@@ -5,6 +5,39 @@ include("../src/interface.jl")
 include("../src/henon_heiles.jl")
 
 
+function fct4( du, u, p, t)
+    B=[0.1 1.1 0.2 05 ; -0.9 -0.12 -0.7 0.4 ; 0.5 0.66 0.7 0.8 ; -0.34 0.8 0 0.3]
+    du[:] = B*u
+    missing
+end
+   
+
+function testinterface_fct()
+    @time @testset "test interface type of function" begin
+        A =  [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0]
+        B=[0.1 1.1 0.2 05 ; -0.9 -0.12 -0.7 0.4 ; 0.5 0.66 0.7 0.8 ; -0.34 0.8 0 0.3]
+        u0 = 2rand(4)-ones(4)
+        epsilon = 0.0001
+        sol_ref = exp(1.0*(1/epsilon*A+B))*u0
+        fct = (u,p,t) -> B*u
+        prob = HiOscODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
+        sol = solve(prob)
+        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+        fct = (u,p) -> B*u
+        prob = HiOscODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
+        sol = solve(prob)
+        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+        fct = (u) -> B*u
+        prob = HiOscODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
+        sol = solve(prob)
+        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+        prob = HiOscODEProblem(fct4, u0, (0.0, 1.0), missing, A, epsilon)
+        sol = solve(prob)
+        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+    end
+end
+
+
 function testinterface_epsilon()
     @time @testset "test interface while epsilon varying" begin
         Random.seed!(199881)
@@ -195,12 +228,10 @@ function testinterface_time_time()
     tts_time_time(-big"0.845722676",-big"0.56716")
 end
 
+testinterface_fct()
 testinterface_interpolate_float()
 testinterface_time()
-
 testinterface_time_time()
-
-
 testinterface_epsilon()
 testinterface_interpolate()
 testinterface_short()
