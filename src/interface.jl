@@ -6,10 +6,11 @@ using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
-struct HiOscODEFunction <: DiffEqBase.AbstractODEFunction{false}
+struct HiOscODEFunction{iip} <: DiffEqBase.AbstractODEFunction{iip}
     f
 end
-(fct::HiOscODEFunction)(u, p, t)=fct.f(u, p, t)
+(fct::HiOscODEFunction{false})(u, p, t)=fct.f(u, p, t)
+(fct::HiOscODEFunction{true})(du, u, p, t)=fct.f(du, u, p, t)
 
 struct HiOscODEProblem{T} <:DiffEqBase.DEProblem
     """The HiOscODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
@@ -35,6 +36,7 @@ A::Matrix,
 epsilon::T,
 B::Union{Matrix, Missing}
 )  where {T}
+        if 
         return new{T}( HiOscODEFunction(f), u0, tspan, p, A, epsilon, B)
     end
 end
@@ -81,6 +83,12 @@ function HiOscODESolution(retcode::Symbol)
 end
 (sol::HiOscODESolution)(t) = sol.dense ? sol.interp(t) : undef
 
+abstract type AbstractHiOscODEAlgorithm end
+
+struct HiOscTwoScalesAB <: AbstractHiOscODEAlgorithm end
+struct HiOscETDRK2 <: AbstractHiOscODEAlgorithm end
+struct HiOscETDRK3 <: AbstractHiOscODEAlgorithm end
+struct HiOscETDRK4 <: AbstractHiOscODEAlgorithm end
 
 
 # function DiffEqBase.build_solution{T}(prob::HiOscODEProblem{T}, 
@@ -132,12 +140,14 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 
 # Examples :
 """
-function DiffEqBase.solve(prob::HiOscODEProblem{T}; 
-    nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2,dense::Bool=true, 
+function DiffEqBase.solve(prob::HiOscODEProblem{T}; kwargs...) where T<:AbstractFloat
+    return DiffEqBase.solve(prob, HiOscTwoScalesAB(); kwargs...)
+end
+function DiffEqBase.solve(prob::HiOscODEProblem{T}, alg::HiOscTwoScalesAB; 
+    nb_tau::Integer=32, order::Integer=4, order_prep::Integer=order+2, dense::Bool=true, 
     nb_t::Integer=100, getprecision::Bool=dense, verbose=100,
     par_u0::Union{PrepareU0,Missing}=missing,
-    p_coef::Union{CoefExpAB,Missing}=missing,
-    
+    p_coef::Union{CoefExpAB,Missing}=missing
 ) where T<:AbstractFloat
     retcode = :Success
     nb_tau = prevpow(2,nb_tau)
