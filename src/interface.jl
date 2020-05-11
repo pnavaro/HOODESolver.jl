@@ -44,21 +44,16 @@ epsilon::T,
 B::Union{Matrix, Missing}
 )  where {T}
         fct = if hasmethod(f, (Vector{T}, Vector{T}, Any, T) )
-            println("trace1")
             HiOscODEFunction{true,4}(f)
         elseif hasmethod(f, (Vector{T}, Any, T) )
-            println("trace2")
             HiOscODEFunction{false,3}(f)
         elseif hasmethod(f, (Vector{T}, Any) )
-            println("trace4")
             HiOscODEFunction{false,2}(f)
         elseif hasmethod(f, (Vector{T},) )
-            println("trace6")
             HiOscODEFunction{false,1}(f)
         else
             println("err !!!!!")
         end
-        println("trace7")
         return new{T}(fct, u0, tspan, p, A, epsilon, B)
     end # end of function
 end # end of struct
@@ -72,10 +67,15 @@ struct HiOscInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
     order
 end
 function (interp::HiOscInterpolation)(t)
-    return _getresult(interp.u_caret, t, 
+    return _getresult(interp.t, 
+    interp.u_caret, t, 
     interp.parphi, 
     interp.t[1], interp.t[end], 
     interp.order)
+#    return _getresult(interp.u_caret, t, 
+#    interp.parphi, 
+#    interp.t[1], interp.t[end], 
+#    interp.order)
 end
 (interp::HiOscInterpolation)(vt::Vector{Float64})=interp.(vt)
 (interp::HiOscInterpolation)(vt::Vector{BigFloat})=interp.(vt)

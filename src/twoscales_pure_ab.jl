@@ -165,6 +165,22 @@ function _getresult( tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
     u_chap = interpolate(tab_u_chap[t1:(t1+order)], order, t_ex, N)
     return _getresult( u_chap, t-t_begin, par)
 end
+function _getresult( tab_t, tab_u_chap, t, par::PreparePhi, t_begin, t_max, order)
+    nb = size(tab_u_chap,1)-1
+    dt = (t_max-t_begin)/nb
+    t_ex = (t-t_begin)/dt
+    t_int = convert(Int64,floor(t_ex))
+    t_int_begin = t_int-div(order,2)
+    if t_int_begin < 0
+        t_int_begin = 0
+    end
+    if t_int_begin > nb-order
+        t_int_begin = nb-order
+    end
+    t1 = t_int_begin+1
+    u_chap = interpolate(tab_t[t1:(t1+order)], tab_u_chap[t1:(t1+order)], order, t)
+    return _getresult( u_chap, t-t_begin, par)
+end
 """
     twoscales_pure_ab(par::PrepareTwoScalesPureAB; only_end::Bool=false, diff_fft::Bool=false, res_fft::Bool=false, verbose::Integer=100)
 

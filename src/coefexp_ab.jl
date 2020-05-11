@@ -24,6 +24,22 @@ function interpolate(tab, order, value, N::DataType)
     end
     return res
 end
+function getpolylagrange( t::Vector{T}, k, j) where {T<:Number}
+    result = Polynomial([one(T)])
+    for l=0:j
+        if l != k
+            result *= Polynomial([-t[l+1],one(T)])/(t[k+1]-t[l+1])
+        end
+    end
+    return result
+end
+function interpolate(tab_time::Vector{T}, tab, order, value) where{T<:Number}
+    res=zeros(Complex{T},size(tab[1]))
+    for i=0:order
+        res .+= getpolylagrange(tab_time, i, order)(value)*tab[i+1] 
+    end
+    return res
+end
 interpolate(tab, order, value)=interpolate(tab, order, value, BigInt)
 struct CoefExpABRational
     tab_coef

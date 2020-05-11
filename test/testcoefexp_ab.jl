@@ -87,6 +87,11 @@ function testinterpolate()
         end
         value = big"4.22856371432981357654"
         res = interpolate(tab, order, value)
+        dt = big"0.00123"
+        t_deb=big"1.82898988989"
+        value2=t_deb+value*dt
+        tab_time=collect(t_deb:dt:(t_deb+(order+2)*dt))
+        res2 = interpolate(tab_time, tab, order, value2)
         resref = zeros(BigFloat,4,32)
         for i=1:4 
             for j=1:32
@@ -94,7 +99,9 @@ function testinterpolate()
             end
         end
         println("norm=$(norm(resref-res,Inf))")
+        println("norm2=$(norm(resref-res2,Inf))")
         @test isapprox( resref, res,atol=1e-60,rtol=1e-60)
+        @test isapprox( resref, res2,atol=1e-60,rtol=1e-48)
     end
 end
 testinterpolate()
