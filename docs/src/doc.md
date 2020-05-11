@@ -1,9 +1,9 @@
 
 
 The objective of this Julia package is to valorize the recent developments carried out within MINGuS on Uniformly Accurate numerical methods (UA) for highly oscillating problems. We propose to solve the following equation 
-$$
+$
 \frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t)), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\;\;\; (1)
-$$
+$
 with 
 - $u : t\in [t_{0}, t_{fin}] \mapsto u(t)\in \mathbb{R}^n$, $t_{0}, t_{fin}\in \mathbb{R}$, 
 - $u_{0}\in \mathbb{R}^n$, 
@@ -16,18 +16,18 @@ The purpose here is to write an explanatory documentation of the *Julia* package
 # Numerical method
 ## Two-scale formulation 
 First, rewrite equation (1) using the variable change $w(t)=\exp(-(t-t_{0})A/\varepsilon) u(t)$ to obtain 
-$$
+$
 \frac{d w(t)}{dt} = F\Big( \frac{t-t_{0}}{\varepsilon}, w(t) \Big), \;\;\; w(t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1],
-$$
+$
 where the function $F$ is expressed from the data of the original problem (1)
-$$
+$
 F\Big( \frac{s}{\varepsilon}, w \Big) = \exp(-sA/\varepsilon) \; f( \exp(sA/\varepsilon) \; w). 
-$$
+$
 We then introduce the function $U(t, ttau), ttau\in [0, 2 pi]$ such that $U(t, ttau=(t-t_{0})/\varepsilon) = w(t)$. The double-scale function is then the solution of the following equation
-$$
+$
 \frac{\partial U}{\partial t} + \frac{1}{\varepsilon} \frac{\partial U}{\partial \tau} =  F( \tau, U), \;\;\; U(t=t_{0}, \tau)=\Phi(\tau), \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\; (2)
 %\label{eq_tau}
-$$
+$
 where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is regular (see [^1] and [^2]).
 
 ## Discretion  
