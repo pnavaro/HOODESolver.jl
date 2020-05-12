@@ -1,125 +1,118 @@
 
 
 The objective of this Julia package is to valorize the recent developments carried out within MINGuS on Uniformly Accurate numerical methods (UA) for highly oscillating problems. We propose to solve the following equation 
-$
-\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t)), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\;\;\; (1)
-$
+
+$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t)), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\;\;\; (1)$$
+
 with 
-- $u : t\in [t_{0}, t_{fin}] \mapsto u(t)\in \mathbb{R}^n$, $t_{0}, t_{fin}\in \mathbb{R}$, 
-- $u_{0}\in \mathbb{R}^n$, 
-- $A\in {\cal M}_{n,n}(\mathbb{R})$ is such that $\tau \mapsto \exp(\tau A)$ is periodic,  
-- $f : u\in  \mathbb{R}^n \mapsto \mathbb{R}^n$.
+-  $u : t\in [t_{0}, t_{fin}] \mapsto u(t)\in \mathbb{R}^n, \;\; t_{0}, t_{\text{end}}\in \mathbb{R}$, 
+-  $u_{0}\in \mathbb{R}^n$, 
+-  $A\in {\mathcal{M}}_{n,n}(\mathbb{R})$ is such that $\tau \mapsto \exp(\tau A)$ is periodic,  
+-  $f : u\in  \mathbb{R}^n \mapsto \mathbb{R}^n$.
 
 The purpose here is to write an explanatory documentation of the *Julia* package containing the two-scale method (see [^1], [^2] and [^3]). This package is inspired by the Differential Equations package which is considered as one of the best *Julia* packages available.
 
 
 # Numerical method
 ## Two-scale formulation 
-First, rewrite equation (1) using the variable change $w(t)=\exp(-(t-t_{0})A/\varepsilon) u(t)$ to obtain 
-$
-\frac{d w(t)}{dt} = F\Big( \frac{t-t_{0}}{\varepsilon}, w(t) \Big), \;\;\; w(t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1],
-$
+First, rewrite equation (1) using the variable change $w(t)=\exp(-(t-t_{0})A/\varepsilon) u(t)$ to obtain
+
+$$\frac{d w(t)}{dt} = F\Big( \frac{t-t_{0}}{\varepsilon}, w(t) \Big), \;\;\; w(t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1],$$
+
 where the function $F$ is expressed from the data of the original problem (1)
-$
-F\Big( \frac{s}{\varepsilon}, w \Big) = \exp(-sA/\varepsilon) \; f( \exp(sA/\varepsilon) \; w). 
-$
-We then introduce the function $U(t, ttau), ttau\in [0, 2 pi]$ such that $U(t, ttau=(t-t_{0})/\varepsilon) = w(t)$. The double-scale function is then the solution of the following equation
-$
-\frac{\partial U}{\partial t} + \frac{1}{\varepsilon} \frac{\partial U}{\partial \tau} =  F( \tau, U), \;\;\; U(t=t_{0}, \tau)=\Phi(\tau), \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\; (2)
-%\label{eq_tau}
-$
+
+$$F\Big( \frac{s}{\varepsilon}, w \Big) = \exp(-sA/\varepsilon) \; f( \exp(sA/\varepsilon), \; w).$$
+
+We then introduce the function $U(t, \tau), \tau\in [0, 2 \pi]$ such that $U(t, \tau=(t-t_{0})/\varepsilon) = w(t)$. The two-scale function is then the solution of the following equation
+
+$$\frac{\partial U}{\partial t} + \frac{1}{\varepsilon} \frac{\partial U}{\partial \tau} =  F( \tau, U), \;\;\; U(t=t_{0}, \tau)=\Phi(\tau), \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\; (2)$$
+
 where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is regular (see [^1] and [^2]).
 
-## Discretion  
+## Discretization  
 The numerical method is based on a discretization of equation (2). In the direction $\tau$, a spectral method is used, while for the time $t$, an exponential Adams-Bashforth method allows to build a high order method (see [^2]). The initialization is based on a "butterfly" technique (going back and forth around the initial time).
 
 ### Initialization 
-Let r be the order of the method $AB_r$.
-Let $\delta t$ the time step, for $i \in \r, -(r-1), \ldots, r-1, r\}$,
-we note $u_i = u(t_0+i \Delta t)$.
-Let $r'$ be the orders of the intermediate AB methods we will use.
-If $u_{k}$ is known with a precision of ${\cal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k-1}, \ldots, u_{k-r'+1}$ are known with a precision of ${\cal O}(\Delta t^{r'})$ then we can calculate $u_{k+1}$ with a precision of ${\cal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.
-Similarly, if $u_{k}$ is known with a precision of ${\cal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k+1}, \ldots, u_{k+r'-1}$ are known with a precision of ${\cal O}(\Delta t^{r'})$ then we can calculate $u_{k-1}$ with a precision of ${\cal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.
+Let r be the order of the method $AB_r$.\
+Let $\Delta t$ the time step, for $i \in \{r, -(r-1), \ldots, r-1, r\}$,
+we note $u_i = u(t_0+i \Delta t)$.\
+Let $r'$ be the orders of the intermediate AB methods we will use.\ 
+If $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k-1}, \ldots, u_{k-r'+1}$ are known with a precision of ${\mathcal O}(\Delta t^{r'})$ then we can calculate $u_{k+1}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.\
+Similarly, if $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k+1}, \ldots, u_{k+r'-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r'})$ then we can calculate $u_{k-1}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.
 
 ### Algorithm
-- With the method $AB_1$, from $u_0$ we calculate $u_{-1}$ with a precision of ${\cal O}(\Delta t^2)$
+- With the method $AB_1$, from $u_0$ we calculate $u_{-1}$ with a precision of ${\mathcal O}(\Delta t^2)$
 - With the method $AB_2$, starting from $u_{0}$ and $u_{-1}$, we calculate $u_{1}$ with a precision of ${\cal O}(\Delta t^3)$
 - For $r' = $3 to $r' = r$.
     - For $k=1$ to $k=r'-1$
         - With the method $AB_{r'-1}$, from $u_{1-k}, u_{2-k}, \ldots,u_{r'-1-k}$, we calculate $u_{-k}$ with a precision of ${\cal O}(\Delta t^{r'})$
     - For $k=1$ to $k=r'-1$
-         - With the method $AB_{r'}$, from $u_{k-1}, u_{k-2}, \ldots,u_{k-r'}$, we calculate $u_{k}$ with a precision of ${\cal O}(\Delta t^{r'+1})$
+         - With the method $AB_{r'}$, from $u_{k-1}, u_{k-2}, \ldots,u_{k-r'}$, we calculate $u_{k}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$
 
-At the end of this algorithm, the values $u_0, u_1, \ldots u_{r-1}$ are known with a precision of ${\cal O}(\Delta t^{r+1})$, we can launch the algorithm $AB_r$.
+At the end of this algorithm, the values $u_0, u_1, \ldots u_{r-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r+1})$, we can launch the algorithm $AB_r$.
 
 
 ### The Adams-Bashforth Method
-For an Adams-Bashforth method of order $r$ in time and spectral $\tau$, we first introduce a mesh in the $\tau$ direction... 
-where $tau_ell = Delta, where N_tau$ is the number of points of discretization. If we apply the Fourier transform to the double-scale equation, we obtain 
-$$
-\frac{\partial \hat{U}_\ell}{\partial t} + \frac{i\ell}{\varepsilon}\hat{U}_\ell = \hat{F}_\ell(t), \;\; \ell=-N_\tau/2, \dots, N_\tau/2-1, 
-$$
+For an Adams-Bashforth method of order $r$ in time and spectral $\tau$, we first introduce a mesh in the $\tau$ direction.\
+$\tau_{\ell} = \ell \Delta \tau, \ell = 0, \ldots, N_{\tau}-1$. Where $N_{\tau}$ is the number of points of discretization. If we apply the Fourier transform to the two-scale equation, we obtain 
+
+$$\frac{\partial \hat{U}_\ell}{\partial t} + \frac{i\ell}{\varepsilon}\hat{U}_\ell = \hat{F}_\ell(t), \;\; \ell=-N_\tau/2, \dots, N_\tau/2-1,$$
+
 with
-$$
-U(t, \tau) = \sum_{\ell=-N_\tau/2}^{N_\tau/2-1} \hat{U}_\ell(t) e^{i\ell\tau} \;\;\; \mbox{ et } F(\tau, U(t, \tau)) = \sum_{\ell=-N_\tau/2}^{N_\tau/2-1} \hat{F}_\ell(t) e^{i\ell\tau}. 
-$$
-If we wish to calculate ${\hat{F}$ from ${\hat{U}$ we have the formula
-$$
-\hat{F}_{\ell}(t) = \sum_{r=-N_\tau/2}^{N_\tau/2-1} e^{- \frac{\pi i r \ell}{N_\tau}}  e^{\frac{\ell}{\varepsilon} A} F( t, \frac{e^{-\frac{\ell}{\varepsilon} A}}{N_\tau}\sum_{k=-N_\tau/2}^{N_\tau/2-1} e^{\frac{\pi i k \ell}{N_\tau}} \hat{U}_k(t))
-$$
+
+$$U(t, \tau) = \sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{U}_{\ell}(t) e^{i \ell \tau } \;\;\; \text{ et } F(\tau, U(t, \tau))\sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{F}_{\ell}(t) e^{i\ell\tau}.$$
+
+If we wish to calculate $\hat{F}$ from $\hat{U}$ we have the formula
+
+$$\hat{F}_{\ell}(t) = \sum_{r=-N_\tau/2}^{N_\tau/2-1} e^{- \frac{\pi i r \ell}{N_\tau}}  e^{\frac{\ell}{\varepsilon} A} F\Big( t, \frac{e^{-\frac{\ell}{\varepsilon} A}}{N_\tau}\sum_{k=-N_\tau/2}^{N_\tau/2-1} e^{\frac{\pi i k \ell}{N_\tau}} \hat{U}_k(t)\Big)$$
 
 Now, given a time step $\Delta t>0$ and a discretization in time $t_n=n\Delta t$, we can write the following Duhamel formula ($n\geq 0$)
-$$
-\hat{U}_{\ell}(t_{n+1}) 
-= e^{-i\ell\Delta t/\varepsilon}\hat{U}_{\ell}(t_{n})  + \int_0^{\Delta t} e^{-i\ell(\Delta t -s)/\varepsilon} \hat{F}_\ell(t_n+s)ds. 
-$$
-Ainsi, pour obtenir un schéma d'ordre $(r+1)$, on 
-approche la fonction $\hat{F}_\ell(t_n+s)$ par le polynôme de Lagrange d'ordre $r$ interpolateur aux points $t_{n-j}, j=0, \dots, r$. Ce polynôme s'écrit 
-$$
-\hat{F}_\ell(t_n+s) \approx \sum_{k=0}^r \Big(\Pi_{j=0, j\neq k}^r \frac{s+j \Delta t}{(j-k)\Delta t} \Big) \hat{F}_\ell(t_n-t_j), \;\; n\geq 0.  
-$$
-Ainsi, à partir de cette approximation, on intègre exactement, ce qui demande les formules suivantes 
-$$
-p^{[r]}_{\ell, j} = \int_0^{\Delta t}e^{-i\ell(\Delta t -s)/\varepsilon}\Big( \Pi_{j=0, j\neq k}^r \frac{s+j \Delta t}{(j-k)\Delta t}\Big) ds,   
-$$
-pour chaque $j$ et $\ell$ tels que $0\leq j\leq r, \; \ell=-N_\tau/2, \dots, N_\tau/2-1$. Ces coefficients $p^{[r]}_{\ell, j}$ peuvent être pré-calculés et stockés une fois pour toute. Ainsi, le schéma s'écrit finalement 
-$$
-\hat{U}_{\ell}^{n+1}= e^{-i\ell\Delta t/\varepsilon}\hat{U}_{\ell}^n + \sum_{j=0}^r p^{[r]}_{\ell, j} \hat{F}_\ell^{n-j},  
-$$
-avec $\hat{U}_{\ell}^n \approx \hat{U}_{\ell}(t_n)$ et $\hat{F}_\ell^{n-j}\approx \hat{F}_\ell(t_{n-j})$. 
 
-On peut vérifier que l'erreur de troncature de ce schéma est ${\cal O}(\Delta t^{r+1})$, une fois que les valeurs initiales $\hat{U}_\ell^1, \dots, \hat{U}_\ell^r$ ont été calculées.  
+$$\hat{U}_{\ell}(t_{n+1}) 
+= e^{-i\ell\Delta t/\varepsilon}\hat{U}_{\ell}(t_{n})  + \int_0^{\Delta t} e^{-i\ell(\Delta t -s)/\varepsilon} \hat{F}_\ell(t_n+s)ds.$$
+
+Thus, to obtain a $(r+1)$ scheme, we can 
+approaches the function $\hat{F}_\ell(t_n+s)$ by the Lagrange polynomial of order $r$ interpolator at points $t_{n-j}, j=0, \dots, r$. This polynomial is written 
+
+$$\hat{F}_\ell(t_n+s) \approx \sum_{k=0}^r \Big(\Pi_{j=0, j\neq k}^r \frac{s+j \Delta t}{(j-k)\Delta t} \Big) \hat{F}_\ell(t_n-t_j), \;\; n\geq 0.$$
+
+Thus, from this approximation, we integrate exactly, which requires the following formulas
+
+$$p^{[r]}_{\ell, j} = \int_0^{\Delta t}e^{-i\ell(\Delta t -s)/\varepsilon}\Big( \Pi_{j=0, j\neq k}^r \frac{s+j \Delta t}{(j-k)\Delta t}\Big) ds,$$
+
+for each $j$ and $\ell$ such that $0\leq j\leq r, \; \ell=-N_\tau/2, \dots, N_\tau/2-1$. These coefficients $p^{[r]}_{\ell, j}$ can be pre-calculated and stored once and for all. Thus, the schema is finally written
+
+$$\hat{U}_{\ell}^{n+1}= e^{-i\ell\Delta t/\varepsilon}\hat{U}_{\ell}^n + \sum_{j=0}^r p^{[r]}_{\ell, j} \hat{F}_\ell^{n-j},$$
+
+with $\hat{U}_{\ell}^n \approx \hat{U}_{\ell}(t_n)$ and $\hat{F}_\ell^{n-j}\approx \hat{F}_\ell(t_{n-j})$. 
+
+We can verify that the truncation error in this schema is  ${\mathcal O}(\Delta t^{r+1})$, once the initial values  $\hat{U}_\ell^1, \dots, \hat{U}_\ell^r$ have been calculated.  
 
 
 
-## Cas non-homogène $f(u, t)$
-On considère ici le cas où $f$ dépend de la variable $t$
+## Non-homogeneous case $f(u, t)$
+Here we consider the case where $f$ depends on the variable $t$.
 
-$$
-\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t), t), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1], 
-%\tag{eq1_t}
-$$
+$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t), t), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1] \;\;\;\; (3)$$
 
-Le cas non-homogène \ref{eq1_t} entre dans le cadre \eqref{eq1} 
-en introduisant la variable $\theta : t \in [t_{0}, t_{fin}] \mapsto \theta(t) = t\in \mathbb{R}$ 
-qui permet de reformuler le cas non-homogène \eqref{eq1_t} en un problème homogène de la forme \eqref{eq1}. 
-En effet, on reformule \eqref{eq1_t} de la manière suivante 
-$$
-\begin{aligned}
+The non-homogeneous case (3) falls under (1), by entering the variable 
+$\theta : t \in [t_{0}, t_{\text{end}}] \mapsto \theta(t) = t\in \mathbb{R}$ 
+which allows us to reformulate the non-homogeneous case (3) into a homogeneous problem of the form (1).
+Indeed, we rephrase (3) as follows
+
+$$\begin{aligned}
 \frac{d u(t) }{dt}  & = \frac{1}{\varepsilon} Au(t) + f(u(t), \theta(t)), \\
-\frac{d \theta(t) }{dt}  & = 1,
-\end{aligned}
-$$
-%\label{eq1_t_theta}
+\frac{d \theta(t) }{dt}  & = 1
+\end{aligned}\;\;\;\;(4)$$
 
-avec la condition initiale $u(t_{0})=u_{0}, \theta(t_{0})=t_{0}$. Ainsi, le problème \eqref{eq1_t_theta} se réécrit en une équation 
-satisfaite par $y: t\in [t_{0}, t_{fin}] \mapsto y(t) =(u(t), \theta(t))\in \mathbb{R}^{n+1}$
-$$
-\frac{d y}{dt} = \frac{1}{\varepsilon} \tilde{A} y + g(y), \;\; y(t_{0})=(u_{0}, t_{0}), 
-$$
-avec $\tilde{A}\in{\cal M}_{n+1, n+1}(\mathbb{R})$
-$$
-\tilde{A}=
+with the initial condition  $u(t_{0})=u_{0}, \theta(t_{0})=t_{0}$. Thus, the problem (4) is rewritten into an equation\
+satisfied by $y: t\in [t_{0}, t_{fin}] \mapsto y(t) =(u(t), \theta(t))\in \mathbb{R}^{n+1}$
+
+$$\frac{d y}{dt} = \frac{1}{\varepsilon} \tilde{A} y + g(y), \;\; y(t_{0})=(u_{0}, t_{0}),$$
+
+with $\tilde{A}\in{\mathcal M}_{n+1, n+1}(\mathbb{R})$
+
+$$\tilde{A}=
 \left(
 \begin{array}{cccc}
    &    &     & 0 \\
@@ -127,37 +120,33 @@ $$
    &    &    & 0 \\
 0 & 0 & 0 &  0 
 \end{array}
-\right) \;\;\;\; \mbox{ et } \;\;\;\;
+\right) \;\;\;\; \text{ and } \;\;\;\;
 g(y)=g(u, \theta) = \left(
 \begin{array}{cccccc}
 f(u, \theta) \\
 1
 \end{array}
-\right) \in \mathbb{R}^{n+1}. 
-$$
+\right) \in \mathbb{R}^{n+1}.$$
 
-## La méthode Runge-Kutta "classique" (ordre 4) adaptée à l'exponentielle
+## The "classical" Runge-Kutta method (order 4) adapted to the exponential
 
 Notations : 
-- Nous notons $G$ la fonction qui permet de passer de $\hat{U}$ à $\hat{f}$, ainsi $\hat{f} = G(\hat{U})$.
-- Nous notons $S_{t_0}^{t_1}(t_2,\ell)$ l'intégrale $S_{t_0}^{t_1}(t_2,\ell) = \int_{t_0}^{t_1} e^{- i \ell (t_2 - s)/\varepsilon} ds = ( i \varepsilon / \ell) ( e^{- i \ell (t_2 - t_1)/\varepsilon}-e^{- i \ell (t_2 - t_0)/\varepsilon})$
+- We denote by $G$ the function which transforms $\hat{U}$ to $\hat{f}$, so $G(\hat{U}) = \hat{f}$.
+- We denote by $S_{t_0}^{t_1}(t_2,\ell)$ the intégral $S_{t_0}^{t_1}(t_2,\ell) = \int_{t_0}^{t_1} e^{- i \ell (t_2 - s)/\varepsilon} ds = ( i \varepsilon / \ell) ( e^{- i \ell (t_2 - t_1)/\varepsilon}-e^{- i \ell (t_2 - t_0)/\varepsilon})$
 
 
-Voici les calculs
+Here are the calculations
 
 
-- $u_{1,\ell} = \hat{U}_{n, \ell}$
-- $u_{2,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell ) G_{\ell}(u_1)$
-- $u_{3,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell )  G_{\ell}(u_2)$
-- D'après (28) du papier, avec $c=-i \ell h_n /\varepsilon$, on a   
-- $u_{4,\ell} = e^{- i \ell h_n /(2\varepsilon)}u_{2,\ell} + S_0^{h_n/2} ( h_n/2,\ell )[ 2 G_{\ell}(u_3)-G_{\ell}(u_1)]$
+-  $u_{1,\ell} = \hat{U}_{n, \ell}$
+-  $u_{2,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell ) G_{\ell}(u_1)$
+-  $u_{3,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell )  G_{\ell}(u_2)$
 
-$$\hat{U}_{n+1, \ell} = e^{- i \ell h_n /\varepsilon}\hat{U}_{n, \ell} + S_0^{h_n/6} ( h_n,\ell ) G_{\ell}(u_1) + \frac{1}{2} S_{h_n/6}^{5 h_n/6} ( h_n,\ell ) ( G_{\ell}(u_2) + G_{\ell}(u_3) )\\ + S_{5h_n/6}^{ h_n} ( h_n,\ell ) G_{\ell}(u_4)$$
+-  $u_{4,\ell} = e^{- i \ell h_n /(2\varepsilon)}u_{2,\ell} + S_0^{h_n/2} ( h_n/2,\ell )[ 2 G_{\ell}(u_3)-G_{\ell}(u_1)]$ (see (28) of [^4], with $c=-i \ell h_n /\varepsilon$)   
 
-D'après (29) du papier, avec $c=-i \ell h_n /\varepsilon$, on a
-$$
-\hat{U}_{n+1, \ell} = e^{- i \ell h_n /\varepsilon}\hat{U}_{n, \ell} +  G_{\ell}(u_1) [-4+i \ell h_n /\varepsilon + e^{-i \ell h_n /\varepsilon}(4+3i \ell h_n /\varepsilon+(i \ell h_n /\varepsilon)^2]\\+ (2 G_{\ell}(u_2) + G_{\ell}(u_3) )[-2-i \ell h_n /\varepsilon+e^{-i \ell h_n /\varepsilon}(2-i \ell h_n /\varepsilon)]\\ + G_{\ell}(u_4)[-4+3i \ell h_n /\varepsilon -(i \ell h_n /\varepsilon)^2 + e^{-i \ell h_n /\varepsilon}(4+i \ell h_n /\varepsilon)]/(h_n^2 (i \ell h_n /\varepsilon)^3)
-$$
+From (29) of [^4], with $c=-i \ell h_n /\varepsilon$, we have
+
+$$\hat{U}_{n+1, \ell} = e^{- i \ell h_n /\varepsilon}\hat{U}_{n, \ell} +  G_{\ell}(u_1) [-4+i \ell h_n /\varepsilon + e^{-i \ell h_n /\varepsilon}(4+3i \ell h_n /\varepsilon+(i \ell h_n /\varepsilon)^2]\\+ (2 G_{\ell}(u_2) + G_{\ell}(u_3) )[-2-i \ell h_n /\varepsilon+e^{-i \ell h_n /\varepsilon}(2-i \ell h_n /\varepsilon)]\\ + G_{\ell}(u_4)[-4+3i \ell h_n /\varepsilon -(i \ell h_n /\varepsilon)^2 + e^{-i \ell h_n /\varepsilon}(4+i \ell h_n /\varepsilon)]/(h_n^2 (i \ell h_n /\varepsilon)^3)$$
 
 
 # Utilisation
@@ -165,18 +154,19 @@ $$
 
 
 ## Paramètres d'entrée
-Les arguments d'entrée utilisent le même format que le package ODE. 
+The input arguments use the same format as the ODE package. 
 
-Ainsi, dans un premier temps, il faut définir les arguments nécessaires pour construire le problème  \eqref{eq1}, à savoir
+Thus, first of all, we must define the arguments necessary to construct the problem (1), namely
 
-- la fonction $f$ (sous la forme *Julia*) 
-- la condition initiale $u_{0}$
-- les temps initial $t_{0}$ et final $t_{fin}$ 
-- le deuxième paramètre de la fonction 
-- la matrice $A$ 
-- $\varepsilon \in ]0, 1]$ 
+- the $f$ function (in the form *Julia*) 
+- the initial condition $u_{0}$.
+- the initial time $t_{0}$ and final time $t_{fin}$. 
+- the second parameter of the 
+- the $A$ matrix 
+-  $\varepsilon \in ]0, 1]$
 
-Note : *Vous devez saisir "à la main" le ] et ^C, pour le reste vous pouvez copier-coller*.
+
+Note: *You have to type ] and ^C by hand, for the rest you can copy and paste*.
 
 ```jl
 ]
@@ -192,20 +182,22 @@ u0 = [0.55, 0.12, 0.03, 0.89]
 prob = HiOscODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
 ```
 
-A partir du problème ```prob```, on peut maintenant passer à sa résolution numérique. 
-Pour cela, on définit les paramètres numériques 
-- le nombre de tranches de temps $N_t$ qui définit le pas de temps $\Delta t = \frac{t_0-t_{fin}}{N_t}$ 
-- l'ordre $r$ de la méthode 
-- le nombre de points $N_\tau$ dans la direction $\tau$ 
-- l'ordre de la préparation $q$ de la condition initiale 
-- précision  <font color=red> non encore implémentée</font>. 
+From the ```prob``` problem, we can now switch to its digital resolution. 
 
-Par défaut, les paramètres sont : $N_t=100$, $r=4$, $N_\tau=32$ et $q=r+2=6$
-Pour résoudre le problème avec les paramètres par défaut, il suffit d'appeler la commande `solve` avec le problème déjà défini comme paramètre
+To do this, the numerical parameters are defined 
+- the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_0}{N_t}$ 
+- the $r$ order of the method 
+- the number of $N_\tau$ points in the $\tau$ direction... 
+- the order of preparation $q$ of the initial condition 
+- precision <font color=red> not yet implemented</font>. 
+- precision $\textcolor{red}{\text{not yet implemented}}$. 
+
+The default settings are : $N_t=100$, $r=4$, $N_\tau=32$ and $q=r+2=6$
+To solve the problem with the default parameters, just call the `solve` command with the problem already defined as parameter
 ```jl     
 sol = solve(prob) 
 ```
-Ce qui est équivalent à cet appel 
+Which is equivalent to this call
 ```jl     
 sol = solve(
     prob;
@@ -220,21 +212,21 @@ sol = solve(
     p_coef=missing,
 ) 
 ```
-### Définition exhaustive des paramètres
-- `prob` : problème défini par `HiOscODEProblem` 
+### Exhaustive definition of the parameters
+- `prob` : problem defined by `HiOscODEProblem` 
 - `nb_tau=32` : $N_{\tau}$
-- `order=4` : ordre $r$ de la méthode
-- `order_prep=order+2` : ordre de préparation des données initiales
-- `dense=true` : indique si l'on conserve ou non les données issues de la transformée de fourier, si `dense=false`, le traitement est plus rapide mais l'interpolation ne peut plus être faite.
+- `order=4` : order $r$ of the method
+- `order_prep=order+2` : order of preparation of initial data
+- `dense=true` : indicates whether or not to keep the data from the fourier transform, if `dense=false`, processing is faster but interpolation can no longer be done.
 - `nb_t=100` : $N_t$
-- `getprecision=dense` : indique si la précision est calculée, la méthode utilisée pour calculer la précision multiplie par 2 le temps de traitement.
-- `verbose=100` : niveau de trace, si `verbose=0` alors rien n'est affiché.
-- `par_u0` : données initiales préparées, si on doit faire plusieurs appels à `solve` avec les mêmes données initiales et au même ordre on peut passer en paramêtre les données déjà calculées.
-- `p_coef` : tableau avec les coefficients de la méthode Adams-Bashforth. Ce tableau peut être utilisé pour optimiser plusieurs appels avec les mêmes paramètres. 
-## Arguments de sortie
-En sortie, une structure de type `HiOscODESolution`.
-Cette structure peut être vue comme une fonction de t, elle peut aussi être vue comme un tableau de taille $N_t + 1$. Cette structure contient aussi les champs `absprec` et `relprec` qui sont les précisions, respectivement absolue et relative, calculées.
-### Exemple
+- `getprecision=dense` : indicates whether the accuracy is calculated, the method used to calculate the accuracy multiplies the processing time by 2.
+- `verbose=100` : trace level, if `verbose=0` then nothing is displayed.
+- `par_u0` : If we have to make several calls to `solve` with the same initial data and in the same order, we can pass in parameter the already calculated data.
+- `p_coef` : table with the coefficients of the Adams-Bashforth method. This array can be used to optimize several calls with the same parameters.
+## Exit arguments
+As an output, a structure of type `HiOscODESolution`.
+This structure can be seen as a function of t, it can also be seen as an array of size $N_t + 1$. This structure also contains the `absprec` and `relprec` fields which are the absolute and relative precisions, respectively, calculated.
+### Example
 ```jl     
 julia> sol = solve(prob);
 solve function prob=HiOscODEProblem with uType Array{Float64,1} and tType Float64. In-place: nothing
@@ -279,7 +271,7 @@ julia> sol.relprec
 
 
 ```
-Pour visualiser le résultat, on peut aussi utiliser Plot, par exemple
+To view the result, you can also use Plot, for example
 ```jl     
 using Plots
 plot(sol) 
@@ -506,6 +498,9 @@ submitted.
 [^3]: N. Crouseilles, M. Lemou, F. Méhats, 
 J. Comput. Phys, 248, pp.287-308, (2013). 
 
+[^4]: S. M. Cox and P. C. Matthews
+"Exponential Time Differencing for Stiff Systems"
+J. Comput. Phys, 436, pp.430-455, (2002).
 
 
 

@@ -1,14 +1,14 @@
 
 
-L'objectif de ce package Julia consiste à valoriser les développements récents effectués au sein de MINGuS sur les méthodes numériques Uniformément Précises (UA pour Uniformly Accurate) pour les problèmes hautement oscillants. On se propose de résoudre l'équation suivante 
-$$
-\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t)), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\;\;\; (1)
-$$
+L'objectif de ce package Julia consiste à valoriser les développements récents effectués au sein de MINGuS sur les méthodes numériques Uniformément Précises (UA pour Uniformly Accurate) pour les problèmes hautement oscillants. On se propose de résoudre l'équation suivante
+
+$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t)), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\;\;\; (1)$$
+
 avec 
-- $u : t\in [t_{0}, t_{fin}] \mapsto u(t)\in \mathbb{R}^n$, $t_{0}, t_{fin}\in \mathbb{R}$, 
-- $u_{0}\in \mathbb{R}^n$, 
-- $A\in {\cal M}_{n,n}(\mathbb{R})$ est telle que $\tau \mapsto \exp(\tau A)$ est périodique,  
-- $f : u\in  \mathbb{R}^n \mapsto \mathbb{R}^n$.
+-  $u : t\in [t_{0}, t_{fin}] \mapsto u(t)\in \mathbb{R}^n, t_{0}, t_{fin}\in \mathbb{R},$
+-  $u_{0}\in \mathbb{R}^n,$ 
+-  $A\in \mathcal{M}_{n,n}(\mathbb{R})\text{ est telle que }\tau \mapsto \exp(\tau A)$ est périodique,  
+-  $f : u\in  \mathbb{R}^n \mapsto \mathbb{R}^n$.
 
 Il s'agit ici d'écrire une documentation explicative du package *Julia* contenant la méthode double-échelle (voir [^1], [^2] et [^3]). Ce package s'inspire du package Differential Equations  qui est considéré comme un des meilleurs packages *Julia* existant. 
 
