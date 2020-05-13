@@ -1,4 +1,4 @@
-# Functions
+# Types
 
 ```@autodocs
 Modules = [HighlyOscillatoryProblems]
