@@ -151,11 +151,8 @@ From (29) of [^4], with $c=-i \ell h_n /\varepsilon$, we have
 $$\hat{U}_{n+1, \ell} = e^{- i \ell h_n /\varepsilon}\hat{U}_{n, \ell} +  G_{\ell}(u_1) [-4+i \ell h_n /\varepsilon + e^{-i \ell h_n /\varepsilon}(4+3i \ell h_n /\varepsilon+(i \ell h_n /\varepsilon)^2]\\+ (2 G_{\ell}(u_2) + G_{\ell}(u_3) )[-2-i \ell h_n /\varepsilon+e^{-i \ell h_n /\varepsilon}(2-i \ell h_n /\varepsilon)]\\ + G_{\ell}(u_4)[-4+3i \ell h_n /\varepsilon -(i \ell h_n /\varepsilon)^2 + e^{-i \ell h_n /\varepsilon}(4+i \ell h_n /\varepsilon)]/(h_n^2 (i \ell h_n /\varepsilon)^3)$$
 
 
-# Utilisation
-
-
-
-## Paramètres d'entrée
+# Use
+## Input parameters
 The input arguments use the same format as the ODE package. 
 
 Thus, first of all, we must define the arguments necessary to construct the problem (1), namely
@@ -278,24 +275,26 @@ To view the result, you can also use Plot, for example
 using Plots
 plot(sol) 
 ```
-Ce qui donne
+This results in
+
 ![](https://codimd.math.cnrs.fr/uploads/upload_a9389e1a0443b2e838dbfc7fb8658cc0.png)
-Si l'on souhaite sauvegarder le résultat dans un fichier (pdf ou png) voici les commandes
+
+If you want to save the result in a file (pdf or png) here are the commands
 ```jl     
 using Plots
 p = plot(sol)
 savefig(p,"out/plot.png")
 ```
 
-# Exemples 
+# Examples 
 ## Hénon-Heiles
-On considère le système de Hénon-Heiles satisfait par $u(t)=(u_1, u_2, u_3, u_4)(t)$ 
-$$
-\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(u), \;\;\; u(0)=u_0\in\mathbb{R}^4, 
-$$
-où $A$ et $f$ sont choisis comme suit 
-$$
-A=
+We consider the system of Hénon-Heiles satisfied by $u(t)=(u_1, u_2, u_3, u_4)(t)$.
+
+$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(u), \;\;\; u(0)=u_0\in\mathbb{R}^4,$$
+
+where $A$ and $f$ are selected as follows
+
+$$A=
 \left(
 \begin{array}{cccc}
 0 & 0 & 1 & 0  \\
@@ -303,7 +302,7 @@ A=
 -1 & 0 & 0 & 0  \\
 0 & 0 & 0 & 0  
 \end{array}
-\right) \;\;\;\; \mbox{ et } \;\;\;\;
+\right) \;\;\;\; \text{ and } \;\;\;\;
 f(u) = \left(
 \begin{array}{cccc}
 0 \\
@@ -311,10 +310,10 @@ u_4\\
 -2 u_1 u_2\\
 -u_2-u_1^2+u_2^2
 \end{array}
-\right). 
-$$
-on choisit par exemple, $\varepsilon=0.001$
-et $u_0 = (0.12, 0.12, 0.12, 0.12)$
+\right).$$
+
+one chooses for example, $\varepsilon=0.001$
+and $u_0 = (0.12, 0.12, 0.12, 0.12)$
 ```jl
 using HighlyOscillatoryProblems
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
@@ -332,34 +331,38 @@ plot(sol)
 ![](https://codimd.math.cnrs.fr/uploads/upload_1514c7513ad489a27a3a3287dfcb2666.png)
 
 
-## Particule chargée
+## Charged particle
 
-On considère un système de particules chargées sous l'effet d'un champ électro-magnétique extérieur 
-$(E(t, x), B(t, x))\in \mathbb{R}^6$. Les particules sont décrites de manière dynamique par leur position 
-$x(t)\in\mathbb{R}^3$ et leur vitesse $v(t)\in\mathbb{R}^3$. On indexera par  $i$  la $i$-ème composante d'un vecteur.
-Les équations de Newton appliquées à une particule s'écrivent  
-\begin{eqnarray*}
-\frac{d x(t) }{dt}&=& v(t) \\
-\frac{d v(t) }{dt}&=& \frac{e}{m} \left[E(t, x(t)) + v(t)\times B(t, x(t))\right]. 
-\end{eqnarray*}
-On va supposer que le champ magnétique s'écrit $B(t, x)=(0, 0, 1)^T$ et sous un certain scaling, on considère l'équation 
-suivante 
-\begin{eqnarray*}
-\frac{d x_1(t) }{dt} &=& \frac{1}{\varepsilon}v_1(t) \\
-\frac{d x_2(t) }{dt} &=& \frac{1}{\varepsilon} v_2(t) \\
-\frac{d x_3(t) }{dt}&=& v_3(t) \\
-\frac{d v_1(t) }{dt} &=& E_1(t, x(t)) + \frac{1}{\varepsilon}v_2(t)\\
-\frac{d v_2(t) }{dt} &=& E_2(t, x(t)) - \frac{1}{\varepsilon}v_1(t)\\
-\frac{d v_3(t) }{dt} &=& E_3(t, x(t)) 
-\end{eqnarray*}
-ce qui se réécrit sous la forme suivante 
-$$
-\frac{d u(t) }{dt}= \frac{1}{\varepsilon}A u(t) + F(t, u(t)), 
-$$
-où le vecteur inconnu $u(t)=(x(t), v(t))\in\mathbb{R}^6$, $A$ est une matrice carrée de taille $6\times 6$ 
-et $F$ est une fonction à valeur dans $\mathbb{R}^6$. $A$ et $F$ sont données par 
-$$
-A=
+A system of charged particles under the effect of an external electro-magnetic field is considered to be 
+$(E(t, x), B(t, x))\in \mathbb{R}^6$.\
+Particles are dynamically described by their position 
+$x(t)\in\mathbb{R}^3$ and their speed $v(t)\in\mathbb{R}^3$. We'll index by $i$ the $i$-th component of a vector.
+Newton's equations applied to a particle can be written as
+
+$$\begin{aligned}
+\frac{d x(t) }{dt}&= v(t) \\
+\frac{d v(t) }{dt}&= \frac{e}{m} \left[E(t, x(t)) + v(t)\times B(t, x(t))\right]. 
+\end{aligned}$$
+
+We will assume that the magnetic field is written $B(t, x)=(0, 0, 1)^T$ and under a certain scaling, we consider the following equation
+
+$$\begin{aligned}
+\frac{d x_1(t) }{dt} &= \frac{1}{\varepsilon}v_1(t) \\
+\frac{d x_2(t) }{dt} &= \frac{1}{\varepsilon} v_2(t) \\
+\frac{d x_3(t) }{dt}&= v_3(t) \\
+\frac{d v_1(t) }{dt} &= E_1(t, x(t)) + \frac{1}{\varepsilon}v_2(t)\\
+\frac{d v_2(t) }{dt} &= E_2(t, x(t)) - \frac{1}{\varepsilon}v_1(t)\\
+\frac{d v_3(t) }{dt} &= E_3(t, x(t)) 
+\end{aligned}$$
+
+which is rewritten as follows
+
+$$\frac{d u(t) }{dt}= \frac{1}{\varepsilon}A u(t) + F(t, u(t)),$$
+
+where the unknown vector $u(t)=(x(t), v(t))\in\mathbb{R}^6$, $A$ is a square matrix of size $6\times 6$
+and $F$ is a function with a value in $\mathbb{R}^6$. $A$ and $F$ are given by
+
+$$A=
 \left(
 \begin{array}{cccccc}
 0 & 0 & 0 & 1 & 0 & 0 \\
@@ -369,7 +372,7 @@ A=
 0 & 0 & 0 & -1 & 0 & 0 \\
 0 & 0 & 0 & 0 & 0 & 0 
 \end{array}
-\right) \;\;\;\; \mbox{ et } \;\;\;\;
+\right) \;\;\;\; \text{ and } \;\;\;\;
 F(t, u(t)) = \left(
 \begin{array}{cccccc}
 0 \\
@@ -379,19 +382,19 @@ E_1(t, u_1(t), u_2(t), u_3(t))\\
 E_2(t,  u_1(t), u_2(t), u_3(t)\\
 E_3(t,  u_1(t), u_2(t), u_3(t)
 \end{array}
-\right). 
-$$
-On peut considérer la fonction $E=(E_1, E_2, E_3)$ suivante 
-$$
-E(t, x) =
+\right).$$
+
+We can consider the following $E=(E_1, E_2, E_3)$ function
+
+$$E(t, x) =
 \left(
 \begin{array}{ccc}
 \cos(x_1/2)\sin(x_2)\sin(x_3)/2\\
 \sin(x_1/2)\cos(x_2)\sin(x_3)\\
 \sin(x_1/2)\sin(x_2)\cos(x_3)
 \end{array}
-\right)
-$$
+\right)$$
+
 ```jl
 using HighlyOscillatoryProblems
 A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
@@ -411,14 +414,14 @@ plot(sol)
 ```
 ![](https://codimd.math.cnrs.fr/uploads/upload_9880503c3c87a8d26e31405fed411f17.png)
 
-## Cas non-homogène linéaire 
-On considère le système linéaire non-homogène suivant satisfait par $u(t)=(u_1, u_2, u_3, u_4)(t)$ 
-$$
-\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(t, u), \;\;\; u(0)=u_0\in\mathbb{R}^4, 
-$$
-où $A$ et $f$ sont choisis comme suit 
-$$
-A=
+## Linear non-homogeneous case 
+The following non-homogeneous linear system is considered to be satisfied by $u(t)=(u_1, u_2, u_3, u_4)(t)$
+
+$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(t, u), \;\;\; u(0)=u_0\in\mathbb{R}^4,$$
+
+where $A$ and $f$ are selected as follows
+
+$$A=
 \left(
 \begin{array}{cccc}
 0 & 0 & 1 & 0  \\
@@ -426,13 +429,15 @@ A=
 -1 & 0 & 0 & 0  \\
 0 & 0 & 0 & 0  
 \end{array}
-\right) \;\;\; \mbox{ et } \;\;\;
-f(t, u) = Bu +\alpha t +\beta \;\; \mbox{ avec  } \;\;
-B\in {\cal M}_{4, 4}(\mathbb{R}), \alpha, \beta \in \mathbb{R}^4, 
-$$
-$B, \alpha, \beta$ sont choisis aléatoirement.
-Nous souhaitons obtenir une grande précision, nous allons donc utiliser des réel de type BigFloat, il sont codés sur 256 bits par défaut ce qui donne une borne de précision d'environ $2^{-256} \approx 10^{-77}$. 
-Nous comparons à la fin un résultat calculé avec un résultat exact. 
+\right) \;\;\; \text{ and } \;\;\;
+f(t, u) = Bu +\alpha t +\beta \;\; \text{ with  } \;\;
+B\in {\mathcal M}_{4, 4}(\mathbb{R}), \alpha, \beta \in \mathbb{R}^4,$$
+
+ $B, \alpha, \beta$ are chosen randomly.
+
+We wish to obtain a high precision, so we will use BigFloat real numbers, they are encoded on 256 bits by default which gives a precision bound of about $2^{-256}. \approx 10^{-77}$.\
+At the end, we compare a calculated result with an exact result.
+
 ```jl
 using HighlyOscillatoryProblems
 using Random
@@ -454,19 +459,21 @@ sol(t)-getexactsol(sol.par_u0.parphi, u0, t)
 using Plots
 Plots.plot(sol.t,sol.u_tr)
 ```
-### Calcul de la solution exacte
-Il s'agit de calculer la solution exacte $u(t)$ de l'équation suivante à l'instant $t$
-$$
-\frac{d u }{dt} = \frac{1}{\varepsilon} Au + Bu +\alpha t +\beta, \;\;\; u(0)=u_0\in\mathbb{R}^4\mbox{, } A \mbox{ et }B \mbox{ sont définies plus haut } 
-$$
-Soit $M = \frac{1}{\varepsilon} A + B$
+### Calculation of the exact solution
+This involves calculating the exact solution $u(t)$ of the following equation at the instant $t$
 
-$C = e^{-t_0 M}u_0 +M^{-1} e^{-t_0 M} (t_0\alpha+\beta)+ M^{-2} e^{-t_0 M} \alpha$
-$C_t = -M^{-1} e^{-t M} (t\alpha+\beta)-M^{-2} e^{-t M} \alpha$
+$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + Bu +\alpha t +\beta, \;\;\; u(0)=u_0\in\mathbb{R}^4\text{, } A \text{ and }B \text{ are defined above }$$
 
-$u(t) = e^{t M} ( C + C_t)$
+Let
 
-Ce qui, traduit en langage Julia, donne le code de la fonction `getexactsol` : 
+$$\begin{aligned}
+    M &= \frac{1}{\varepsilon} A + B\\
+    C &= e^{-t_0 M}u_0 +M^{-1} e^{-t_0 M} (t_0\alpha+\beta)+ M^{-2} e^{-t_0 M} \alpha\\
+    C_t &= -M^{-1} e^{-t M} (t\alpha+\beta)-M^{-2} e^{-t M} \alpha\\
+    u(t) &= e^{t M} ( C + C_t)
+\end{aligned}$$
+
+Which, translated into Julia language, gives the code of the function `getexactsol` : 
 ```julia
 function getexactsol(par::PreparePhi, u0, t)
     @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
@@ -490,19 +497,14 @@ end
 ```
 
 
-### Bibliographie
-[^1]: P. Chartier, N. Crouseilles, M. Lemou, F. Méhats, 
-Numer. Math., 129, pp. 211-250, (2015).
+### Bibliography
+[^1]: P. Chartier, N. Crouseilles, M. Lemou, F. Méhats, Numer. Math., 129, pp. 211-250, (2015).
 
-[^2]: P. Chartier, M. Lemou, F. Méhats, X. Zhao, 
-submitted. 
+[^2]: P. Chartier, M. Lemou, F. Méhats, X. Zhao, submitted. 
 
-[^3]: N. Crouseilles, M. Lemou, F. Méhats, 
-J. Comput. Phys, 248, pp.287-308, (2013). 
+[^3]: N. Crouseilles, M. Lemou, F. Méhats, J. Comput. Phys, 248, pp.287-308, (2013). 
 
-[^4]: S. M. Cox and P. C. Matthews
-"Exponential Time Differencing for Stiff Systems"
-J. Comput. Phys, 436, pp.430-455, (2002).
+[^4]: S. M. Cox and P. C. Matthews "Exponential Time Differencing for Stiff Systems" J. Comput. Phys, 436, pp.430-455, (2002).
 
 
 
