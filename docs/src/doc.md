@@ -273,7 +273,7 @@ plot(sol)
 ```
 This results in
 
-![](https://ua.gitlabpages.inria.fr/HighlyOscillatoryProblems.jl/img/upload_a9389e1a0443b2e838dbfc7fb8658cc0.png)
+![](https://ua.gitlabpages.inria.fr/HighlyOscillatoryProblems.jl/-/master/img/upload_a9389e1a0443b2e838dbfc7fb8658cc0.png)
 
 If you want to save the result in a file (pdf or png) here are the commands
 ```jl     
