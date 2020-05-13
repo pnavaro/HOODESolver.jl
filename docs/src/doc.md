@@ -273,7 +273,7 @@ plot(sol)
 ```
 This results in
 
-![](https://ua.gitlabpages.inria.fr/HighlyOscillatoryProblems.jl/-/tree/master/img/upload_a9389e1a0443b2e838dbfc7fb8658cc0.png)
+![](img/first.png)
 
 If you want to save the result in a file (pdf or png) here are the commands
 ```jl     
@@ -324,7 +324,7 @@ using Plots
 plot(sol)
 ```
 
-![](https://codimd.math.cnrs.fr/uploads/upload_1514c7513ad489a27a3a3287dfcb2666.png)
+![](img/henon_heiles.png)
 
 
 ## Charged particle
@@ -408,7 +408,7 @@ prob = HiOscODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
 sol=solve(prob)
 plot(sol)
 ```
-![](https://codimd.math.cnrs.fr/uploads/upload_9880503c3c87a8d26e31405fed411f17.png)
+![](img/particle.png)
 
 ## Linear non-homogeneous case 
 The following non-homogeneous linear system is considered to be satisfied by $u(t)=(u_1, u_2, u_3, u_4)(t)$
