@@ -5,19 +5,23 @@ using Plots
 using Random
 
 function fctmain(n_tau, prec)
+    setprecision(prec)
     Random.seed!(8900161)
     u0 = rand(BigFloat, 4)
     B = 2rand(BigFloat, 4, 4)-ones(BigFloat,4, 4)
-    setprecision(prec)
+    alpha = 2rand(BigFloat, 4)-ones(BigFloat, 4)
+    beta = 2rand(BigFloat, 4)-ones(BigFloat, 4)
     u0=BigFloat.(u0)
     B = BigFloat.(B)
     println("u0=$u0")
     println("B=$B")
-    fct = u -> B*u
+    println("alpha=$alpha")
+    println("beta=$beta")
+    fct = (u,p,t) -> B*u + t*p[0] +p[1]
     t_max = big"1.0"
     epsilon=big"0.00000015"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), missing, A, epsilon, B)
+    prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
     nbmaxtest=12
     ordmax=17
     debord=3
@@ -35,6 +39,10 @@ function fctmain(n_tau, prec)
         ordprep = order+2
         println("preparation ordre $ordprep")
         while indc <= nbmaxtest
+            println("u0=$u0")
+            println("B=$B")
+            println("alpha=$alpha")
+            println("beta=$beta")        
             @time res = solve(prob, nb_tau=n_tau, order=order, order_prep=ordprep, nb_t=nb, dense=false)
             sol = res[end]
             solref=getexactsol(res.par_u0.parphi, u0, t_max)
@@ -66,7 +74,7 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res2_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
+        Plots.savefig(p,"out/res3_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
         if resnorm > resnormprec
             break
         end
