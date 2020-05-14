@@ -1,6 +1,5 @@
 
 include("../src/interface.jl")
-using DifferentialEquations
 using LinearAlgebra
 using Plots
 using Random
@@ -16,9 +15,9 @@ function fctmain(n_tau, prec)
     println("B=$B")
     fct = u -> B*u
     t_max = big"1.0"
-    epsilon=big"0.000005"
+    epsilon=big"0.00000015"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), missing, A, epsilon)
+    prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), missing, A, epsilon, B)
     nbmaxtest=12
     ordmax=17
     debord=3
@@ -27,9 +26,6 @@ function fctmain(n_tau, prec)
     x=zeros(Float64,nbmaxtest)
     ind=1
     for order=debord:pasord:ordmax
-        parphi = PreparePhi(epsilon, n_tau, A, fct, B)
-        solref = getexactsol(parphi, u0, t_max)
-        println("eps=$epsilon solRef=$solref order=$order")
         nb = 100
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
@@ -38,10 +34,10 @@ function fctmain(n_tau, prec)
         ordprep = min(order+2,10)
         ordprep = order+2
         println("preparation ordre $ordprep")
-        @time par_u0 = PrepareU0(parphi, ordprep, u0)       
         while indc <= nbmaxtest
             @time res = solve(prob, nb_tau=n_tau, order=order, order_prep=ordprep, nb_t=nb, dense=false)
             sol = res[end]
+            solref=getexactsol(res.par_u0.parphi, u0, t_max)
             println("solref=$solref")
             println("nb=$nb sol=$sol")
             diff=solref-sol
