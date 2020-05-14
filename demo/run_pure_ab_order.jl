@@ -17,7 +17,7 @@ function fctmain(n_tau, prec)
     println("B=$B")
     println("alpha=$alpha")
     println("beta=$beta")
-    fct = (u,p,t) -> B*u + t*p[0] +p[1]
+    fct = (u,p,t) -> B*u + t*p[1] +p[2]
     t_max = big"1.0"
     epsilon=big"0.00000015"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
