@@ -59,7 +59,7 @@ function fctmain(n_tau, prec)
             indc += 1
         end
         for i=debord:pasord:order
-            labels[1,(i-debord)÷pasord+1] = " eps,order=$(convert(Float32,epsilon)),$i "
+            labels[1,(i-debord)÷pasord+1] = " order=$i "
         end
         p=Plots.plot(
                         x,
@@ -74,7 +74,7 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res3_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
+        Plots.savefig(p,"out/res4_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
         if resnorm > resnormprec
             break
         end
