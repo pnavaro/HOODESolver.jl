@@ -38,12 +38,14 @@ function fctmain(n_tau, prec)
         ordprep = min(order+2,10)
         ordprep = order+2
         println("preparation ordre $ordprep")
+        par_u0=missing
         while indc <= nbmaxtest
             println("u0=$u0")
             println("B=$B")
             println("alpha=$alpha")
             println("beta=$beta")        
-            @time res = solve(prob, nb_tau=n_tau, order=order, order_prep=ordprep, nb_t=nb, dense=false)
+            @time res = solve(prob, nb_tau=n_tau, order=order, order_prep=ordprep, nb_t=nb,par_u0=par_u0, dense=false)
+            par_u0=res.par_u0
             sol = res[end]
             solref=getexactsol(res.par_u0.parphi, u0, t_max)
             println("solref=$solref")
