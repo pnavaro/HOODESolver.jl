@@ -15,16 +15,20 @@ function testexp()
         Abig = convert(Array{BigFloat,2},A)
         Random.seed!(81725)
         sens=1
-        for i = 1:100:100000
-            v=rand(BigFloat)*i*sens
-            res = _expmat0(v*Abig)
-            resRef = one(Abig)
-            resRef[1,1] = resRef[3,3] = cos(v)
-            resRef[1,3] = sin(v)
-            resRef[3,1]= -resRef[1,3]
- #           println("i=$i norm=$(norm(resRef-res))")
-            @test isapprox( resRef, res, atol=1e-78)
-            sens *= -1
+        for k=1:4
+            setprecision(k*256) do
+                for i = 1:100:10000
+                    v=rand(BigFloat)*i*sens
+                    res = _expmat0(v*Abig)
+                    resRef = one(Abig)
+                    resRef[1,1] = resRef[3,3] = cos(v)
+                    resRef[1,3] = sin(v)
+                    resRef[3,1]= -resRef[1,3]
+        #           println("i=$i norm=$(norm(resRef-res))")
+                    @test isapprox( resRef, res, atol=(1e-77)^k)
+                    sens *= -1
+                end
+            end
         end
     end    
     @time @testset "test 3 exp big matrices" begin
