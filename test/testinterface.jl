@@ -154,6 +154,8 @@ function testinterface_short()
         prob = HiOscODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
         sol = solve(prob, getprecision=false, order=order, nb_t=nb)
         resnorm=norm(exp(t_max*(1/epsilon*A+B))*u0-sol[end], Inf)
+        println("sol=$(sol[end])")
+        println("solexact=$(exp(t_max*(1/epsilon*A+B))*u0)")
         println("resnorm=$resnorm")
         @test resnorm < 1e-10
     end

@@ -100,8 +100,10 @@ function testfftbigprec(s, seed_v)
                 tabRes = fftgen(p,tab)
                 tabRes2 = ifftgen(p, tabRes)
                 println("k=$k norm=$(norm(tabRef-tabRes2))")
-                @test isapprox(tabRef, tabRes2, atol=1e-78^k)
-                @test isapprox(real.(tabRef), real.(tabRes2), atol=1e-78^k)
+#                @test isapprox(tabRef, tabRes2, atol=1e-78^k)
+#                @test isapprox(real.(tabRef), real.(tabRes2), atol=1e-78^k)
+                @test isapprox(tabRef, tabRes2, atol=1e-75^k)
+                @test isapprox(real.(tabRef), real.(tabRes2), atol=1e-75^k)
             end
         end
     end

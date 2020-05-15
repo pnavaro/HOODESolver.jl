@@ -80,8 +80,8 @@ function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
     n_len = len>>1
     nb_r = 1
     rootO = flag_inv ? par.root_one : par.root_one_conj;
-    prec= precision(real(rootO[1]))
-    setprecision(prec+32) do
+#    prec= precision(real(rootO[1]))
+#    setprecision(prec+32) do
         while n_len != 0
             start = 1
             suite = start+n_len
@@ -102,7 +102,7 @@ function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
             n_len >>= 1
             nb_r <<= 1
         end
-    end
+#    end
     signal .= signal[:,par.tab_permut]       
     
     if flag_inv
