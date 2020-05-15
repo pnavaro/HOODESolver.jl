@@ -80,25 +80,28 @@ function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
     n_len = len>>1
     nb_r = 1
     rootO = flag_inv ? par.root_one : par.root_one_conj;
-    while n_len != 0
-        start = 1
-        suite = start+n_len
-          for i=1:nb_r
- #           println("start=$start suite=$suite n_len_m1=$n_len_m1")
-             deb = 1
-             for j=deb:nb_r:s_div2
-                signal[:,start], signal[:,suite] = (signal[:,start] + signal[:,suite,]), 
-    (signal[:,start] - signal[:,suite])*rootO[j]
- #               println("start=$start suite=$suite nb_r=$nb_r")
-                start += 1
-                suite += 1
-             end
-             start = suite
-             suite = start+n_len
+    prec= precision(real(rootO[1]))
+    setprecision(prec+32) do
+        while n_len != 0
+            start = 1
+            suite = start+n_len
+            for i=1:nb_r
+    #           println("start=$start suite=$suite n_len_m1=$n_len_m1")
+                deb = 1
+                for j=deb:nb_r:s_div2
+                    signal[:,start], signal[:,suite] = (signal[:,start] + signal[:,suite,]), 
+        (signal[:,start] - signal[:,suite])*rootO[j]
+    #               println("start=$start suite=$suite nb_r=$nb_r")
+                    start += 1
+                    suite += 1
+                end
+                start = suite
+                suite = start+n_len
+            end
+            len = n_len
+            n_len >>= 1
+            nb_r <<= 1
         end
-        len = n_len
-        n_len >>= 1
-        nb_r <<= 1
     end
     signal .= signal[:,par.tab_permut]       
     

@@ -7,6 +7,7 @@ testfftbig:
 using Test
 using FFTW
 using Random
+using LinearAlgebra
 
 include("../src/fftbig.jl")
 
@@ -87,7 +88,28 @@ function testfftbig2( s, T::DataType, seed_val, nb_v )
 
 end
 
-tab_decl = [[8, Float64, 12345678], [8, BigFloat, 9876],[2^16, Float64, 1928], [2^13, BigFloat, 5656]]
+function testfftbigprec(s, seed_v)
+
+    @time @testset "test fftbig changing precision s=$s seed=$seed_v" begin
+        Random.seed!(seed_v)
+        for k=1:10
+            setprecision(k*256) do
+                p = PrepareFftBig(s)
+                tab = rand(BigFloat, 5, s)
+                tabRef = Complex.(tab)
+                tabRes = fftgen(p,tab)
+                tabRes2 = ifftgen(p, tabRes)
+                println("k=$k norm=$(norm(tabRef-tabRes2))")
+                @test isapprox(tabRef, tabRes2, atol=1e-78^k)
+                @test isapprox(real.(tabRef), real.(tabRes2), atol=1e-78^k)
+            end
+        end
+    end
+
+end
+
+
+tab_decl = [[8, Float64, 12345678], [8, BigFloat, 9876],[2^8, Float64, 1928], [2^10, BigFloat, 5656]]
 
 for t in tab_decl
     s = t[1]
@@ -95,7 +117,7 @@ for t in tab_decl
     seed_v = t[3]
     @time @testset "test fftbig for value size=$s type=$type" begin testfftbig(s, type, seed_v) end
 end
-tab_decl2 = [[8, Float64, 4556789, 4], [8, BigFloat, 4563, 4],[2^16, Float64, 9900771, 4], [2^13, BigFloat, 125609, 4]]
+tab_decl2 = [[8, Float64, 4556789, 4], [8, BigFloat, 4563, 4],[2^10, Float64, 9900771, 4], [2^13, BigFloat, 125609, 4]]
 
 for t in tab_decl2
     s = t[1]
@@ -105,3 +127,7 @@ for t in tab_decl2
     @time @testset "test fftbig for vector size=$s type=$type nb_v=$nb_v" begin testfftbig2(s, type, seed_v, nb_v) end
 end
 
+tab_decl3 =[ 8965, 1919191, 56188827, 9017555]
+for sd in tab_decl3
+    testfftbigprec(32,sd)
+end
