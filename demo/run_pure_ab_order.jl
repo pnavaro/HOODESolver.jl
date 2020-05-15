@@ -19,7 +19,7 @@ function fctmain(n_tau, prec)
     println("beta=$beta")
     fct = (u,p,t) -> B*u + t*p[1] +p[2]
     t_max = big"1.0"
-    epsilon=big"0.00000015"
+    epsilon=big"0.015"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
     nbmaxtest=12
@@ -66,7 +66,7 @@ function fctmain(n_tau, prec)
         p=Plots.plot(
                         x,
                         view(y,:,1:ind),
-                        xlabel="delta t",
+                        xlabel="Δt",
                         xaxis=:log,
                         ylabel="error",
                         yaxis=:log,
