@@ -37,7 +37,7 @@ function fctmain(n_tau, prec)
     for order=debord:pasord:ordmax
         nb = 100
         indc = 1
-        labels=Array{String,2}(undef, 1, order-debord+1)
+        labels=Array{String,2}(undef, 1, div(order-debord,pasord)+1)
         resnorm=0
         resnormprec=1
         ordprep = min(order+2,10)
@@ -58,8 +58,8 @@ function fctmain(n_tau, prec)
             diff=solref-sol
             x[indc] = 1.0/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
-            resnorm = norm(diff,Inf)
-            y[indc,ind] = min(norm(diff,Inf), 1.1)
+            resnorm = Float64(norm(diff,Inf))
+            y[indc,ind] = (resnorm < 1) ? resnorm : NaN
             println("result=$y")
             println("log2(y)=$(log2.(y))")
             nb *= 2
@@ -81,7 +81,7 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res7_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
+        Plots.savefig(p,"out/res8_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
         if resnorm > resnormprec
             break
         end
