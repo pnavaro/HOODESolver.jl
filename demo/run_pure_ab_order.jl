@@ -7,10 +7,15 @@ using Random
 function fctmain(n_tau, prec)
     setprecision(prec)
     Random.seed!(8900161)
-    u0 = rand(BigFloat, 4)
-    B = 2rand(BigFloat, 4, 4)-ones(BigFloat,4, 4)
-    alpha = 2rand(BigFloat, 4)-ones(BigFloat, 4)
-    beta = 2rand(BigFloat, 4)-ones(BigFloat, 4)
+    u0 = [-big"0.34",big"0.78",big"0.67",-big"0.56"]
+    B = [big"0.12" -big"0.78" big"0.91" big"0.34"
+    	-big"0.45" big"0.56" big"0.3" big"0.54"
+    	-big"0.67" big"0.09" big"0.18" big"0.89"
+    	-big"0.91" -big"0.56" big"0.11" -big"0.56"]
+
+
+    alpha =  [big"0.12",-big"0.98",big"0.45",big"0.26"]
+    beta =  [-big"0.4",big"0.48",big"0.23",-big"0.87"]
     u0=BigFloat.(u0)
     B = BigFloat.(B)
     println("u0=$u0")
@@ -25,7 +30,7 @@ function fctmain(n_tau, prec)
     nbmaxtest=12
     ordmax=17
     debord=3
-    pasord=1
+    pasord=2
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
     ind=1
@@ -76,7 +81,7 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res6_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
+        Plots.savefig(p,"out/res7_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
         if resnorm > resnormprec
             break
         end
