@@ -28,7 +28,8 @@ function fctmain(n_tau, prec)
     epsilon=big"0.015"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
-    nbmaxtest=12
+    nbmaxtest=6
+#    nbmaxtest=12
     ordmax=17
     debord=3
     pasord=2
@@ -68,6 +69,7 @@ function fctmain(n_tau, prec)
             labels[1,div((i-debord),pasord)+1] = " order=$i "
         end
         yv = y[:,1:ind]
+        gr()
         p=Plots.plot(
                         x,
                         yv,
@@ -78,13 +80,13 @@ function fctmain(n_tau, prec)
                         legend=:bottomright,
                         label=labels,
                         marker=2,
-                        bottom_margin=30px,
-                        left_margin=60px
+#                        bottom_margin=30px,
+#                        left_margin=60px
                    )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res9_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
-        Plots.savefig(p,"out/res9_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
+        Plots.savefig(p,"out/res9try_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
+        Plots.savefig(p,"out/res9try_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
         ind+= 1
     end
 end
