@@ -60,9 +60,15 @@ with
 
 $$U(t, \tau) = \sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{U}_{\ell}(t) e^{i \ell \tau } \;\;\; \text{ et } F(\tau, U(t, \tau))\sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{F}_{\ell}(t) e^{i\ell\tau}.$$
 
-If we wish to calculate $\hat{F}$ from $\hat{U}$ we have the formula
+and the inverse (discrete) Fourier transform formulae
 
-$$\hat{F}_{\ell}(t) = \sum_{r=-N_\tau/2}^{N_\tau/2-1} e^{- \frac{\pi i r \ell}{N_\tau}}  e^{\frac{\ell}{\varepsilon} A} F\Big( t, \frac{e^{-\frac{\ell}{\varepsilon} A}}{N_\tau}\sum_{k=-N_\tau/2}^{N_\tau/2-1} e^{\frac{\pi i k \ell}{N_\tau}} \hat{U}_k(t)\Big)$$
+$$\hat{U}_{\ell}(t) = \frac{1}{N_{\tau}}\sum_{k=0}^{N_{\tau}-1} U(t, \tau_k) e^{-i\ell k 2\pi/N_{\tau}}\;\;\; \text{ and } \hat{F}_{\ell}(t) = \frac{1}{N_{\tau}}\sum_{k=0}^{N_{\tau}-1} F(\tau_k, U(t, \tau_k))e^{-i\ell k 2\pi/N_{\tau}}.$$
+
+If we wish to calculate $\hat{F}_{\ell}$ from $\hat{U}_{\ell}$ we have the following formula 
+
+$$F(\tau_k,U(t, \tau_k)) = e^{-\tau_k A}f(e^{\tau_k A}U(t, \tau_k)) \;\; \text{ with } \;\; U(t, \tau_k) = \sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{U}_{\ell}(t) e^{i\ell k2\pi/N_{\tau}}$$
+
+from which the Fourier transform is calculated in $\tau$ from the discrete Fourier transform formulas above.
 
 Now, given a time step $\Delta t>0$ and a discretization in time $t_n=n\Delta t$, we can write the following Duhamel formula ($n\geq 0$)
 
