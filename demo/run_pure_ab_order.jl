@@ -77,15 +77,9 @@ function fctmain(n_tau, prec)
                         yaxis=:log,
                         legend=:bottomright,
                         label=labels,
-                        markershape = :hexagon,
-    markersize = 20,
-    markeralpha = 0.6,
-    markercolor = :green,
-    markerstrokewidth = 3,
-    markerstrokealpha = 0.2,
-    markerstrokecolor = :black,
-    markerstrokestyle = :dot
-                    )
+                        marker=2,
+                        bottom_margin=50px
+                   )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
         Plots.savefig(p,"out/res8essai_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
