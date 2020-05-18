@@ -38,8 +38,6 @@ function fctmain(n_tau, prec)
         nb = 100
         indc = 1
         labels=Array{String,2}(undef, 1, div(order-debord,pasord)+1)
-        resnorm=0
-        resnormprec=1
         ordprep = min(order+2,10)
         ordprep = order+2
         println("preparation ordre $ordprep")
@@ -81,11 +79,8 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res8_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")
-        if resnorm > resnormprec
-            break
-        end
-        resnormprec = resnorm
+        Plots.savefig(p,"out/res8_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
+        Plots.savefig(p,"out/res8_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
         ind+= 1
     end
 end
