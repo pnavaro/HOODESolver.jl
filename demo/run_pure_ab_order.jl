@@ -28,8 +28,7 @@ function fctmain(n_tau, prec)
     epsilon=big"0.015"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
-#    nbmaxtest=12
-    nbmaxtest=7
+    nbmaxtest=12
     ordmax=17
     debord=3
     pasord=2
