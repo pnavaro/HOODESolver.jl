@@ -4,19 +4,11 @@ testODE:
 - Author: ymocquar
 - Date: 2019-11-13
 =#
-include("../src/twoscales_pure_ab.jl")
-using DifferentialEquations
+include("../src/interface.jl")
 using LinearAlgebra
 using Plots
 using Random
 
-function twoscales_solve( par_u0::PrepareU0, order, t, nb)
-    
-    parGen = PrepareTwoScalesPureAB(nb, t, order, par_u0)
-
-    return twoscales_pure_ab(parGen, only_end=true)
-
-end
 
 
 function fctMain(n_tau)
@@ -25,15 +17,15 @@ function fctMain(n_tau)
     seed=1293456
     Random.seed!(seed)
     tab_eps = zeros(BigFloat,6)
-    epsilon=big"0.1"
-    for i=1:6
+    epsilon=big"0.15"
+    for i=1:7
         tab_eps[i] = epsilon
         epsilon /= 10
     end
-    nbMaxTest=9
+    nbMaxTest=8
     order=7
     ordprep=order+2
-    t_max = big"3.0"
+    t_max = big"1.0"
     y = ones(Float64, nbMaxTest, size(tab_eps,1) )
     x=zeros(Float64,nbMaxTest)
     ind=1

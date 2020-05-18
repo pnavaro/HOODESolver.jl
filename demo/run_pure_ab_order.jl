@@ -7,18 +7,13 @@ using Random
 
 function fctmain(n_tau, prec)
     setprecision(prec)
-    Random.seed!(8900161)
-    u0 = [-big"0.34",big"0.78",big"0.67",-big"0.56"]
+    u0 = [-big"0.34", big"0.78", big"0.67", -big"0.56"]
     B = [big"0.12" -big"0.78" big"0.91" big"0.34"
-    	-big"0.45" big"0.56" big"0.3" big"0.54"
-    	-big"0.67" big"0.09" big"0.18" big"0.89"
-    	-big"0.91" -big"0.56" big"0.11" -big"0.56"]
-
-
-    alpha =  [big"0.12",-big"0.98",big"0.45",big"0.26"]
-    beta =  [-big"0.4",big"0.48",big"0.23",-big"0.87"]
-    u0=BigFloat.(u0)
-    B = BigFloat.(B)
+        -big"0.45" big"0.56" big"0.3" big"0.54"
+        -big"0.67" big"0.09" big"0.18" big"0.89"
+        -big"0.91" -big"0.56" big"0.11" -big"0.56"]
+    alpha =  [big"0.12", -big"0.98", big"0.45", big"0.26"]
+    beta =  [-big"0.4", big"0.48", big"0.23", -big"0.87"]
     println("u0=$u0")
     println("B=$B")
     println("alpha=$alpha")

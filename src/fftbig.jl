@@ -86,12 +86,10 @@ function fftbig!(par::PrepareFftBig, signal; flag_inv=false)
             start = 1
             suite = start+n_len
             for i=1:nb_r
-    #           println("start=$start suite=$suite n_len_m1=$n_len_m1")
-                deb = 1
+                 deb = 1
                 for j=deb:nb_r:s_div2
                     signal[:,start], signal[:,suite] = (signal[:,start] + signal[:,suite,]), 
         (signal[:,start] - signal[:,suite])*rootO[j]
-    #               println("start=$start suite=$suite nb_r=$nb_r")
                     start += 1
                     suite += 1
                 end
