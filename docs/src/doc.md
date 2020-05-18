@@ -34,13 +34,13 @@ The numerical method is based on a discretization of equation (2). In the direct
 Let r be the order of the method $AB_r$.\
 Let $\Delta t$ the time step, for $i \in \{r, -(r-1), \ldots, r-1, r\}$,
 we note $u_i = u(t_0+i \Delta t)$.\
-Let $r'$ be the orders of the intermediate AB methods we will use.\ 
+Let $r'$ be the orders of the intermediate AB methods we will use.\
 If $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k-1}, \ldots, u_{k-r'+1}$ are known with a precision of ${\mathcal O}(\Delta t^{r'})$ then we can calculate $u_{k+1}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.\
 Similarly, if $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k+1}, \ldots, u_{k+r'-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r'})$ then we can calculate $u_{k-1}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.
 
 ### Algorithm
 - With the method $AB_1$, from $u_0$ we calculate $u_{-1}$ with a precision of ${\mathcal O}(\Delta t^2)$
-- With the method $AB_2$, starting from $u_{0}$ and $u_{-1}$, we calculate $u_{1}$ with a precision of ${\cal O}(\Delta t^3)$
+- With the method $AB_2$, starting from $u_{0}$ and $u_{-1}$, we calculate $u_{1}$ with a precision of ${\mathcal O}(\Delta t^3)$
 - For $r' = $3 to $r' = r$.
     - For $k=1$ to $k=r'-1$
         - With the method $AB_{r'-1}$, from $u_{1-k}, u_{2-k}, \ldots,u_{r'-1-k}$, we calculate $u_{-k}$ with a precision of ${\cal O}(\Delta t^{r'})$
@@ -58,7 +58,7 @@ $$\frac{\partial \hat{U}_\ell}{\partial t} + \frac{i\ell}{\varepsilon}\hat{U}_\e
 
 with
 
-$$U(t, \tau) = \sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{U}_{\ell}(t) e^{i \ell \tau } \;\;\; \text{ et } F(\tau, U(t, \tau))\sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{F}_{\ell}(t) e^{i\ell\tau}.$$
+$$U(t, \tau_k) = \sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{U}_{\ell}(t) e^{i\ell k 2\pi/N_{\tau}} \;\;\; \text{ and } F(\tau_k, U(t, \tau_k)) = \sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{F}_{\ell}(t) e^{i\ell k 2\pi/N_\tau}.$$
 
 and the inverse (discrete) Fourier transform formulae
 
@@ -66,7 +66,7 @@ $$\hat{U}_{\ell}(t) = \frac{1}{N_{\tau}}\sum_{k=0}^{N_{\tau}-1} U(t, \tau_k) e^{
 
 If we wish to calculate $\hat{F}_{\ell}$ from $\hat{U}_{\ell}$ we have the following formula 
 
-$$F(\tau_k,U(t, \tau_k)) = e^{-\tau_k A}f(e^{\tau_k A}U(t, \tau_k)) \;\; \text{ with } \;\; U(t, \tau_k) = \sum_{\ell=-N_{\tau}/2}^{N_{\tau}/2-1} \hat{U}_{\ell}(t) e^{i\ell k2\pi/N_{\tau}}$$
+$$F(\tau_k,U(t, \tau_k)) = e^{-\tau_k A}f(e^{\tau_k A}U(t, \tau_k)) \;\;$$
 
 from which the Fourier transform is calculated in $\tau$ from the discrete Fourier transform formulas above.
 
@@ -497,6 +497,28 @@ function getexactsol(par::PreparePhi, u0, t)
 end
 
 ```
+
+## Accuracy of the result according to the time interval
+From a problem of the previous type, as long as we can calculate the exact solution, it is possible to know exactly what the error is.
+The initialization data being
+```jl
+using HighlyOscillatoryProblems
+A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
+fct = (u,p,t)-> B*u + t*p[1] +p[2]
+u0 = [-big"0.34", big"0.78", big"0.67", -big"0.56"]
+B = [big"0.12" -big"0.78" big"0.91" big"0.34"
+    -big"0.45" big"0.56" big"0.3" big"0.54"
+    -big"0.67" big"0.09" big"0.18" big"0.89"
+    -big"0.91" -big"0.56" big"0.11" -big"0.56"]
+alpha =  [big"0.12", -big"0.98", big"0.45", big"0.26"]
+beta =  [-big"0.4", big"0.48", big"0.23", -big"0.87"]
+epsilon = 0.015
+t_max = big"1.0"
+prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
+```
+Note that the floats are coded on 512 bits.\
+By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ on a logarithmic scale, for odd orders from 3 to 17 we get these errors
+![](img/errors.png)
 
 
 ### Bibliography
