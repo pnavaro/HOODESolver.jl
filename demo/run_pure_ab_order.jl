@@ -83,8 +83,8 @@ function fctmain(n_tau, prec)
                    )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res8essai_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
-        Plots.savefig(p,"out/res8essai_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
+        Plots.savefig(p,"out/res9_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
+        Plots.savefig(p,"out/res9_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
         ind+= 1
     end
 end
