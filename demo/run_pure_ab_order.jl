@@ -79,7 +79,8 @@ function fctmain(n_tau, prec)
                         legend=:bottomright,
                         label=labels,
                         marker=2,
-#                        bottom_margin=50px
+                        bottom_margin=30px,
+                        left_margin=30px
                    )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
