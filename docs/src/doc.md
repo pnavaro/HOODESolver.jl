@@ -519,7 +519,7 @@ prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
 Note that the floats are coded on 512 bits.\
 By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ (i.e. `nb_t` from `100` to `204800`) on a logarithmic scale, for odd orders from 3 to 17 we get these errors
 
-![](img/errors.png)
+![](img/error_order.png)
 
 
 ### Bibliography
