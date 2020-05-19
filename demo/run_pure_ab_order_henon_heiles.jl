@@ -1,41 +1,8 @@
-include("../src/twoscales_pure_ab.jl")
+include("../src/interface.jl")
 include("../src/henon_heiles.jl")
 using DifferentialEquations
 using LinearAlgebra
 using Plots
-using Random
-
-
-# function getindmin( tab::Array{Array{BigFloat,1},1} )
-
-    # summin=Inf
-    # for i=1:size(tab,1)
-        # sum = zero(BigFloat)
-        # for j=i:size(tab,1)
-            # sum += norm(tab[i]-tab[j],Inf)
-        # end
-        # if sum < summin
-            # sum = summin
-            # ret = i
-        # end
-    # end
-# end
-
-
-
-# function getsolref( solref_gen, res_gen, y)
-    # mindiff = 1.0
-    # for i=1:size(y,1), j=1:size(y,2)
-        # if y[i,j] != NaN && y[i,j] != undef
-            # diff = norm(solref_gen-res_gen[i,j], Inf)
-            # if diff < mindiff && diff != 0.0
-                # mindiff = diff
-# 
-		# end
-# end
-# end
-# end
-
 function getmindif(tab::Vector{Vector{BigFloat}})
     nmmin = Inf
     ret = (0, 0)
@@ -50,14 +17,10 @@ function getmindif(tab::Vector{Vector{BigFloat}})
     end
     return ret, nmmin
 end
-
-
 function fctmain(n_tau, prec)
 
     setprecision(prec)
-    Random.seed!(5612)
-    u0=rand(BigFloat,4)
-
+    u0=BigFloat([90, -44, 83, 13]//100)
     t_max = big"1.0"
     epsilon=big"0.001"
     println("epsilon=$epsilon")
@@ -70,44 +33,13 @@ function fctmain(n_tau, prec)
     res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
-
-    nm = NaN
-
-    ordmax += 1
-    ordprep=undef
-    nb = 100*2^(nbmaxtest)
-    solref=undef
-
-    while isnan(nm)
-
-        ordmax -= 1
-        ordprep = ordmax+2
-
-    	@time par_u0 = PrepareU0(parphi, ordprep, u0)
-        @time pargen = PrepareTwoScalePureAB(nb, t_max, ordmax, par_u0)
-        @time solref= twoscales_pure_ab(
-pargen,
-only_end=true,
-diff_fft=false
-)
-	    nm = norm(solref, Inf)
-    end
-
-    tabsol = Array{Array{BigFloat,1},1}(undef,1)
-
-    tabsol[1] = solref
-
+    prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
+    tabsol = Array{Array{BigFloat,1},1}(undef,0)
     println("ordmax=$ordmax")
-
-    println("solref=$solref")
-    solref_gen = solref
     indref = 1
-
     ind=1
     for order=debord:pasord:ordmax
-        ordprep=order+2
-        println("eps=$epsilon solRef=$solref order=$order")
+        println("eps=$epsilon order=$order")
         nb = 100
         indc = 1
         labels=Array{String,2}(undef, 1, order-debord+1)
@@ -115,15 +47,9 @@ diff_fft=false
         resnormprec=1
         sol =undef
         println("preparation ordre $order + 2")
-        @time par_u0 = PrepareU0(parphi, ordprep, u0)       
+        par_u0 = missing     
         while indc <= nbmaxtest
-            @time pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
-            @time sol = twoscales_pure_ab(
-    pargen,
-    only_end=true,
-    diff_fft=false
-)
-            push!(tabsol, sol)
+             push!(tabsol, sol)
             res_gen[indc,ind] = sol 
             (a, b), nm = getmindif(tabsol)
             if a != indref
