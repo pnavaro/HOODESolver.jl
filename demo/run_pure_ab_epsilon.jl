@@ -7,114 +7,85 @@ testODE:
 include("../src/interface.jl")
 using LinearAlgebra
 using Plots
-using Random
-
-
-
 function fctMain(n_tau)
 
  #   u0 =[big"0.12345678", big"0.1209182736", big"0.1290582671", big"0.1239681094" ]
-    seed=1293456
-    Random.seed!(seed)
     tab_eps = zeros(BigFloat,6)
     epsilon=big"0.15"
     for i=1:7
         tab_eps[i] = epsilon
         epsilon /= 10
     end
-    nbMaxTest=8
-    order=7
-    ordprep=order+2
+    u0 = BigFloat.([-34//100, 78//100, 67//100, -56//10])
+    B = BigFloat.([12//100 -78//100 91//100 34//100
+        -45//100 56//100 3//100 54//100
+        -67//100 09//100 18//100 89//100
+        -91//100 -56//100 11//100 -56//100])
+    alpha =  BigFloat.([12//100, -98//100, 45//100, 26//100])
+    beta =  BigFloat.([-4//100, 48//100, 23//100, -87//100])
+    fct = (u,p,t) -> B*u + t*p[1] +p[2]
     t_max = big"1.0"
+    nbMaxTest=12
+    order=7
     y = ones(Float64, nbMaxTest, size(tab_eps,1) )
     x=zeros(Float64,nbMaxTest)
     ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        u0=rand(BigFloat,4)
-        B = 2rand(BigFloat, 4, 4) - ones(BigFloat, 4, 4)
-        paramfct = (2rand(BigFloat, 4) - ones(BigFloat, 4),
-                        2rand(BigFloat, 4) - ones(BigFloat, 4))
-        fct = (u, p, t) -> B*u + t*p[1]+p[2]
-        parphi = PreparePhi(epsilon, n_tau, A , fct, B, paramfct=paramfct)
-        # fct = (u, p, t) -> B*u
-        # parphi = PreparePhi(epsilon, n_tau, A , fct, B)
-        println("prepareU0 eps=$epsilon n_tau=$n_tau")
-        @time par_u0 = PrepareU0(parphi, ordprep, u0)
-        solref = getexactsol(parphi, u0, t_max)
+        prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
         eps_v = convert(Float32,epsilon)
-        println("epsilon = $eps_v solref=$solref")
-        nb = 30
-        indc =1
+        println("epsilon = $eps_v")
+        nb = 100
+        indc = 1
         labels=Array{String,2}(undef, 1, ind)  
         while indc <= nbMaxTest
-            @time pargen = PrepareTwoScalesPureAB(nb, t_max, order, par_u0)
-            @time result, tabdf, tabdf2, nm, nm2 = twoscales_pure_ab(
-    pargen,
-    only_end=false,
-    diff_fft=true
-)
-            sol = result[:, end]
+            res = solve(prob, nb_tau=n_tau, order=order, nb_t=nb, dense=false)
+            sol = res[end]
+            solref = getexactsol(res.par_u0.parphi, u0, t_max)
             println("solref=$solref")
             println("nb=$nb sol=$sol")
-            # pasaff=div(nb,100)
-            # for i=1:50
-            #     diff = norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb))
-            #     println("i=$i/$nb diff=$diff")
-            #  end
-            #  for i=51:pasaff:(nb-50)
-            #     diff = norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb))
-            #     println("i=$i/$nb diff=$diff")
-            # end
-            # for i=(nb-50):nb
-            #     diff = norm(result[:,i]-getexactsol(parphi,u0,t_max*(i-1)/nb))
-            #     println("i=$i/$nb diff=$diff")
-            # end
-            # for i=1:50
-            #     println("i=$i/$nb difffftInf=$(tabdf[i])")
-            # end
-            # for i=51:pasaff:(nb-50)
-            #     println("i=$i/$nb difffftInf=$(tabdf[i])")
-            # end
-            # for i=(nb-50):nb
-            #     println("i=$i/$nb difffftInf=$(tabdf[i])")
-            # end
-            # for i=1:50
-            #     println("i=$i/$nb difffft2=$(tabdf2[i])")
-            # end
-            # for i=51:pasaff:(nb-50)
-            #     println("i=$i/$nb difffft2=$(tabdf2[i])")
-            # end
-            # for i=(nb-50):nb
-            #     println("i=$i/$nb difffft2=$(tabdf2[i])")
-            # end
             diff=solref-sol
             x[indc] = t_max/nb
             println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
-            y[indc,ind] = min(norm(diff,Inf),big"1.0")
+            ni = norm(diff,Inf)
+            y[indc,ind] = (ni < 1) ? ni : NaN
             println("epsilon=$epsilon result=$y")
             println("epsilon=$epsilon reslog2=$(log2.(y))")
             nb *= 2
             indc += 1
         end
         for i=1:ind
-            labels[1,i] = " epsilon,order=$(convert(Float32,tab_eps[i])),$order "
+            labels[1,i] = " epsilon=$(convert(Float32,tab_eps[i])) "
         end
-        gr()
         p=Plots.plot(
     x,
     view(y,:,1:ind),
-    xlabel="delta t",
+    xlabel="Δt",
     xaxis=:log,
     ylabel="error",
     yaxis=:log,
     legend=:bottomright,
     label=labels,
     marker=2
-)
-        
+)    
+pp=Plots.plot(
+    x,
+    view(y,:,1:ind),
+    xlabel="Δt",
+    xaxis=:log,
+    ylabel="error",
+    yaxis=:log,
+    legend=:bottomright,
+    label=labels,
+    marker=2,
+    bottom_margin=30px,
+    left_margin=60px
+)    
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r10_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
+        Plots.savefig(p,"out/r10p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
+        Plots.savefig(p,"out/r10p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.png")
+        Plots.savefig(pp,"out/r10pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.pdf")
+        Plots.savefig(pp,"out/r10pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon.png")
         ind+= 1
     end
 end
