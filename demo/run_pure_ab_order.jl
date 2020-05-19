@@ -7,13 +7,13 @@ using Random
 
 function fctmain(n_tau, prec)
     setprecision(prec)
-    u0 = [-big"0.34", big"0.78", big"0.67", -big"0.56"]
-    B = [big"0.12" -big"0.78" big"0.91" big"0.34"
-        -big"0.45" big"0.56" big"0.3" big"0.54"
-        -big"0.67" big"0.09" big"0.18" big"0.89"
-        -big"0.91" -big"0.56" big"0.11" -big"0.56"]
-    alpha =  [big"0.12", -big"0.98", big"0.45", big"0.26"]
-    beta =  [-big"0.4", big"0.48", big"0.23", -big"0.87"]
+    u0 = BigFloat.([-34//100, 78//100, 67//100, -56//10])
+    B = BigFloat.([12//100 -78//100 91//100 34//100
+        -45//100 56//100 3//100 54//100
+        -67//100 09//100 18//100 89//100
+        -91//100 -56//100 11//100 -56//100])
+    alpha =  BigFloat.([12//100, -98//100, 45//100, 26//100])
+    beta =  BigFloat.([-4//100, 48//100, 23//100, -87//100])
     println("u0=$u0")
     println("B=$B")
     println("alpha=$alpha")
@@ -65,22 +65,35 @@ function fctmain(n_tau, prec)
         end
         yv = y[:,1:ind]
         p=Plots.plot(
-                        x,
-                        yv,
-                        xlabel="Δt",
-                        xaxis=:log,
-                        ylabel="error",
-                        yaxis=:log,
-                        legend=:bottomright,
-                        label=labels,
-                        marker=2,
-                        bottom_margin=30px,
-                        left_margin=60px
-                   )
+    x,
+    yv,
+    xlabel="Δt",
+    xaxis=:log,
+    ylabel="error",
+    yaxis=:log,
+    legend=:bottomright,
+    label=labels,
+    marker=2,
+)
+        pp=Plots.plot(
+    x,
+    yv,
+    xlabel="Δt",
+    xaxis=:log,
+    ylabel="error",
+    yaxis=:log,
+    legend=:bottomright,
+    label=labels,
+    marker=2,
+    bottom_margin=30px,
+    left_margin=60px
+)
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res9_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
-        Plots.savefig(p,"out/res9_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
+        Plots.savefig(p,"out/res9p_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
+        Plots.savefig(p,"out/res9p_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
+        Plots.savefig(pp,"out/res9pp_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.pdf")        
+        Plots.savefig(pp,"out/res9pp_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_exact.png")
         ind+= 1
     end
 end
