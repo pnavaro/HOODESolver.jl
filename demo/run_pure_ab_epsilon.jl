@@ -27,7 +27,7 @@ function fctMain(n_tau)
     fct = (u,p,t) -> B*u + t*p[1] +p[2]
     t_max = big"1.0"
     nbMaxTest=12
-    order=7
+    order=6
     y = ones(Float64, nbMaxTest, size(tab_eps,1) )
     x=zeros(Float64,nbMaxTest)
     ind=1
