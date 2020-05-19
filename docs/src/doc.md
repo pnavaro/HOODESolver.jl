@@ -519,8 +519,12 @@ prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
 Note that the floats are coded on 512 bits.\
 By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ (i.e. `nb_t` from `100` to `204800`) on a logarithmic scale, for odd orders from 3 to 17 we get these errors
 
+#### precision of the result with ε = 0.015
 ![](img/error_order.png)
 
+Now with the same initial data order is set to 6, and $\varepsilon = 0.15, 0.015, \ldots, 1.5\times 10^{-7}$ 
+#### precision of the result with order = 6
+![](img/error_epsilon.png)
 
 ### Bibliography
 [^1]: P. Chartier, N. Crouseilles, M. Lemou, F. Méhats, Numer. Math., 129, pp. 211-250, (2015).
