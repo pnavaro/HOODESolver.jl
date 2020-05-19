@@ -504,20 +504,21 @@ The initialization data being
 ```jl
 using HighlyOscillatoryProblems
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
-fct = (u,p,t)-> B*u + t*p[1] +p[2]
-u0 = [-big"0.34", big"0.78", big"0.67", -big"0.56"]
-B = [big"0.12" -big"0.78" big"0.91" big"0.34"
-    -big"0.45" big"0.56" big"0.3" big"0.54"
-    -big"0.67" big"0.09" big"0.18" big"0.89"
-    -big"0.91" -big"0.56" big"0.11" -big"0.56"]
-alpha =  [big"0.12", -big"0.98", big"0.45", big"0.26"]
-beta =  [-big"0.4", big"0.48", big"0.23", -big"0.87"]
+u0 = BigFloat.([-34//100, 78//100, 67//100, -56//10])
+B = BigFloat.([12//100 -78//100 91//100 34//100
+    -45//100 56//100 3//100 54//100
+    -67//100 09//100 18//100 89//100
+    -91//100 -56//100 11//100 -56//100])
+alpha =  BigFloat.([12//100, -98//100, 45//100, 26//100])
+beta =  BigFloat.([-4//100, 48//100, 23//100, -87//100])
 epsilon = 0.015
 t_max = big"1.0"
+fct = (u,p,t)-> B*u + t*p[1] +p[2]
 prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
 ```
 Note that the floats are coded on 512 bits.\
-By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ on a logarithmic scale, for odd orders from 3 to 17 we get these errors
+By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ (i.e. `nb_t` from `100` to `204800`) on a logarithmic scale, for odd orders from 3 to 17 we get these errors
+
 ![](img/errors.png)
 
 

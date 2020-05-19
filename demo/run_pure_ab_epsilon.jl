@@ -56,7 +56,7 @@ function fctMain(n_tau)
             indc += 1
         end
         for i=1:ind
-            labels[1,i] = " epsilon=$(convert(Float32,tab_eps[i])) "
+            labels[1,i] = " ε = $(convert(Float32,tab_eps[i])) "
         end
         p=Plots.plot(
     x,
