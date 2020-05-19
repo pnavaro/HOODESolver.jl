@@ -10,9 +10,9 @@ using Plots
 function fctMain(n_tau)
 
  #   u0 =[big"0.12345678", big"0.1209182736", big"0.1290582671", big"0.1239681094" ]
-    tab_eps = zeros(BigFloat,6)
+    tab_eps = zeros(BigFloat,7)
     epsilon=big"0.15"
-    for i=1:7
+    for i=1:size(tab_eps,1)
         tab_eps[i] = epsilon
         epsilon /= 10
     end
