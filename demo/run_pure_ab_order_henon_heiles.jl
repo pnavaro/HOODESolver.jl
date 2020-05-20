@@ -1,8 +1,8 @@
 include("../src/interface.jl")
 include("../src/henon_heiles.jl")
-using DifferentialEquations
 using LinearAlgebra
 using Plots
+using Plots.PlotMeasures
 function getmindif(tab::Vector{Vector{BigFloat}})
     nmmin = Inf
     ret = (0, 0)

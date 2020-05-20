@@ -3,7 +3,6 @@ include("../src/interface.jl")
 using LinearAlgebra
 using Plots
 using Plots.PlotMeasures
-using Random
 
 function fctmain(n_tau, prec)
     setprecision(prec)
