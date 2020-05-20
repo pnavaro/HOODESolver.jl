@@ -45,26 +45,34 @@ function fctmain(n_tau, prec)
         resnormprec=1
         sol =undef
         println("preparation ordre $order + 2")
-        par_u0 = missing     
-        while indc <= nbmaxtest
+        par_u0 = missing
+        borindc = (order < ordmax) ? nbmaxtest : nbmaxtest+1   
+        while indc <= borindc
+            if indc > nbmaxtest
+                nb = 51*2^nbmaxtest
             res = solve(prob, nb_tau=n_tau, order=order, nb_t=nb,par_u0=par_u0, dense=false)
             par_u0=res.par_u0
             sol = res[end]          
             push!(tabsol, sol)
-            res_gen[indc,ind] = sol 
+            if indc <= nbmaxtest
+                res_gen[indc,ind] = sol
+                x[indc] = 1.0/nb
+            end
             (a, b) = getmindif(tabsol)
             if a != 0
                 indref = a
-                solref = (tabsol[a]+tabsol[b])/2
+                solref = tabsol[b]
                 for i=1:ind
-                    borne = (i <ind) ? size(res_gen,1) : indc
+                    borne = (i <ind) ? size(res_gen,1) : min(indc, size(res_gen,1))
                     for j = 1:borne
                         nm = norm(res_gen[j,i] - solref, Inf)
+                        if nm == 0
+                            nm = norm(res_gen[j,i] - tabsol[a], Inf)
+                        end
                         y[j,i] = (nm < 1) ? nm : NaN
                    end
                 end
             end
-            x[indc] = 1.0/nb
             println("result=$y")
             println("log2(y)=$(log2.(y))")
             nb *= 2
@@ -99,10 +107,10 @@ function fctmain(n_tau, prec)
             )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/res3p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
-        Plots.savefig(p,"out/res3p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.png")
-        Plots.savefig(pp,"out/res3pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
-        Plots.savefig(pp,"out/res3pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.png")
+        Plots.savefig(p,"out/res4p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
+        Plots.savefig(p,"out/res4p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.png")
+        Plots.savefig(pp,"out/res4pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.pdf")
+        Plots.savefig(pp,"out/res4pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_henon_heiles.png")
         ind+= 1
     end
 end
