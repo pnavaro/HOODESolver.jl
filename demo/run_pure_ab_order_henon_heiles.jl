@@ -19,7 +19,7 @@ function getmindif(tab::Vector{Vector{BigFloat}})
 end
 function fctmain(n_tau, prec)
     setprecision(prec)
-    u0=BigFloat([90, -44, 83, 13]//100)
+    u0=BigFloat.([90, -44, 83, 13]//100)
     t_max = big"1.0"
     epsilon=big"0.0017"
     println("epsilon=$epsilon")
@@ -28,7 +28,6 @@ function fctmain(n_tau, prec)
     debord=3
     pasord=2
     y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
-
     res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
