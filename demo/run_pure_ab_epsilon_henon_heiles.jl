@@ -8,33 +8,26 @@ include("../src/twoscales_pure_ab.jl")
 include("../src/henon_heiles.jl")
 using LinearAlgebra
 using Plots
-using Random
-function fctmain(n_tau)
-    seed=123456
-    Random.seed!(seed)
-    u0=rand(BigFloat,4)
-    println("seed = $seed")
-    tab_eps = zeros(BigFloat,9)
-    epsilon=big"0.4"
-    for i=2:10
-        tab_eps[i-1] = epsilon
-        epsilon /= 2^i
+using Plots.PlotMeasures
+function fctmain(n_tau, prec)
+    setprecision(prec)
+    u0=BigFloat.([90, -44, 83, 13]//100)
+    tab_eps = zeros(BigFloat,8)
+    epsilon=big"0.19"
+    for i=1:size(tab_eps,1)
+        tab_eps[i] = epsilon
+        epsilon /= 10
     end
-    nbmaxtest=8
-    order=14
-    ordprep=16
+    nbmaxtest=12
+    order=6
     t_max = big"1.0"
     y = ones(Float64, nbmaxtest, size(tab_eps,1) )
     x=zeros(Float64,nbmaxtest)
     ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
-        println("prepareU0 eps=$epsilon n_tau=$n_tau")
-        @time par_u0 = PrepareU0(parphi, ordprep, u0)
-        nb=100*2^nbmaxtest
-        pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
-        solref =  twoscales_pure_ab(pargen, only_end=true)
+        prob = HiOscODEProblem(henon_heiles, u0, (big"0.0",t_max), missing, A, epsilon)
+        tabsol = Array{Array{BigFloat,1},1}(undef,0)
         eps_v = convert(Float32,epsilon)
         println("epsilon = $eps_v solref=$solref")
         nb = 100
