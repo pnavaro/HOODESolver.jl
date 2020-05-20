@@ -132,26 +132,6 @@ f(u, \theta) \\
 \end{array}
 \right) \in \mathbb{R}^{n+1}.$$
 
-## The "classical" Runge-Kutta method (order 4) adapted to the exponential
-
-Notations : 
-- We denote by $G$ the function which transforms $\hat{U}$ to $\hat{f}$, so $G(\hat{U}) = \hat{f}$.
-- We denote by $S_{t_0}^{t_1}(t_2,\ell)$ the intégral $S_{t_0}^{t_1}(t_2,\ell) = \int_{t_0}^{t_1} e^{- i \ell (t_2 - s)/\varepsilon} ds = ( i \varepsilon / \ell) ( e^{- i \ell (t_2 - t_1)/\varepsilon}-e^{- i \ell (t_2 - t_0)/\varepsilon})$
-
-
-Here are the calculations
-
-
--  $u_{1,\ell} = \hat{U}_{n, \ell}$
--  $u_{2,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell ) G_{\ell}(u_1)$
--  $u_{3,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell )  G_{\ell}(u_2)$
-
--  $u_{4,\ell} = e^{- i \ell h_n /(2\varepsilon)}u_{2,\ell} + S_0^{h_n/2} ( h_n/2,\ell )[ 2 G_{\ell}(u_3)-G_{\ell}(u_1)]$ (see (28) of [^4], with $c=-i \ell h_n /\varepsilon$)   
-
-From (29) of [^4], with $c=-i \ell h_n /\varepsilon$, we have
-
-$$\hat{U}_{n+1, \ell} = e^{- i \ell h_n /\varepsilon}\hat{U}_{n, \ell} +  G_{\ell}(u_1) [-4+i \ell h_n /\varepsilon + e^{-i \ell h_n /\varepsilon}(4+3i \ell h_n /\varepsilon+(i \ell h_n /\varepsilon)^2]\\+ (2 G_{\ell}(u_2) + G_{\ell}(u_3) )[-2-i \ell h_n /\varepsilon+e^{-i \ell h_n /\varepsilon}(2-i \ell h_n /\varepsilon)]\\ + G_{\ell}(u_4)[-4+3i \ell h_n /\varepsilon -(i \ell h_n /\varepsilon)^2 + e^{-i \ell h_n /\varepsilon}(4+i \ell h_n /\varepsilon)]/(h_n^2 (i \ell h_n /\varepsilon)^3)$$
-
 
 # Use
 ## Input parameters
@@ -190,8 +170,6 @@ To do this, the numerical parameters are defined
 - the $r$ order of the method 
 - the number of $N_\tau$ points in the $\tau$ direction... 
 - the order of preparation $q$ of the initial condition 
-- precision <font color=red> not yet implemented</font>. 
-- precision $\textcolor{red}{\text{not yet implemented}}$. 
 
 The default settings are : $N_t=100$, $r=4$, $N_\tau=32$ and $q=r+2=6$
 To solve the problem with the default parameters, just call the `solve` command with the problem already defined as parameter
@@ -499,6 +477,7 @@ end
 ```
 
 ## Accuracy of the result according to the time interval
+### Linear problem
 From a problem of the previous type, as long as we can calculate the exact solution, it is possible to know exactly what the error is.
 The initialization data being
 ```jl
@@ -519,12 +498,65 @@ prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
 Note that the floats are coded on 512 bits.\
 By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ (i.e. `nb_t` from `100` to `204800`) on a logarithmic scale, for odd orders from 3 to 17 we get these errors
 
-#### precision of the result with ε = 0.015
+#### Precision of the result with ε = 0.015
 ![](img/error_order.png)
 
-Now with the same initial data order is set to 6, and $\varepsilon = 0.15, 0.015, \ldots, 1.5\times 10^{-7}$ 
-#### precision of the result with order = 6
+Now with the same initial data, order being setted to 6, and $\varepsilon = 0.15, 0.015, \ldots, 1.5\times 10^{-7}$.\
+Here floats are coded on 256 bits.
+
+#### Precision of the result with order = 6
 ![](img/error_epsilon.png)
+
+### Problem with Hénon-Heiles function
+
+```jl
+    u0=BigFloat.([90, -44, 83, 13]//100)
+    t_max = big"1.0"
+    epsilon=big"0.0017"
+    fct = u -> [0, u[4], -2u[1]*u[2], -u[2]-u[1]^2+u[2]^2]
+    A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+    prob = HiOscODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+```
+The float are coded on 512 bits.
+
+#### Precision of the result with ε = 0.0017
+
+![](img/error_order_hh.png)
+
+Now with the same initial data, order being setted to 6, and $\varepsilon = 0.19, 0.019, \ldots, 1.9\times 10^{-8}$.\
+Here floats are coded on 256 bits.
+
+
+#### Precision of the result with ordre = 6
+
+
+![](img/error_epsilon_hh.png)
+
+
+## Future work
+- precision on parameter.
+- exponential runge-kutta method
+
+### The "classical" Runge-Kutta method (order 4) adapted to the exponential (not yet implemented)
+
+Notations : 
+- We denote by $G$ the function which transforms $\hat{U}$ to $\hat{f}$, so $G(\hat{U}) = \hat{f}$.
+- We denote by $S_{t_0}^{t_1}(t_2,\ell)$ the intégral $S_{t_0}^{t_1}(t_2,\ell) = \int_{t_0}^{t_1} e^{- i \ell (t_2 - s)/\varepsilon} ds = ( i \varepsilon / \ell) ( e^{- i \ell (t_2 - t_1)/\varepsilon}-e^{- i \ell (t_2 - t_0)/\varepsilon})$
+
+
+Here are the calculations
+
+
+-  $u_{1,\ell} = \hat{U}_{n, \ell}$
+-  $u_{2,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell ) G_{\ell}(u_1)$
+-  $u_{3,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell )  G_{\ell}(u_2)$
+
+-  $u_{4,\ell} = e^{- i \ell h_n /(2\varepsilon)}u_{2,\ell} + S_0^{h_n/2} ( h_n/2,\ell )[ 2 G_{\ell}(u_3)-G_{\ell}(u_1)]$ (see (28) of [^4], with $c=-i \ell h_n /\varepsilon$)   
+
+From (29) of [^4], with $c=-i \ell h_n /\varepsilon$, we have
+
+$$\hat{U}_{n+1, \ell} = e^{- i \ell h_n /\varepsilon}\hat{U}_{n, \ell} +  G_{\ell}(u_1) [-4+i \ell h_n /\varepsilon + e^{-i \ell h_n /\varepsilon}(4+3i \ell h_n /\varepsilon+(i \ell h_n /\varepsilon)^2]\\+ (2 G_{\ell}(u_2) + G_{\ell}(u_3) )[-2-i \ell h_n /\varepsilon+e^{-i \ell h_n /\varepsilon}(2-i \ell h_n /\varepsilon)]\\ + G_{\ell}(u_4)[-4+3i \ell h_n /\varepsilon -(i \ell h_n /\varepsilon)^2 + e^{-i \ell h_n /\varepsilon}(4+i \ell h_n /\varepsilon)]/(h_n^2 (i \ell h_n /\varepsilon)^3)$$
+
 
 ### Bibliography
 [^1]: P. Chartier, N. Crouseilles, M. Lemou, F. Méhats, Numer. Math., 129, pp. 211-250, (2015).
