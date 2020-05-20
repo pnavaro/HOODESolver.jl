@@ -81,4 +81,4 @@ function fctmain(n_tau, prec)
     end
 end
 
-fctmain(32)
+fctmain(32,256)
