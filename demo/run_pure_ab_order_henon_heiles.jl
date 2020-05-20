@@ -47,7 +47,7 @@ function fctmain(n_tau, prec)
         println("preparation ordre $order + 2")
         par_u0 = missing     
         while indc <= nbmaxtest
-            res = solve(prob, nb_tau=n_tau, order=order, order_prep=ordprep, nb_t=nb,par_u0=par_u0, dense=false)
+            res = solve(prob, nb_tau=n_tau, order=order, nb_t=nb,par_u0=par_u0, dense=false)
             par_u0=res.par_u0
             sol = res[end]          
             push!(tabsol, sol)
