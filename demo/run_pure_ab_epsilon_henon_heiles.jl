@@ -29,50 +29,56 @@ function fctmain(n_tau, prec)
         prob = HiOscODEProblem(henon_heiles, u0, (big"0.0",t_max), missing, A, epsilon)
         tabsol = Array{Array{BigFloat,1},1}(undef,0)
         eps_v = convert(Float32,epsilon)
-        println("epsilon = $eps_v solref=$solref")
+        nb = 60*2^nbmaxtest
+        res = solve(prob, nb_tau=n_tau, order=order, nb_t=nb, dense=false)
+        par_u0=res.par_u0
+        solRef = res[end]          
         nb = 100
         indc =1
         labels=Array{String,2}(undef, 1, ind)  
         while indc <= nbmaxtest
-            pargen = PrepareTwoScalePureAB(nb, t_max, order, par_u0)
-            sol =  twoscales_pure_ab(pargen, only_end=true)
-            println("solref=$solref")
-            println("nb=$nb sol=$sol")
-            diff=solref-sol
+            res = solve(prob, nb_tau=n_tau, order=order, nb_t=nb,par_u0=par_u0, dense=false)
+            sol = res[end]
+            nm = norm(sol - solRef, Inf)
+            y[indc,ind] = (nm < 1) ? nm : NaN  
             x[indc] = 1.0/nb
-            println("nb=$nb dt=$(1.0/nb) normInf=$(norm(diff,Inf)) norm2=$(norm(diff))")
-            y[indc,ind] = norm(diff,Inf)
-            println("epsilon=$epsilon\nresult=$y\nlog(result)=$(log2.(y))")
             nb *= 2
             indc += 1
         end
         for i=1:ind
-            labels[1,i] = " epsilon,order=$(convert(Float32,tab_eps[i])),$order "
+            labels[1,i] = "  ε = $(convert(Float32,tab_eps[i])) "
         end
-        gr()
         p=Plots.plot(
     x,
     view(y,:,1:ind),
-    xlabel="delta t",
+    xlabel="Δt",
     xaxis=:log,
     ylabel="error",
     yaxis=:log,
-    legend=:topleft,
+    legend=:bottomright,
     label=labels,
     marker=2
-)
-        
+)    
+        pp=Plots.plot(
+    x,
+    view(y,:,1:ind),
+    xlabel="Δt",
+    xaxis=:log,
+    ylabel="error",
+    yaxis=:log,
+    legend=:bottomright,
+    label=labels,
+    marker=2,
+    bottom_margin=30px,
+    left_margin=60px
+)          
         prec_v = precision(BigFloat)
-        Plots.savefig(p,"out/r_$(prec_v)_$(eps_v)_$(order)_$(ordprep)_$(n_tau)_epsilon_hh_2.pdf")
+        Plots.savefig(p,"out/r2p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_hh_2.pdf")
+        Plots.savefig(p,"out/r2p_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_hh_2.png")
+        Plots.savefig(pp,"out/r2pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_hh_2.pdf")
+        Plots.savefig(pp,"out/r2pp_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_epsilon_hh_2.png")
         ind+= 1
     end
 end
 
-
-# testODESolverEps()
-
-# for i=3:9
-#     fctMain(2^i)
-# end
-# setprecision(512)
 fctmain(32)
