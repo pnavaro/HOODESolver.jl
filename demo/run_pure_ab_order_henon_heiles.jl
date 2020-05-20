@@ -50,6 +50,7 @@ function fctmain(n_tau, prec)
         while indc <= borindc
             if indc > nbmaxtest
                 nb = 51*2^nbmaxtest
+            end
             res = solve(prob, nb_tau=n_tau, order=order, nb_t=nb,par_u0=par_u0, dense=false)
             par_u0=res.par_u0
             sol = res[end]          
