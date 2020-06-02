@@ -182,10 +182,10 @@ sol = solve(
     prob;
     nb_tau=32, 
     order=4, 
-    order_prep=order+2,
+    order_prep=6, # by default : order + 2
     dense=true, 
     nb_t=100, 
-    getprecision=dense, 
+    getprecision=true, # by default : dense 
     verbose=100,    
     par_u0=missing,
     p_coef=missing,
