@@ -152,7 +152,6 @@ Note: *You have to type ] and ^C by hand, for the rest you can copy and paste*.
 ```jl
 ]
 add https://gitlab.inria.fr/ua/HighlyOscillatoryProblems.jl.git
-^C
 using HighlyOscillatoryProblems
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
