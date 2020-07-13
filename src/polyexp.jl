@@ -7,19 +7,19 @@ import Base: show, *, +
     PolyExp(p::Vector{T}, a::T, b::T)
     PolyExp(pol::Polynomial{T},a::T,b::T)
 
-On the model of `Polynomial` from package `Polynomials`, construct a function that is a polynome multiply by an exponential
+On the model of `Polynomial` from package `Polynomials`, construct a function that is a polynomial multiply by an exponential
 function. The exponential is an exponential of an affine function ``a x + b``.
-The polynome is construct from its coefficients `p`, lowest order first.
+The polynomial is construct from its coefficients `p`, lowest order first.
 
 If ``f = (p_n x^n + \\ldots + p_2 x^2 + p_1 x + p_0)e^{a x + b}``, we construct this through
 `PolyExp([p_0, p_1, ..., p_n], a, b)`. 
-It is also possible to construct it directly from the polynome.
+It is also possible to construct it directly from the polynomial.
 
 In the sequels some methods with the same name than for Polynomial are implemented
 (`derivative`, `integrate`, `strings`, ...) but not all, only the methods needed are developped.
 
 # Arguments :
-- `p::Vector{T}` or pol::Polynomial{T} : vector of coefficients of the polynome, or directly the polynome.
+- `p::Vector{T}` or pol::Polynomial{T} : vector of coefficients of the polynomial, or directly the polynomial.
 - `a::T`, `b::T` : coefficients of affine exponentiated function.
 
 # Examples
