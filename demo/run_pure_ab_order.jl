@@ -21,7 +21,7 @@ function fctmain(n_tau, prec)
     t_max = big"1.0"
     epsilon=big"0.015"
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
+    prob = HOODEODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
 #    nbmaxtest=6
     nbmaxtest=12
     ordmax=17
