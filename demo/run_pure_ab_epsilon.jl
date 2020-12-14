@@ -33,7 +33,7 @@ function fctMain(n_tau)
     ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
+        prob = HOODEODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
         eps_v = convert(Float32,epsilon)
         println("epsilon = $eps_v")
         nb = 100
