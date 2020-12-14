@@ -17,7 +17,7 @@ makedocs(
         canonical="https://ymocquar.github.io/HOODESolver.jl",
         assets=String[],
     ),
-    modules = [HiOscSolver],
+    modules = [HOODESolver],
     pages = ["Documentation"    => "index.md",
              "Numerical Method" => "numerical_method.md",
              "Quickstart"       => "quickstart.md",
