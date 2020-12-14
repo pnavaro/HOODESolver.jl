@@ -47,7 +47,7 @@ function fctmain(n_tau, prec)
         res_gen = Array{ Array{BigFloat,1}, 1}(undef, nbmaxtest )
         x=zeros(Float64,nbmaxtest)
         nb = 10*2^(nbmaxtest)
-        prob = HiOscODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
+        prob = HOODEODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
         @time sol = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, dense=false)
         solref = sol[end]
         tabsol = Array{Array{BigFloat,1},1}(undef,1)
