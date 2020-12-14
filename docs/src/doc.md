@@ -1,18 +1,8 @@
-The objective of this Julia package is to valorize the recent developments carried out within MINGuS on Uniformly Accurate numerical methods (UA) for highly oscillating problems. We propose to solve the following equation 
-
-$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t)), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\;\;\; (1)$$
-
-with 
--  $u : t\in [t_{0}, t_{fin}] \mapsto u(t)\in \mathbb{R}^n, \;\; t_{0}, t_{\text{end}}\in \mathbb{R}$, 
--  $u_{0}\in \mathbb{R}^n$, 
--  $A\in {\mathcal{M}}_{n,n}(\mathbb{R})$ is such that $\tau \mapsto \exp(\tau A)$ is periodic,  
--  $f : u\in  \mathbb{R}^n \mapsto \mathbb{R}^n$.
-
-The purpose here is to write an explanatory documentation of the *Julia* package containing the two-scale method (see [^1], [^2] and [^3]). This package is inspired by the Differential Equations package which is considered as one of the best *Julia* packages available.
-
 
 # Numerical method
+
 ## Two-scale formulation 
+
 First, rewrite equation (1) using the variable change $w(t)=\exp(-(t-t_{0})A/\varepsilon) u(t)$ to obtain
 
 $$\frac{d w(t)}{dt} = F\Big( \frac{t-t_{0}}{\varepsilon}, w(t) \Big), \;\;\; w(t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1],$$
@@ -25,12 +15,14 @@ We then introduce the function $U(t, \tau), \tau\in [0, 2 \pi]$ such that $U(t, 
 
 $$\frac{\partial U}{\partial t} + \frac{1}{\varepsilon} \frac{\partial U}{\partial \tau} =  F( \tau, U), \;\;\; U(t=t_{0}, \tau)=\Phi(\tau), \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\; (2)$$
 
-where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is regular (see [^1] and [^2]).
+where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is regular (see [chartier2015](@cite) and [chartier2020](@cite).
 
 ## Discretization  
-The numerical method is based on a discretization of equation (2). In the direction $\tau$, a spectral method is used, while for the time $t$, an exponential Adams-Bashforth method allows to build a high order method (see [^2]). The initialization is based on a "butterfly" technique (going back and forth around the initial time).
+
+The numerical method is based on a discretization of equation (2). In the direction $\tau$, a spectral method is used, while for the time $t$, an exponential Adams-Bashforth method allows to build a high order method (see [chartier2020](@cite)). The initialization is based on a "butterfly" technique (going back and forth around the initial time).
 
 ### Initialization 
+
 Let r be the order of the method $AB_r$.\
 Let $\Delta t$ the time step, for $i \in \{r, -(r-1), \ldots, r-1, r\}$,
 we note $u_i = u(t_0+i \Delta t)$.\
@@ -39,6 +31,7 @@ If $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for
 Similarly, if $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k+1}, \ldots, u_{k+r'-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r'})$ then we can calculate $u_{k-1}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.
 
 ### Algorithm
+
 - With the method $AB_1$, from $u_0$ we calculate $u_{-1}$ with a precision of ${\mathcal O}(\Delta t^2)$
 - With the method $AB_2$, starting from $u_{0}$ and $u_{-1}$, we calculate $u_{1}$ with a precision of ${\mathcal O}(\Delta t^3)$
 - For $r' = $3 to $r' = r$.
@@ -146,12 +139,8 @@ Thus, first of all, we must define the arguments necessary to construct the prob
 - the $A$ matrix 
 -  $\varepsilon \in ]0, 1]$
 
-
-Note: *You have to type ] and ^C by hand, for the rest you can copy and paste*.
-
 ```jl
-]
-add https://github/ymocquar/HOODESolver.jl.git
+pkg'add https://gitlab.inria.fr/ua/HOODESolver.jl.git'
 using HOODESolver
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
@@ -159,7 +148,7 @@ epsilon= 0.0001
 t_min=0.0
 t_max=3.0
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HiOscODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
+prob = HOODEODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
 ```
 
 From the ```prob``` problem, we can now switch to its digital resolution. 
@@ -191,7 +180,7 @@ sol = solve(
 ) 
 ```
 ### Exhaustive definition of the parameters
-- `prob` : problem defined by `HiOscODEProblem` 
+- `prob` : problem defined by `HOODEODEProblem` 
 - `nb_tau=32` : $N_{\tau}$
 - `order=4` : order $r$ of the method
 - `order_prep=order+2` : order of preparation of initial data
@@ -202,12 +191,12 @@ sol = solve(
 - `par_u0` : If we have to make several calls to `solve` with the same initial data and in the same order, we can pass in parameter the already calculated data.
 - `p_coef` : table with the coefficients of the Adams-Bashforth method. This array can be used to optimize several calls with the same parameters.
 ## Exit arguments
-As an output, a structure of type `HiOscODESolution`.
+As an output, a structure of type `HOODEODESolution`.
 This structure can be seen as a function of t, it can also be seen as an array of size $N_t + 1$. This structure also contains the `absprec` and `relprec` fields which are the absolute and relative precisions, respectively, calculated.
 ### Example
 ```jl     
 julia> sol = solve(prob);
-solve function prob=HiOscODEProblem with uType Array{Float64,1} and tType Float64. In-place: nothing
+solve function prob=HOODEODEProblem with uType Array{Float64,1} and tType Float64. In-place: nothing
 timespan: (0.0, 3.0)
 u0: [0.55, 0.12, 0.03, 0.89],
  nb_tau=32, order=4, order_prep=6, dense=true,
@@ -301,14 +290,13 @@ epsilon= 0.001
 t_min=0.0
 t_max=1.0
 u0 = [0.12, 0.12, 0.12, 0.12]
-prob = HiOscODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon)
+prob = HOODEODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon)
 sol = solve(prob);
 using Plots
 plot(sol)
 ```
 
 ![](img/henon_heiles.png)
-
 
 ## Charged particle
 
@@ -328,7 +316,7 @@ We will assume that the magnetic field is written $B(t, x)=(0, 0, 1)^T$ and unde
 $$\begin{aligned}
 \frac{d x_1(t) }{dt} &= \frac{1}{\varepsilon}v_1(t) \\
 \frac{d x_2(t) }{dt} &= \frac{1}{\varepsilon} v_2(t) \\
-\frac{d x_3(t) }{dt}&= v_3(t) \\
+\frac{d x_3(t) }{dt} &= v_3(t) \\
 \frac{d v_1(t) }{dt} &= E_1(t, x(t)) + \frac{1}{\varepsilon}v_2(t)\\
 \frac{d v_2(t) }{dt} &= E_2(t, x(t)) - \frac{1}{\varepsilon}v_1(t)\\
 \frac{d v_3(t) }{dt} &= E_3(t, x(t)) 
@@ -387,7 +375,7 @@ epsilon= 0.05
 t_min=0.0
 t_max=1.0
 u0 = [1.0, 1.5, -0.5, 0, -1.2, 0.8]
-prob = HiOscODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
+prob = HOODEODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
 sol=solve(prob)
 plot(sol)
 ```
@@ -430,7 +418,7 @@ u0 = [big"0.5", big"-0.123", big"0.8", big"0.7"]
 t_min=big"0.0"
 t_max=big"1.0"
 epsilon=big"0.017"
-prob = HiOscODEProblem(fct, u0, (t_min,t_max), (alpha, beta), A, epsilon, B)
+prob = HOODEODEProblem(fct, u0, (t_min,t_max), (alpha, beta), A, epsilon, B)
 sol = solve(prob, nb_t=10000, order=8)
 sol.absprec
 t=big"0.9756534187771"
@@ -492,7 +480,7 @@ beta =  BigFloat.([-4//100, 48//100, 23//100, -87//100])
 epsilon = 0.015
 t_max = big"1.0"
 fct = (u,p,t)-> B*u + t*p[1] +p[2]
-prob = HiOscODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
+prob = HOODEODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
 ```
 Note that the floats are coded on 512 bits.\
 By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ (i.e. `nb_t` from `100` to `204800`) on a logarithmic scale, for odd orders from 3 to 17 we get these errors
@@ -514,7 +502,7 @@ Here floats are coded on 256 bits.
     epsilon=big"0.0017"
     fct = u -> [0, u[4], -2u[1]*u[2], -u[2]-u[1]^2+u[2]^2]
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    prob = HiOscODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+    prob = HOODEODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
 ```
 The float are coded on 512 bits.
 
@@ -550,21 +538,8 @@ Here are the calculations
 -  $u_{2,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell ) G_{\ell}(u_1)$
 -  $u_{3,\ell} = e^{- i \ell h_n /(2 \varepsilon)}\hat{U}_{n, \ell} + S_0^{h_n /2} ( h_n /2,\ell )  G_{\ell}(u_2)$
 
--  $u_{4,\ell} = e^{- i \ell h_n /(2\varepsilon)}u_{2,\ell} + S_0^{h_n/2} ( h_n/2,\ell )[ 2 G_{\ell}(u_3)-G_{\ell}(u_1)]$ (see (28) of [^4], with $c=-i \ell h_n /\varepsilon$)   
+-  $u_{4,\ell} = e^{- i \ell h_n /(2\varepsilon)}u_{2,\ell} + S_0^{h_n/2} ( h_n/2,\ell )[ 2 G_{\ell}(u_3)-G_{\ell}(u_1)]$ (see (28) of [cox2002](@cite), with $c=-i \ell h_n /\varepsilon$)   
 
-From (29) of [^4], with $c=-i \ell h_n /\varepsilon$, we have
+From (29) of [cox2002](@cite), with $c=-i \ell h_n /\varepsilon$, we have
 
 $$\hat{U}_{n+1, \ell} = e^{- i \ell h_n /\varepsilon}\hat{U}_{n, \ell} +  G_{\ell}(u_1) [-4+i \ell h_n /\varepsilon + e^{-i \ell h_n /\varepsilon}(4+3i \ell h_n /\varepsilon+(i \ell h_n /\varepsilon)^2]\\+ (2 G_{\ell}(u_2) + G_{\ell}(u_3) )[-2-i \ell h_n /\varepsilon+e^{-i \ell h_n /\varepsilon}(2-i \ell h_n /\varepsilon)]\\ + G_{\ell}(u_4)[-4+3i \ell h_n /\varepsilon -(i \ell h_n /\varepsilon)^2 + e^{-i \ell h_n /\varepsilon}(4+i \ell h_n /\varepsilon)]/(h_n^2 (i \ell h_n /\varepsilon)^3)$$
-
-
-### Bibliography
-[^1]: P. Chartier, N. Crouseilles, M. Lemou, F. Méhats, Numer. Math., 129, pp. 211-250, (2015).
-
-[^2]: P. Chartier, M. Lemou, F. Méhats, X. Zhao, submitted. 
-
-[^3]: N. Crouseilles, M. Lemou, F. Méhats, J. Comput. Phys, 248, pp.287-308, (2013). 
-
-[^4]: S. M. Cox and P. C. Matthews "Exponential Time Differencing for Stiff Systems" J. Comput. Phys, 436, pp.430-455, (2002).
-
-
-
