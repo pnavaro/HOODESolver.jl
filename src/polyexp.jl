@@ -7,19 +7,19 @@ import Base: show, *, +
     PolyExp(p::Vector{T}, a::T, b::T)
     PolyExp(pol::Polynomial{T},a::T,b::T)
 
-On the model of `Polynomial` from package `Polynomials`, construct a function that is a polynomial multiply by an exponential
+On the model of `Polynomial` from package `Polynomials`, construct a function that is a polynome multiply by an exponential
 function. The exponential is an exponential of an affine function ``a x + b``.
-The polynomial is construct from its coefficients `p`, lowest order first.
+The polynome is construct from its coefficients `p`, lowest order first.
 
 If ``f = (p_n x^n + \\ldots + p_2 x^2 + p_1 x + p_0)e^{a x + b}``, we construct this through
 `PolyExp([p_0, p_1, ..., p_n], a, b)`. 
-It is also possible to construct it directly from the polynomial.
+It is also possible to construct it directly from the polynome.
 
 In the sequels some methods with the same name than for Polynomial are implemented
 (`derivative`, `integrate`, `strings`, ...) but not all, only the methods needed are developped.
 
 # Arguments :
-- `p::Vector{T}` or pol::Polynomial{T} : vector of coefficients of the polynomial, or directly the polynomial.
+- `p::Vector{T}` or pol::Polynomial{T} : vector of coefficients of the polynome, or directly the polynome.
 - `a::T`, `b::T` : coefficients of affine exponentiated function.
 
 # Examples
@@ -38,10 +38,10 @@ struct PolyExp{T}
     p::Polynomial{T}
     a::T
     b::T
-    PolyExp(p::Vector{T},a::T,b::T) where{T<:Number}=new{T}(Polynomial{T}(p), a, b)
-    PolyExp(pol::Polynomial{T},a::T,b::T) where{T<:Number}=new{T}(pol, a, b)
+    PolyExp(p::Vector{T}, a::T, b::T) where {T<:Number} = new{T}(Polynomial{T}(p), a, b)
+    PolyExp(pol::Polynomial{T}, a::T, b::T) where {T<:Number} = new{T}(pol, a, b)
 end
-function _printNumberPar(x::Number) 
+function _printNumberPar(x::Number)
     return isreal(x) ? "$(real(x))" : (iszero(real(x)) ? "$(imag(x))im" : "($x)")
 end
 function _printNumber(x::Number)
@@ -49,9 +49,9 @@ function _printNumber(x::Number)
 end
 function Base.show(io::IO, pe::PolyExp)
     return print(
-    io, 
-    "PolyExp($(pe.p)*exp($(_printNumberPar(pe.a))*x + $(_printNumber(pe.b))))"
-)
+        io,
+        "PolyExp($(pe.p)*exp($(_printNumberPar(pe.a))*x + $(_printNumber(pe.b))))",
+    )
 end
 """
     derivative(pe::PolyExp)
@@ -68,7 +68,7 @@ PolyExp(Polynomial((0.5 + 6.5im) - (6.5 - 6.0im)*x + (10.0 - 1.5im)*x^2 + (8.0 +
 ```
 """
 function Polynomials.derivative(pe::PolyExp)
-    return PolyExp(pe.p*pe.a + Polynomials.derivative(pe.p), pe.a, pe.b)
+    return PolyExp(pe.p * pe.a + Polynomials.derivative(pe.p), pe.a, pe.b)
 end
 
 """
@@ -87,26 +87,26 @@ PolyExp(Polynomial((0.5 - 0.5im) - 1.0im*x)*exp(2.0im*x + 3.0))
 ```
 """
 function Polynomials.integrate(pe::PolyExp)
-    if ( pe.a != 0 )
+    if (pe.a != 0)
         pol = pe.p / pe.a
         if Polynomials.degree(pe.p) > 0
-            pol -= Polynomials.integrate(PolyExp(Polynomials.derivative(pe.p), pe.a, pe.b)).p / pe.a
+            pol -=
+                Polynomials.integrate(PolyExp(Polynomials.derivative(pe.p), pe.a, pe.b)).p /
+                pe.a
         end
     else
         pol = Polynomials.integrate(pol)
     end
-    return PolyExp( pol, pe.a, pe.b)
+    return PolyExp(pol, pe.a, pe.b)
 end
-(pe::PolyExp)(x) = pe.p(x) * exp(pe.a*x + pe.b)
+(pe::PolyExp)(x) = pe.p(x) * exp(pe.a * x + pe.b)
 coeffs(pe::PolyExp) = vcat(Polynomials.coeffs(pe.p), pe.a, pe.b)
-function Polynomials.integrate(p::PolyExp, v_begin::Number, v_end::Number )
+function Polynomials.integrate(p::PolyExp, v_begin::Number, v_end::Number)
     pol = Polynomials.integrate(p)
-    return pol(v_end)-pol(v_begin)
+    return pol(v_end) - pol(v_begin)
 end
-*( p1::PolyExp, p2::PolyExp )=PolyExp(p1.p*p2.p,p1.a+p2.a,p1.b+p2.b)
-function +( p1::PolyExp, p2::PolyExp )
+*(p1::PolyExp, p2::PolyExp) = PolyExp(p1.p * p2.p, p1.a + p2.a, p1.b + p2.b)
+function +(p1::PolyExp, p2::PolyExp)
     @assert (p1.a == p2.a && p1.b == p2.b) "for adding exponents must be equal"
-    return PolyExp(p1.p+p2.p,p1.a,p1.b)
+    return PolyExp(p1.p + p2.p, p1.a, p1.b)
 end
-
-
