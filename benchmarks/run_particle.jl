@@ -1,4 +1,4 @@
-include("../src/interface.jl")
+using HOODESolver
 using DifferentialEquations
 using LinearAlgebra
 using Plots
@@ -34,52 +34,74 @@ function fctmain(n_tau, prec)
     u0 = BigFloat.(u0)
     println("u0=$u0")
     t_max = big"1.0"
-    epsbase=big"0.1"
-    nbeps=9
-    nbmaxtest=14
-    order=5
+    epsilon=big"1e-7"
+    println("epsilon=$epsilon")
+    nbmaxtest=15
+    ordmax=9
+    debord=3
+    pasord=1
+    y = ones(Float64, nbmaxtest, div(ordmax-debord,pasord)+1 )
+    res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, div(ordmax-debord,pasord)+1 )
+    x=zeros(Float64,nbmaxtest)
     A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
     t_0=big"0.0"
     t_max=big"1.0"
-    y = ones(Float64, nbmaxtest, nbeps )
-    for ieps=1:nbeps
-        epsilon = epsbase^ieps
-        res_gen = Array{ Array{BigFloat,1}, 1}(undef, nbmaxtest )
-        x=zeros(Float64,nbmaxtest)
-        nb = 10*2^(nbmaxtest)
-        prob = HOODEODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
-        @time sol = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, dense=false)
+    prob = HOODEODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
+    nm = NaN
+    ordmax += 1
+    ordprep=undef
+    nb = 10*2^(nbmaxtest)
+    solref=undef
+    while isnan(nm)
+        ordmax -= 1
+        @time sol = solve(prob, nb_t=nb, order=ordmax, getprecision=false, nb_tau=n_tau, dense=false)
         solref = sol[end]
-        tabsol = Array{Array{BigFloat,1},1}(undef,1)
-        tabsol[1] = solref
+	    nm = norm(solref, Inf)
+    end
+
+    tabsol = Array{Array{BigFloat,1},1}(undef,1)
+
+    tabsol[1] = solref
+
+    println("ordmax=$ordmax")
+
+
+    solref_gen = solref
+    indref = 1
+
+    ind=1
+    for order=debord:pasord:ordmax
+        ordprep=order+2
         println("eps=$epsilon solRef=$solref order=$order")
         nb = 10
         indc = 1
-        labels=Array{String,2}(undef, 1, nbeps)
+        labels=Array{String,2}(undef, 1, order-debord+1)
         resnorm=0
         resnormprec=1
         sol =undef
         par_u0=missing
-        indref = 1
         println("preparation ordre $order + 2")
         while indc <= nbmaxtest
             @time solall = solve(prob, nb_t=nb, order=order, getprecision=false, nb_tau=n_tau, par_u0=par_u0, dense=false)
             par_u0 = solall.par_u0
             sol = solall[end]
-            res_gen[indc] = sol
             push!(tabsol, sol)
+            res_gen[indc,ind] = sol
             (a, b), nm = getmindif(tabsol)
             if a != indref
                 println("New solref !!!! a=$a, b=$b nm=$nm")
                 indref = a
                 solref = tabsol[a]
-                for j = 1:indc
-                    nm2 = min( norm(res_gen[j] - solref, Inf), 1.1)
-                    y[j,ieps] = nm2 == 0 ? nm : nm2
+                for i=1:ind
+                    borne = (i <ind) ? size(res_gen,1) : indc
+                    for j = 1:borne
+                        nm2 = min( norm(res_gen[j,i] - solref, Inf), 1.1)
+                        y[j,i] = nm2 == 0 ? nm : nm2
+                   end
                 end
             else
                 diff=solref-sol
-                y[indc,ieps] = min(norm(diff,Inf), 1.1)
+                y[indc,ind] = min(norm(diff,Inf), 1.1)
             end
             x[indc] = 1.0/nb
             println("result=$y")
@@ -87,13 +109,12 @@ function fctmain(n_tau, prec)
             nb *= 2
             indc += 1
         end
-        for i=1:ieps
-            ep=epsbase^i
-            labels[1,i] = " eps,order=$(convert(Float32,ep)),$order "
+        for i=debord:pasord:order
+            labels[1,(i-debord)÷pasord+1] = " eps,order=$(convert(Float32,epsilon)),$i "
         end
         p=Plots.plot(
                         x,
-                        view(y,:,1:ieps),
+                        view(y,:,1:ind),
                         xlabel="delta t",
                         xaxis=:log,
                         ylabel="error",
@@ -104,7 +125,12 @@ function fctmain(n_tau, prec)
                     )
         prec_v = precision(BigFloat)
         eps_v = convert(Float32,epsilon)
-        Plots.savefig(p,"out/r3_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle_epsilon.pdf")
+        Plots.savefig(p,"out/r4_$(prec_v)_$(eps_v)_$(order)_$(n_tau)_particle.pdf")
+        if resnorm > resnormprec
+            break
+        end
+        resnormprec = resnorm
+        ind+= 1
     end
 end
-fctmain(32,256)
+fctmain(32,512)

@@ -1,8 +1,5 @@
-include("../src/preparephi.jl")
-include("../src/henon_heiles.jl")
-
+using HOODESolver
 using Printf
-
 
 function _printnumstr( num::BigFloat)
     str = @sprintf("%1.200e", num)

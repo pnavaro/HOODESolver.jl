@@ -1,5 +1,5 @@
 
-include("../src/interface.jl")
+using HOODESolver
 using LinearAlgebra
 using Plots
 using Plots.PlotMeasures

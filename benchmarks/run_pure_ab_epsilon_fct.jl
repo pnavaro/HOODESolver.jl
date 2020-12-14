@@ -4,7 +4,7 @@ testODE:
 - Author: ymocquar
 - Date: 2019-11-13
 =#
-include("../src/twoscales_pure_ab.jl")
+using HOODESolver
 using DifferentialEquations
 using LinearAlgebra
 using Plots

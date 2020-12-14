@@ -1,5 +1,4 @@
-include("../src/twoscales_pure_ab.jl")
-include("../src/henon_heiles.jl")
+using HOODESolver
 using DifferentialEquations
 using LinearAlgebra
 using Plots

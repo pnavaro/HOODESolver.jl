@@ -1,5 +1,4 @@
-include("../src/interface.jl")
-include("../src/henon_heiles.jl")
+using HOODESolver
 using LinearAlgebra
 using Plots
 using Plots.PlotMeasures

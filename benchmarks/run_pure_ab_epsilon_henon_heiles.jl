@@ -4,11 +4,16 @@ testODE:
 - Author: ymocquar
 - Date: 2019-11-13
 =#
-include("../src/interface.jl")
-include("../src/henon_heiles.jl")
+
+using HOODESolver
 using LinearAlgebra
 using Plots
 using Plots.PlotMeasures
+
+function henon_heiles(u, p, t)
+    return [0, u[4], -2u[1] * u[2], -u[2] - u[1]^2 + u[2]^2]
+end
+
 function fctmain(n_tau, prec)
     setprecision(prec)
     u0=BigFloat.([90, -44, 83, 13]//100)

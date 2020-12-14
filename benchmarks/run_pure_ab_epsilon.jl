@@ -4,7 +4,7 @@ testODE:
 - Author: ymocquar
 - Date: 2019-11-13
 =#
-include("../src/interface.jl")
+using HOODESolver
 using LinearAlgebra
 using Plots
 using Plots.PlotMeasures
