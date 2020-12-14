@@ -1,4 +1,4 @@
-#using HOODESolver
+using HOODESolver
 using Test
 include("testfftbig.jl")
 include("testexpmatrices.jl")
