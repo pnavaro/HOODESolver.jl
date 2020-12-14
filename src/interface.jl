@@ -6,22 +6,22 @@ using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
-struct HOODEODEFunction{iip,N} <: DiffEqBase.AbstractODEFunction{iip}
+struct HOODEFunction{iip,N} <: DiffEqBase.AbstractODEFunction{iip}
     f::Any
 end
-(fct::HOODEODEFunction{false,3})(u, p, t) = fct.f(u, p, t)
-(fct::HOODEODEFunction{false,2})(u, p, t) = fct.f(u, p)
-(fct::HOODEODEFunction{false,1})(u, p, t) = fct.f(u)
-function (fct::HOODEODEFunction{true,4})(u, p, t)
+(fct::HOODEFunction{false,3})(u, p, t) = fct.f(u, p, t)
+(fct::HOODEFunction{false,2})(u, p, t) = fct.f(u, p)
+(fct::HOODEFunction{false,1})(u, p, t) = fct.f(u)
+function (fct::HOODEFunction{true,4})(u, p, t)
     du = zero(u)
     fct.f(du, u, p, t)
     return du
 end
 
 
-struct HOODEODEProblem{T} <: DiffEqBase.DEProblem
-    """The HOODEODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
-    f::HOODEODEFunction
+struct HOODEProblem{T} <: DiffEqBase.DEProblem
+    """The HOODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
+    f::HOODEFunction
     """The initial condition is `u(tspan[1]) = u0`."""
     u0::Vector{T}
     """The solution `u(t)` will be computed for `tspan[1] ≤ t ≤ tspan[2]`."""
@@ -34,7 +34,7 @@ struct HOODEODEProblem{T} <: DiffEqBase.DEProblem
     epsilon::T
     """Matrix of linear problem to get the exact solution"""
     B::Union{Matrix,Missing}
-    function HOODEODEProblem(
+    function HOODEProblem(
         f,
         u0::Vector{T},
         tspan::Tuple{T,T},
@@ -44,21 +44,21 @@ struct HOODEODEProblem{T} <: DiffEqBase.DEProblem
         B::Union{Matrix,Missing},
     ) where {T}
         fct = if hasmethod(f, (Vector{T}, Vector{T}, Any, T))
-            HOODEODEFunction{true,4}(f)
+            HOODEFunction{true,4}(f)
         elseif hasmethod(f, (Vector{T}, Any, T))
-            HOODEODEFunction{false,3}(f)
+            HOODEFunction{false,3}(f)
         elseif hasmethod(f, (Vector{T}, Any))
-            HOODEODEFunction{false,2}(f)
+            HOODEFunction{false,2}(f)
         elseif hasmethod(f, (Vector{T},))
-            HOODEODEFunction{false,1}(f)
+            HOODEFunction{false,1}(f)
         else
             println("err !!!!!")
         end
         return new{T}(fct, u0, tspan, p, A, epsilon, B)
     end # end of function
 end # end of struct
-function HOODEODEProblem(f, u0, tspan, p, A, epsilon)
-    return HOODEODEProblem(f, u0, tspan, p, A, epsilon, missing)
+function HOODEProblem(f, u0, tspan, p, A, epsilon)
+    return HOODEProblem(f, u0, tspan, p, A, epsilon, missing)
 end
 struct HOODEInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
     t::Vector{T}
@@ -88,7 +88,7 @@ if typeof(DiffEqBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == Dat
 else
     abstract type AbstractHOODESolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
 end
-struct HOODEODESolution{T} <: AbstractHOODESolution{T,T}
+struct HOODESolution{T} <: AbstractHOODESolution{T,T}
     u::Vector{Vector{T}}
     u_tr::Union{Vector{Vector{T}},Nothing}
     t::Vector{T}
@@ -96,15 +96,15 @@ struct HOODEODESolution{T} <: AbstractHOODESolution{T,T}
     order::Integer
     par_u0::PrepareU0
     p_coef::CoefExpAB
-    prob::HOODEODEProblem{T}
+    prob::HOODEProblem{T}
     retcode::Any
     interp::Union{HOODEInterpolation,Nothing}
     tslocation::Any
     absprec::Any
     relprec::Any
 end
-function HOODEODESolution(retcode::Symbol)
-    return HOODEODESolution(
+function HOODESolution(retcode::Symbol)
+    return HOODESolution(
         undef,
         undef,
         undef,
@@ -117,34 +117,34 @@ function HOODEODESolution(retcode::Symbol)
         undef,
     )
 end
-(sol::HOODEODESolution)(t) = sol.dense ? sol.interp(t) : undef
+(sol::HOODESolution)(t) = sol.dense ? sol.interp(t) : undef
 
-abstract type AbstractHOODEODEAlgorithm end
+abstract type AbstractHOODEAlgorithm end
 
-struct HOODETwoScalesAB <: AbstractHOODEODEAlgorithm end
-struct HOODEETDRK2 <: AbstractHOODEODEAlgorithm end
-struct HOODEETDRK3 <: AbstractHOODEODEAlgorithm end
-struct HOODEETDRK4 <: AbstractHOODEODEAlgorithm end
+struct HOODETwoScalesAB <: AbstractHOODEAlgorithm end
+struct HOODEETDRK2 <: AbstractHOODEAlgorithm end
+struct HOODEETDRK3 <: AbstractHOODEAlgorithm end
+struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
 
 
-# function DiffEqBase.build_solution{T}(prob::HOODEODEProblem{T}, 
+# function DiffEqBase.build_solution{T}(prob::HOODEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
 #     t::Vector{T}, 
 #     fftsol::Vector{Array{T,2}}) where T<:AbstractFloat
-#     return HOODEODESolution(sol, t, fftsol)
+#     return HOODESolution(sol, t, fftsol)
 # end
-# function DiffEqBase.build_solution{T}(prob::HOODEODEProblem{T}, 
+# function DiffEqBase.build_solution{T}(prob::HOODEProblem{T}, 
 #     sol::Vector{Vector{T}}, 
 #     t::Vector{T}) where T<:AbstractFloat
-#     return HOODEODESolution(sol, t, undef)
+#     return HOODESolution(sol, t, undef)
 # end
 
 
 
 
-# function DiffEqBase.solve(prob::HOODEODEProblem{T};
+# function DiffEqBase.solve(prob::HOODEProblem{T};
 """
-    function DiffEqBase.solve(prob::HOODEODEProblem{T}; 
+    function DiffEqBase.solve(prob::HOODEProblem{T}; 
     nb_tau::Integer=32, 
     order::Integer=4, 
     order_prep::Integer=order+2, 
@@ -162,7 +162,7 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 ``A`` must be a periodic matrix i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
 
 # Argument :
-- `prob::HOODEODEProblem{T}` : The problem to solve
+- `prob::HOODEProblem{T}` : The problem to solve
 
 # Keywords :
 - `nb_tau::Integer=32` : number of values of FFT transform, must be power of twoscales_pure_ab
@@ -176,11 +176,11 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 
 # Examples :
 """
-function DiffEqBase.solve(prob::HOODEODEProblem{T}; kwargs...) where {T<:AbstractFloat}
+function DiffEqBase.solve(prob::HOODEProblem{T}; kwargs...) where {T<:AbstractFloat}
     return DiffEqBase.solve(prob, HOODETwoScalesAB(); kwargs...)
 end
 function DiffEqBase.solve(
-    prob::HOODEODEProblem{T},
+    prob::HOODEProblem{T},
     alg::HOODETwoScalesAB;
     nb_tau::Integer = 32,
     order::Integer = 4,
@@ -236,7 +236,7 @@ function DiffEqBase.solve(
         #         relprec = max(relprec,rp)
         #     end
         # end
-        return HOODEODESolution(
+        return HOODESolution(
             s1.u,
             s1.u_tr,
             s1.t,
@@ -289,7 +289,7 @@ function DiffEqBase.solve(
         u_tr = nothing
         interp = nothing
     end
-    return HOODEODESolution(
+    return HOODESolution(
         u,
         u_tr,
         t,
