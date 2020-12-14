@@ -1,9 +1,11 @@
-include("../src/coefexp_ab.jl")
-include("datacoefexp.jl")
-include("datacoefexp10.jl")
 using LinearAlgebra
 using Random
 using Test
+using HOODESolver
+
+include("datacoefexp.jl")
+include("datacoefexp10.jl")
+
 function testcoefexp_ab()
     prec = prec_old = precision(BigFloat)
     @time @testset "test 1 coef for exponential Adams-Bashforth" begin

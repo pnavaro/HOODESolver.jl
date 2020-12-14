@@ -1,5 +1,5 @@
-include("../src/coefexp_ab.jl")
 using LinearAlgebra
+using HOODESolver
 
 function testcoeffloat()
     tab=[ (big"0.1", big"0.0001"), (big"0.00001", big"0.01")]

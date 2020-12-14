@@ -2,8 +2,9 @@ using DifferentialEquations
 using LinearAlgebra
 using Random
 using Test
-include("../src/twoscales_pure_ab.jl")
-include("../src/henon_heiles.jl")
+
+include("twoscales_pure_ab.jl")
+include("henon_heiles.jl")
 
 function testtwoscales_pure_ab()
 

@@ -1,5 +1,5 @@
 
-include("../src/polyexp.jl")
+using HOODESolver
 using Test
 function testPolyExp()
 

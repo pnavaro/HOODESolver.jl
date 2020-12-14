@@ -1,8 +1,9 @@
 
-include("../src/expmatrices.jl")
+using HOODESolver
 using LinearAlgebra
 using Random
 using Test
+
 function testexp()
     A=zeros(Int64, 4, 4)
     A[1,3] = 1

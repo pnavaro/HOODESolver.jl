@@ -1,9 +1,7 @@
+using HOODESolver
 using LinearAlgebra
 using Random
 using Test
-include("../src/interface.jl")
-include("../src/henon_heiles.jl")
-
 
 function fct4( du, u, p, t)
     B=[0.1 1.1 0.2 05 ; -0.9 -0.12 -0.7 0.4 ; 0.5 0.66 0.7 0.8 ; -0.34 0.8 0 0.3]

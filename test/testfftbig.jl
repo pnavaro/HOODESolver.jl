@@ -4,12 +4,12 @@ testfftbig:
 - Author: ymocquar
 - Date: 2019-11-18
 =#
+
 using Test
 using FFTW
 using Random
 using LinearAlgebra
-
-include("../src/fftbig.jl")
+using HOODESolver
 
 function getfalse( tab )
     for i=1:size(tab,1), j=1:size(tab,2)
@@ -19,7 +19,6 @@ function getfalse( tab )
     end
     return 0, 0
 end
-
 
 
 function testfftbig( s, T::DataType, seed_val )

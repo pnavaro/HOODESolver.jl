@@ -1,4 +1,4 @@
-include("../src/interface.jl")
+using HOODESolver
 using LinearAlgebra
 using Test
 

@@ -1,7 +1,8 @@
-include("../src/preparephi.jl")
-include("../src/henon_heiles.jl")
-include("dataprep_u0.jl")
+using HOODESolver
 using Test
+
+include("henon_heiles.jl")
+include("dataprep_u0.jl")
 
 # these 3 functions come from old version with sin and cos computation
 # to test the new version
@@ -24,7 +25,7 @@ function test_tau_A()
     epsilon = big"0.5"
     n_tau = 64
     A = [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0]
-    parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
+    parphi = HOODESolver.PreparePhi(epsilon, n_tau, A, henon_heiles)
     tol= 1e-77
     @testset "preparephi tau_A" begin
         for i = 1:n_tau
@@ -47,7 +48,7 @@ function test_fct()
     epsilon = big"0.5"
     n_tau = 64
     A = [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0]
-    parphi = PreparePhi(epsilon, n_tau, A, henon_heiles)
+    parphi = HOODESolver.PreparePhi(epsilon, n_tau, A, henon_heiles)
     tol= 1e-76
     @testset "preparephi fct" begin
         for i = 1:n_tau
@@ -69,7 +70,7 @@ function testpreparephi0()
     n_tau = 64
     tol=1e-76
     @time @testset "preparephi and function for all tau" begin
-        parphi = PreparePhi(
+        parphi = HOODESolver.PreparePhi(
     epsilon, 
     n_tau,
     [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0],
@@ -81,7 +82,7 @@ function testpreparephi0()
         s = sinpi.(2tau)
         c = cospi.(2tau)
         old_m = collect(transpose(reffltfctgen(u_mat_tr, s, c, n_tau)))
-        new_m = filtredfct(parphi,u_mat)
+        new_m = HOODESolver.filtredfct(parphi,u_mat)
         println("norm=$(norm(old_m-new_m))")
         @test isapprox(old_m, new_m, atol=tol)
     end
@@ -99,7 +100,7 @@ function testpreparephi()
                 for i_eps=1:size(tab_eps,1)
                    epsilon = BigFloat(tab_eps[i_eps])
                    n_tau = 32
-                   parphi = PreparePhi(
+                   parphi = HOODESolver.PreparePhi(
     epsilon, 
     n_tau, 
     [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0],

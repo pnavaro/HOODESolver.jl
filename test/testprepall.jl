@@ -1,6 +1,7 @@
-include("../src/preparephi.jl")
-include("../src/henon_heiles.jl")
+using HOODESolver
 using Test
+
+include("henon_heiles.jl")
 
 function testprepare()
     n_tau=32
