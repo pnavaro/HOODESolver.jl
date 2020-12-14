@@ -1,6 +1,6 @@
 # Functions
 
 ```@autodocs
-Modules = [HighlyOscillatoryProblems]
+Modules = [HOODESolver]
 Order   = [:function]
 ```

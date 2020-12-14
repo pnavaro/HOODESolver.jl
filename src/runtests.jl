@@ -1,4 +1,4 @@
-#using HighlyOscillatoryProblems
+#using HOODESolver
 using Test
 include("testfftbig.jl")
 include("testexpmatrices.jl")

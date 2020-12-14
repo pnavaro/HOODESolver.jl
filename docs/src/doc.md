@@ -151,8 +151,8 @@ Note: *You have to type ] and ^C by hand, for the rest you can copy and paste*.
 
 ```jl
 ]
-add https://gitlab.inria.fr/ua/HighlyOscillatoryProblems.jl.git
-using HighlyOscillatoryProblems
+add https://github/ymocquar/HOODESolver.jl.git
+using HOODESolver
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 epsilon= 0.0001
@@ -294,7 +294,7 @@ u_4\\
 one chooses for example, $\varepsilon=0.001$
 and $u_0 = (0.12, 0.12, 0.12, 0.12)$
 ```jl
-using HighlyOscillatoryProblems
+using HOODESolver
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 epsilon= 0.001
@@ -375,7 +375,7 @@ $$E(t, x) =
 \right)$$
 
 ```jl
-using HighlyOscillatoryProblems
+using HOODESolver
 A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
 function fparticle(u, p, t)
     s1, c1 = sincos(u[1]/2)
@@ -418,7 +418,7 @@ We wish to obtain a high precision, so we will use BigFloat real numbers, they a
 At the end, we compare a calculated result with an exact result.
 
 ```jl
-using HighlyOscillatoryProblems
+using HOODESolver
 using Random
 Random.seed!(1111)
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
@@ -480,7 +480,7 @@ end
 From a problem of the previous type, as long as we can calculate the exact solution, it is possible to know exactly what the error is.
 The initialization data being
 ```jl
-using HighlyOscillatoryProblems
+using HOODESolver
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 u0 = BigFloat.([-34//100, 78//100, 67//100, -56//10])
 B = BigFloat.([12//100 -78//100 91//100 34//100

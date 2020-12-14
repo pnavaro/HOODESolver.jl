@@ -1,16 +1,16 @@
 push!(LOAD_PATH,"../src/")
 
 using Documenter
-using HighlyOscillatoryProblems
+using HOODESolver
 
 makedocs(
-    sitename = "HighlyOscillatoryProblems.jl",
+    sitename = "HOODESolver.jl",
     format = Documenter.HTML(),
-    modules = [HighlyOscillatoryProblems],
+    modules = [HOODESolver],
     pages = ["Documentation" => "index.md",
              "Types"         => "types.md",
              "Functions"     => "functions.md"],
-    repo = "https://gitlab.inria.fr/ua/HighlyOscillatoryProblems.jl/blob/{commit}{path}#{line}"
+    repo = "https://github.com/ymocquar/HOODESolver.jl/blob/{commit}{path}#{line}"
 )
 
 # Documenter can also automatically deploy documentation to gh-pages.

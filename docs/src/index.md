@@ -1,6 +1,6 @@
-# HighlyOscillatoryProblems.jl
+# HOODESolver.jl
 
-Documentation for HighlyOscillatoryProblems.jl
+Documentation for HOODESolver.jl
 
 # Contents
 

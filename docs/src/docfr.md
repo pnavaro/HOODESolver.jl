@@ -195,9 +195,9 @@ Note : *Vous devez saisir "à la main" le ] et ^C, pour le reste vous pouvez cop
 
 ```jl
 ]
-add https://gitlab.inria.fr/ua/HighlyOscillatoryProblems.jl.git
+add https://github/ymocquar/HOODESolver.jl.git
 ^C
-using HighlyOscillatoryProblems
+using HOODESolver
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 epsilon= 0.0001
@@ -337,7 +337,7 @@ $$
 on choisit par exemple, $\varepsilon=0.001$
 et $u_0 = (0.12, 0.12, 0.12, 0.12)$
 ```jl
-using HighlyOscillatoryProblems
+using HOODESolver
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 epsilon= 0.001
@@ -414,7 +414,7 @@ E(t, x) =
 \right)
 $$
 ```jl
-using HighlyOscillatoryProblems
+using HOODESolver
 A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
 function fparticle(u, p, t)
     s1, c1 = sincos(u[1]/2)
@@ -455,7 +455,7 @@ $B, \alpha, \beta$ sont choisis aléatoirement.
 Nous souhaitons obtenir une grande précision, nous allons donc utiliser des réel de type BigFloat, il sont codés sur 256 bits par défaut ce qui donne une borne de précision d'environ $2^{-256} \approx 10^{-77}$. 
 Nous comparons à la fin un résultat calculé avec un résultat exact. 
 ```jl
-using HighlyOscillatoryProblems
+using HOODESolver
 using Random
 Random.seed!(1111)
 A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]

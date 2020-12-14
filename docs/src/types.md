@@ -1,6 +1,6 @@
 # Types
 
 ```@autodocs
-Modules = [HighlyOscillatoryProblems]
+Modules = [HOODESolver]
 Order   = [:type]
 ```
