@@ -24,8 +24,8 @@ function testcomp()
         u0 = convert.(Float64, bigu0)
         A =  [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
         fct = (u,p,t) -> [0, u[4], -2u[1]*u[2], -u[2]-u[1]^2+u[2]^2] # Henon-Heiles
-        bigprob = HOODEODEProblem(fct, bigu0, (big"0.0",big"3.0"), missing, A, bigeps)
-        prob = HOODEODEProblem(fct, u0, (0.0, 3.0), missing, A, epsilon)
+        bigprob = HOODEProblem(fct, bigu0, (big"0.0",big"3.0"), missing, A, bigeps)
+        prob = HOODEProblem(fct, u0, (0.0, 3.0), missing, A, epsilon)
         bigsol = solve(bigprob)
         sol = solve(prob) 
 
