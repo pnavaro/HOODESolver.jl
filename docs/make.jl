@@ -22,7 +22,6 @@ makedocs(
              "Numerical Method" => "numerical_method.md",
              "Quickstart"       => "quickstart.md",
              "Charged Particle" => "charged_particle.md",
-             "Henon-Heiles"     => "henon_heiles.md",
              "Future work"      => "future_work.md",
              "Types"            => "types.md",
              "Functions"        => "functions.md"],
