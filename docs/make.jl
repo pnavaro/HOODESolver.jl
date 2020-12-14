@@ -1,21 +1,36 @@
 push!(LOAD_PATH,"../src/")
 
 using Documenter
+using DocumenterCitations
+using Plots
 using HOODESolver
 
+ENV["GKSwstype"] = "100"
+
+bib = CitationBibliography(joinpath(@__DIR__, "references.bib"))
 makedocs(
+    bib, 
     sitename = "HOODESolver.jl",
-    format = Documenter.HTML(),
-    modules = [HOODESolver],
-    pages = ["Documentation" => "index.md",
-             "Types"         => "types.md",
-             "Functions"     => "functions.md"],
+    authors="Yves Mocquard",
+    format=Documenter.HTML(;
+        prettyurls=get(ENV, "CI", "false") == "true",
+        canonical="https://ymocquar.github.io/HOODESolver.jl",
+        assets=String[],
+    ),
+    modules = [HiOscSolver],
+    pages = ["Documentation"    => "index.md",
+             "Numerical Method" => "numerical_method.md",
+             "Quickstart"       => "quickstart.md",
+             "Charged Particle" => "charged_particle.md",
+             "Henon-Heiles"     => "henon_heiles.md",
+             "Future work"      => "future_work.md",
+             "Types"            => "types.md",
+             "Functions"        => "functions.md"],
     repo = "https://github.com/ymocquar/HOODESolver.jl/blob/{commit}{path}#{line}"
 )
 
-# Documenter can also automatically deploy documentation to gh-pages.
-# See "Hosting Documentation" and deploydocs() in the Documenter manual
-# for more information.
-#=deploydocs(
-    repo = "<repository url>"
-)=#
+deploydocs(;
+branch = "gh-pages",
+    devbranch = "main",
+    repo="github.com/ymocquar/HOODESolver.jl",
+)
