@@ -1,5 +1,5 @@
 module HOODESolver
 include("interface.jl")
-export HOODEODEProblem, HOODEInterpolation, AbstractHOODESolution, HOODEODESolution
+export HOODEProblem, HOODEInterpolation, AbstractHOODESolution, HOODEODESolution
 export solve, getexactsol
 end # module
