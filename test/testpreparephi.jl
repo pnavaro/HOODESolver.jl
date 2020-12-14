@@ -1,4 +1,4 @@
-using HOODESolver
+using HOODESolver: filtred_f, PrepareU0
 using Test
 
 include("henon_heiles.jl")

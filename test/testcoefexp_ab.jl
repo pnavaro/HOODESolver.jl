@@ -1,7 +1,7 @@
 using LinearAlgebra
 using Random
 using Test
-using HOODESolver
+using HOODESolver: Polynomial, interpolate, getpolylagrange, CoefExpAB
 
 include("datacoefexp.jl")
 include("datacoefexp10.jl")

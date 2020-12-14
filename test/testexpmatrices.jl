@@ -1,5 +1,4 @@
-
-using HOODESolver
+using HOODESolver: _expmat0, _expmat1
 using LinearAlgebra
 using Random
 using Test

@@ -1,5 +1,4 @@
-
-using HOODESolver
+using HOODESolver: PolyExp, coeffs, derivative, integrate
 using Test
 function testPolyExp()
 

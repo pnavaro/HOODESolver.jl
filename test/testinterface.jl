@@ -18,18 +18,18 @@ function testinterface_fct()
         epsilon = 0.0001
         sol_ref = exp(1.0*(1/epsilon*A+B))*u0
         fct = (u,p,t) -> B*u
-        prob = HOODEODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
+        prob = HOODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
         @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
         fct = (u,p) -> B*u
-        prob = HOODEODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
+        prob = HOODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
         @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
         fct = (u) -> B*u
-        prob = HOODEODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
+        prob = HOODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
         @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
-        prob = HOODEODEProblem(fct4, u0, (0.0, 1.0), missing, A, epsilon)
+        prob = HOODEProblem(fct4, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
         @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
     end
@@ -50,7 +50,7 @@ function testinterface_epsilon()
             eps_v = convert(Float32, epsilon)
             t_max = big"1.0"
             sol_ref = exp(t_max*(1/epsilon*A+B))*u0
-            prob = HOODEODEProblem(fct, u0, (big"0.0", t_max), missing, A, epsilon)
+            prob = HOODEProblem(fct, u0, (big"0.0", t_max), missing, A, epsilon)
             println("epsilon=$eps_v sol_ref=$sol_ref")
             nb = 100
             res_err = zeros(BigFloat,5)
@@ -85,7 +85,7 @@ function testinterface_interpolate()
             epsilon = big"0.4"/2.0^i
             eps_v = convert(Float32, epsilon)
             t_max = big"1.0"
-            prob = HOODEODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+            prob = HOODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
    #         sol = solve(prob, getprecision=false)
             sol = solve(prob)
             m = 1/epsilon*A+B
@@ -117,7 +117,7 @@ function testinterface_interpolate_float()
             epsilon = 0.4/2.0^i
             eps_v = convert(Float32, epsilon)
             t_max = 1.0
-            prob = HOODEODEProblem(fct, u0, (0.0,t_max), missing, A, epsilon)
+            prob = HOODEProblem(fct, u0, (0.0,t_max), missing, A, epsilon)
    #         sol = solve(prob, getprecision=false)
             sol = solve(prob)
             m = 1/epsilon*A+B
@@ -149,7 +149,7 @@ function testinterface_short()
         epsilon = big"0.00004"/2.0^i
         eps_v = convert(Float32, epsilon)
         t_max = big"0.01"
-        prob = HOODEODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+        prob = HOODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
         sol = solve(prob, getprecision=false, order=order, nb_t=nb)
         resnorm=norm(exp(t_max*(1/epsilon*A+B))*u0-sol[end], Inf)
         println("sol=$(sol[end])")
@@ -165,7 +165,7 @@ function tts_time(t_begin, t_end)
         u0 = rand(BigFloat, 4)
         fct = (u,p,t) -> B*u
         epsilon=big"0.000000345"
-        prob = HOODEODEProblem(fct, u0, (t_begin,t_end), missing, A, epsilon)
+        prob = HOODEProblem(fct, u0, (t_begin,t_end), missing, A, epsilon)
         sol = solve(prob, getprecision=false, nb_t=100, order=4)
         m = 1/epsilon*A+B
         solref = exp((t_end-t_begin)*m)*u0
@@ -190,7 +190,7 @@ function tts_time_time(t_begin, t_end)
         epsilon=big"0.000003467"
         nb = 100
         order = 4
-        prob = HOODEODEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon, B)
+        prob = HOODEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon, B)
         sol = solve(prob, getprecision=false, nb_t=100, order=4)
         solref = getexactsol(sol.par_u0.parphi, u0, t_end)
         println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")

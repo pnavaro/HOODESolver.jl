@@ -1,9 +1,10 @@
+using HOODESolver: PreparePhi, isexactsol, PrepareTwoScalesPureAB
+using HOODESolver: twoscales_pure_ab, _getresult
 using DifferentialEquations
 using LinearAlgebra
 using Random
 using Test
 
-include("twoscales_pure_ab.jl")
 include("henon_heiles.jl")
 
 function testtwoscales_pure_ab()

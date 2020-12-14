@@ -36,15 +36,15 @@ function testfftbig( s, T::DataType, seed_val )
 
     tab_test = copy(tab)
 
-    p = PrepareFftBig(s, real(tab[1, 1]))
+    p = HOODESolver.PrepareFftBig(s, real(tab[1, 1]))
 
-    fftbig!(p, tab_test)
+    HOODESolver.fftbig!(p, tab_test)
 
     @test isapprox(tabfftref, tab_test, atol=1e-15, rtol=1e-15)
 
     tol = (T == BigFloat) ? 1e-50 : 1e-15
 
-    fftbig!(p, tab_test, flag_inv=true)
+    HOODESolver.fftbig!(p, tab_test, flag_inv=true)
 
     @test getfalse(isapprox.(tab, tab_test, atol=tol, rtol=tol)) == (0, 0)
 
@@ -66,22 +66,22 @@ function testfftbig2( s, T::DataType, seed_val, nb_v )
 
     tab_test = copy(tab)
 
-    p = PrepareFftBig(s, one(T) )
+    p = HOODESolver.PrepareFftBig(s, one(T) )
 
-    tab_test2 = fftbig(p, tab_test)
+    tab_test2 = HOODESolver.fftbig(p, tab_test)
 
     @test isapprox(tabfftref, tab_test2, atol=1e-15, rtol=1e-15)
 
-    fftbig!(p, tab_test)
+    HOODESolver.fftbig!(p, tab_test)
 
     @test isapprox(tabfftref, tab_test, atol=1e-15, rtol=1e-15)
 
     tol = (T == BigFloat) ? 1e-50 : 1e-15
 
-    tab_test3 = fftbig(p, tab_test, flag_inv=true)
+    tab_test3 = HOODESolver.fftbig(p, tab_test, flag_inv=true)
     @test isapprox(tab, tab_test3, atol=tol, rtol=tol)
 
-    fftbig!(p, tab_test, flag_inv=true)
+    HOODESolver.fftbig!(p, tab_test, flag_inv=true)
 
     @test isapprox(tab, tab_test, atol=tol, rtol=tol)
 
@@ -93,11 +93,11 @@ function testfftbigprec(s, seed_v)
         Random.seed!(seed_v)
         for k=1:10
             setprecision(k*256) do
-                p = PrepareFftBig(s)
+                p = HOODESolver.PrepareFftBig(s)
                 tab = rand(BigFloat, 5, s)
                 tabRef = Complex.(tab)
-                tabRes = fftgen(p,tab)
-                tabRes2 = ifftgen(p, tabRes)
+                tabRes = HOODESolver.fftgen(p,tab)
+                tabRes2 = HOODESolver.ifftgen(p, tabRes)
                 println("k=$k norm=$(norm(tabRef-tabRes2))")
 #                @test isapprox(tabRef, tabRes2, atol=1e-78^k)
 #                @test isapprox(real.(tabRef), real.(tabRes2), atol=1e-78^k)
