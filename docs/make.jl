@@ -30,6 +30,6 @@ makedocs(
 
 deploydocs(;
 branch = "gh-pages",
-    devbranch = "main",
+    devbranch = "master",
     repo="github.com/ymocquar/HOODESolver.jl",
 )
