@@ -54,4 +54,7 @@ function print_for_test(
     setprecision(prec)
 end
 
-print_for_test(15, big"1"//10^10, 32, big"1"//10000, [1,5,10,16],"10")
+# to generate test/datacoefexp10.jl the result is the output
+# print_for_test(15, big"1"//10^10, 32, big"1"//10000, [1,5,10,16],"10")
+# to generate test/datacoefexp.jl the result is the output
+print_for_test(15, big"1"//10, 32, big"1"//10000, [1,5,10,16],"")
