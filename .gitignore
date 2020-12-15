@@ -6,3 +6,4 @@
 out/*
 outext/*
 docs/Manifest.toml
+benchmark/Manifest.toml
