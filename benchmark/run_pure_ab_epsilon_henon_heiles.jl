@@ -31,7 +31,7 @@ function fctmain(n_tau, prec)
     ind=1
     A=[0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
     for epsilon in tab_eps
-        prob = HOODEODEProblem(henon_heiles, u0, (big"0.0",t_max), missing, A, epsilon)
+        prob = HOODEProblem(henon_heiles, u0, (big"0.0",t_max), missing, A, epsilon)
         tabsol = Array{Array{BigFloat,1},1}(undef,0)
         eps_v = convert(Float32,epsilon)
         nb = 60*2^nbmaxtest

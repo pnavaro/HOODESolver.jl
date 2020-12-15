@@ -30,7 +30,7 @@ function fctmain(n_tau, prec)
     res_gen = Array{ Array{BigFloat,1}, 2}(undef, nbmaxtest, div(ordmax-debord,pasord)+1 )
     x=zeros(Float64,nbmaxtest)
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    prob = HOODEODEProblem(henon_heiles, u0, (big"0.0",t_max), missing, A, epsilon)
+    prob = HOODEProblem(henon_heiles, u0, (big"0.0",t_max), missing, A, epsilon)
     tabsol = Array{Array{BigFloat,1},1}(undef,0)
     println("ordmax=$ordmax")
     indref = 1

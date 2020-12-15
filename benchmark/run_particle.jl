@@ -46,7 +46,7 @@ function fctmain(n_tau, prec)
     A = [0 0 0 1 0 0; 0 0 0 0 1 0;0 0 0 0 0 0; 0 0 0 0 1 0; 0 0 0 -1 0 0; 0 0 0 0 0 0]
     t_0=big"0.0"
     t_max=big"1.0"
-    prob = HOODEODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
+    prob = HOODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
     nm = NaN
     ordmax += 1
     ordprep=undef
