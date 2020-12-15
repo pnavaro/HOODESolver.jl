@@ -228,7 +228,7 @@ epsilon= 0.0001
 t_min=0.0
 t_max=3.0
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
+prob = HOODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
 
 ```
 
@@ -266,7 +266,7 @@ sol = solve(
 
 ### Définition exhaustive des paramètres
 
-- `prob` : problème défini par `HOODEODEProblem` 
+- `prob` : problème défini par `HOODEProblem` 
 - `nb_tau=32` : $N_{\tau}$
 - `order=4` : ordre $r$ de la méthode
 - `order_prep=order+2` : ordre de préparation des données initiales
@@ -279,7 +279,7 @@ sol = solve(
 
 ### Arguments de sortie
 
-En sortie, une structure de type `HOODEODESolution`.
+En sortie, une structure de type `HOODESolution`.
 Cette structure peut être vue comme une fonction de t, elle peut aussi être vue comme un tableau de taille $N_t + 1$. Cette structure contient aussi les champs `absprec` et `relprec` qui sont les précisions, respectivement absolue et relative, calculées.
 
 ### Exemple
@@ -292,7 +292,7 @@ epsilon= 0.0001
 t_min=0.0 
 t_max=3.0
 u0 = [0.55, 0.12, 0.03, 0.89] 
-prob = HOODEODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
+prob = HOODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
 ```
 
 ```@repl 1
@@ -358,7 +358,7 @@ epsilon= 0.001
 t_min=0.0
 t_max=1.0
 u0 = [0.12, 0.12, 0.12, 0.12]
-prob = HOODEODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon)
+prob = HOODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon)
 sol = solve(prob);
 plot(sol)
 ```
@@ -454,7 +454,7 @@ epsilon= 0.05
 t_min=0.0
 t_max=1.0
 u0 = [1.0, 1.5, -0.5, 0, -1.2, 0.8]
-prob = HOODEODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
+prob = HOODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
 sol=solve(prob)
 plot(sol)
 ```
@@ -504,7 +504,7 @@ u0 = [big"0.5", big"-0.123", big"0.8", big"0.7"]
 t_min=big"0.0"
 t_max=big"1.0"
 epsilon=big"0.017"
-prob = HOODEODEProblem(fct, u0, (t_min,t_max), (alpha, beta), A, epsilon, B)
+prob = HOODEProblem(fct, u0, (t_min,t_max), (alpha, beta), A, epsilon, B)
 sol = solve(prob, nb_t=10000, order=8)
 sol.absprec
 t=big"0.9756534187771"

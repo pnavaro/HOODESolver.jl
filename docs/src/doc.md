@@ -148,7 +148,7 @@ epsilon= 0.0001
 t_min=0.0
 t_max=3.0
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
+prob = HOODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon) 
 ```
 
 From the ```prob``` problem, we can now switch to its digital resolution. 
@@ -180,7 +180,7 @@ sol = solve(
 ) 
 ```
 ### Exhaustive definition of the parameters
-- `prob` : problem defined by `HOODEODEProblem` 
+- `prob` : problem defined by `HOODEProblem` 
 - `nb_tau=32` : $N_{\tau}$
 - `order=4` : order $r$ of the method
 - `order_prep=order+2` : order of preparation of initial data
@@ -191,12 +191,12 @@ sol = solve(
 - `par_u0` : If we have to make several calls to `solve` with the same initial data and in the same order, we can pass in parameter the already calculated data.
 - `p_coef` : table with the coefficients of the Adams-Bashforth method. This array can be used to optimize several calls with the same parameters.
 ## Exit arguments
-As an output, a structure of type `HOODEODESolution`.
+As an output, a structure of type `HOODESolution`.
 This structure can be seen as a function of t, it can also be seen as an array of size $N_t + 1$. This structure also contains the `absprec` and `relprec` fields which are the absolute and relative precisions, respectively, calculated.
 ### Example
 ```jl     
 julia> sol = solve(prob);
-solve function prob=HOODEODEProblem with uType Array{Float64,1} and tType Float64. In-place: nothing
+solve function prob=HOODEProblem with uType Array{Float64,1} and tType Float64. In-place: nothing
 timespan: (0.0, 3.0)
 u0: [0.55, 0.12, 0.03, 0.89],
  nb_tau=32, order=4, order_prep=6, dense=true,
@@ -290,7 +290,7 @@ epsilon= 0.001
 t_min=0.0
 t_max=1.0
 u0 = [0.12, 0.12, 0.12, 0.12]
-prob = HOODEODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon)
+prob = HOODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon)
 sol = solve(prob);
 using Plots
 plot(sol)
@@ -375,7 +375,7 @@ epsilon= 0.05
 t_min=0.0
 t_max=1.0
 u0 = [1.0, 1.5, -0.5, 0, -1.2, 0.8]
-prob = HOODEODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
+prob = HOODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
 sol=solve(prob)
 plot(sol)
 ```
@@ -418,7 +418,7 @@ u0 = [big"0.5", big"-0.123", big"0.8", big"0.7"]
 t_min=big"0.0"
 t_max=big"1.0"
 epsilon=big"0.017"
-prob = HOODEODEProblem(fct, u0, (t_min,t_max), (alpha, beta), A, epsilon, B)
+prob = HOODEProblem(fct, u0, (t_min,t_max), (alpha, beta), A, epsilon, B)
 sol = solve(prob, nb_t=10000, order=8)
 sol.absprec
 t=big"0.9756534187771"
@@ -480,7 +480,7 @@ beta =  BigFloat.([-4//100, 48//100, 23//100, -87//100])
 epsilon = 0.015
 t_max = big"1.0"
 fct = (u,p,t)-> B*u + t*p[1] +p[2]
-prob = HOODEODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
+prob = HOODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
 ```
 Note that the floats are coded on 512 bits.\
 By varying $\Delta t$ from $10^{-2}$ to $5.10^{-6}$ (i.e. `nb_t` from `100` to `204800`) on a logarithmic scale, for odd orders from 3 to 17 we get these errors
@@ -502,7 +502,7 @@ Here floats are coded on 256 bits.
     epsilon=big"0.0017"
     fct = u -> [0, u[4], -2u[1]*u[2], -u[2]-u[1]^2+u[2]^2]
     A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-    prob = HOODEODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+    prob = HOODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
 ```
 The float are coded on 512 bits.
 
