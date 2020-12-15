@@ -1,4 +1,6 @@
-using HOODESolver
+# using HOODESolver
+include("../test/henon_heiles.jl")
+include("../src/preparephi.jl")
 using Printf
 
 function _printnumstr( num::BigFloat)

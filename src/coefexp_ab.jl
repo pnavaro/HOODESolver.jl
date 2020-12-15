@@ -70,7 +70,7 @@ struct CoefExpABRational
                         Polynomials.integrate(pol2)
                     else
                         pol3 = PolyExp(pol2, im * ell / epsilon, -im * ell * dt / epsilon)
-                        Polynomial.integrate(pol3)
+                        Polynomials.integrate(pol3)
                     end
                     res[ind] = pol_int(dt) - pol_int(0)
                 end
