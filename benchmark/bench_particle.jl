@@ -4,6 +4,8 @@ using Random
 using BenchmarkTools
 using HOODESolver
 
+suite = BenchmarkGroup()
+
 function fct(u, p, t)
     s1, c1 = sincos(u[1]/2)
     s2, c2 = sincos(u[2])
@@ -25,7 +27,7 @@ A = [0 0 0  1 0 0;
 t_0 = big"0.0"
 t_max = big"1.0"
 prob = HOODEProblem(fct, u0, (t_0, t_max), missing, A, epsilon)
-nb = 10^4
+nb = 10^3
 n_tau = 32
 suite["solve"] = @benchmarkable solve(prob, nb_t=nb, order=ordmax, 
                                       getprecision=false, nb_tau=n_tau, dense=false)
