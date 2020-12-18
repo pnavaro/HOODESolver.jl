@@ -18,15 +18,6 @@ julia>]
 (@v1.5) pkg> add HOODESolver
 ```
 
-To exit Pkg mode, just backspace. Once the package is installed it can be imported with
-
-```julia
-julia> using HOODESolver
-```
-
-To exit Pkg mode, just backspace. Once the package is installed it can be imported with
-For more information, see the [Pkg documentation](https://docs.julialang.org/en/v1/stdlib/Pkg/).
-
 ## Usage
 
 The following is an example with the system of Hénon-Heiles. Please see the [documentation](https://ymocquar.github.io/HOODESolver.jl/stable/) for further usage, tutorials, and api reference.
