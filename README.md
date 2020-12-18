@@ -49,10 +49,6 @@ plot(sol)
 ```
 ![](docs/src/img/example.png)
 
-## Contributing and Support
-
 For support with using HOODESolver.jl, please open an [issue](https://github.com/ymocquar/HOODESolver.jl/issues/new/) describing the problem and steps to reproduce it.
-
-## License
 
 This package is licensed under the MIT Expat license. See [LICENSE](LICENSE) for more information.
