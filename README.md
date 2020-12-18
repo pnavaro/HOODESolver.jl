@@ -14,7 +14,6 @@ HOODESolver.jl is a registered package and can be installed using the Julia pack
 
 ```julia
 julia>]
-
 (@v1.5) pkg> add HOODESolver
 ```
 
