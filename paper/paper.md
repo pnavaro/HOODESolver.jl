@@ -70,7 +70,7 @@ struggle to solve such multi-scale phenomena since they require to use tiny
 time steps to capture high oscillations and become computationally
 very costly.  On the one side, specific methods inspired by the
 averaging theory have been designed to deal with the regime
-$\varepsilon <\!\!<1$. On the other side, when $\varepsilon \sim
+$\varepsilon \ll 1$. On the other side, when $\varepsilon \sim
 1$ the problem ceases to be stiff and a classical integrator gives
 accurate result in a reasonable time.  The true difficulty emerges
 for intermediate values of $\varepsilon$, for which averaging
@@ -126,13 +126,32 @@ $\varepsilon$, $t_{start}, t_{end}$, $u_{in}$) following the required
 format.  The user simply chooses an order of the Adams-Bashforth
 time integrator and the time step.  The result is given as a function
 object which can be evaluated in an arbitrary time $t$, not just
-at the discrete times.  In particular, the Julia command $plot(t\mapsto
-u(t)[1])$ enables to plot the solution.  In addition to the methodology
+at the discrete times. In addition to the methodology
 introduced in `HOODESolver.jl` includes
 
 - the use of BigFloat types (optional), 
 - a new technique to compute the first iterations required for the initialization of the Adams-Bashforth method,    
 - the extension of the two-scale method to non-homogeneous problems.  
+
+The following is an example with the system of Hénon-Heiles
+
+```julia
+using HOODESolver, Plots
+
+A = [ 0 0 1 0 ; 
+      0 0 0 0 ; 
+     -1 0 0 0 ; 
+      0 0 0 0 ]
+
+fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
+epsilon = 0.0001
+tspan = (0.0, 3.0)
+u0 = [0.55, 0.12, 0.03, 0.89]
+prob = HOODEProblem(fct, u0, tspan, missing, A, epsilon); 
+sol = solve(prob) 
+plot(sol) 
+```
+![](paper.png)
 
 # Related research and software 
 
@@ -156,21 +175,19 @@ package more easily and compare our method with others.
 
 [^3]: https://diffeq.sciml.ai/stable/types/split_ode_types/
 
-The following research projects are connected to HOODESolver in the
+The following research projects are connected to `HOODESolver.jl` in the
 sense that most of which have led to its development [@vlasov_beam;
 @numer_math; @vlasov_pic1; @vlasov_pic2; @derivative_free]
 
-- introduction of two-scale method to design Uniformly Accurate methods 
-- numerical analysis of the two-scale method 
-- coupling of the two-scale method with Particle-In-Cell approach 
-- extension to high order 
-
+- Introduction of two-scale method to design Uniformly Accurate methods.
+- Numerical analysis of the two-scale method.
+- Coupling of the two-scale method with Particle-In-Cell approach.
+- Extension to high order.
 
 # Aknowledgements
 
-Much of the HOODESolver developement was performed by Y. Mocquard
+Much of `HOODESolver.jl` was implemented by Y. Mocquard
 while he was supported by Inria through the AdT (Aide au developpement
 technologique) J-Plaff of the center Rennes-Bretagne Atlantique.
-
 
 # References
