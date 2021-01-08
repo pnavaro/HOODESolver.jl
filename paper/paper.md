@@ -149,18 +149,12 @@ purpose, excepting the very recent (py)oscode package [@joss_ode]
 which combines WKB techniques and standard integration methods to
 ensure a user-specified tolerance.
 
-`HOODESolver.jl` has been thought to be in close connection to the
-`DifferentialEquation.jl` Julia package
-[@rackauckas2017differentialequations].  Whereas `DifferentialEquation.jl`
-is a very popular and powerful Julia package, it does not provide
-an algorithm to overcome the stiffness due to the presence of
-$\varepsilon$ and thus needs to use very small time steps leading
-to lengthy computations or unstable results.  In particular, the
-`HOODESolver.jl` is intended to offer a common interface with the
-package DifferentiaEquations.jl by extending the Split ODE problem
-type. Users could compare more easily our method with methods
-implemented in [@rackauckas2017differentialequations].
+`HOODESolver.jl` has been thought to be in close connection to 
+`DifferentialEquation.jl`.  We plan to offer a common interface with it
+by extending the Split ODE problem type [^3]. Future users could use our
+package more easily and compare our method with others. 
 
+[^3]: https://diffeq.sciml.ai/stable/types/split_ode_types/
 
 The following research projects are connected to HOODESolver in the
 sense that most of which have led to its development [@vlasov_beam;
