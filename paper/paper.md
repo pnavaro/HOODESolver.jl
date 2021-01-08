@@ -58,32 +58,31 @@ degree of stiffness $\varepsilon$.
 
 # Statement of need
 
-There are many software packages to efficiently solve ODEs (one can
-quote DifferentialEquations in Julia [@rackauckas2017differentialequations]
-but also many others in Python \textcolor{blue}{(completer/citer
-?)}). In spite of the fact that these packages include recent and
-advanced numerical techniques, the highly oscillatory character of
-the solution makes the use of these packages very limited.  Indeed,
-when $\varepsilon$ is small, the solution presents oscillations
-whose period is proportional to $\varepsilon$.  As a consequence,
-conventional methods struggle to solve such multi-scale phenomena
-since they require to use tiny time steps to capture high oscillations
-and become computationally very costly.  On the one side, specific
-methods inspired by the averaging theory have been designed to deal
-with the regime $\varepsilon <\!\!<1$. On the other side, when
-$\varepsilon \sim 1$ the problem ceases to be stiff and a classical
-integrator gives accurate result in a reasonable time.  The true
-difficulty emerges for intermediate values of $\varepsilon$, for
-which averaging techniques are not accurate enough and, due to
-computational cost, standard methods are inefficient. Thus, a new
-paradigm has been recently introduced, the so-called uniform accuracy:
-uniformly accurate (UA) methods are indeed able to solve the original
-highly oscillatory problem with a precision and a computational
-cost that are independent of the value $\varepsilon$.  In particular,
-these methods allows to skip several oscillations in a single time
-step, reducing the number of iterations (and then the cost of the
-simulation) drastically. \textcolor{blue}{(met-on des figures pour
-illustrer ?)}
+The Julia package `DifferentialEquations.jl`
+[@rackauckas2017differentialequations] efficiently solves many ODE
+problems using recent and advanced numerical techniques. However
+the available algorithms do not easily solve this type of problem
+because of the highly oscillatory character of the solution.
+
+The solution presents oscillations whose period is proportional to
+$\varepsilon$.  If $\varepsilon$ is small, conventional methods 
+struggle to solve such multi-scale phenomena since they require to use tiny
+time steps to capture high oscillations and become computationally
+very costly.  On the one side, specific methods inspired by the
+averaging theory have been designed to deal with the regime
+$\varepsilon <\!\!<1$. On the other side, when $\varepsilon \sim
+1$ the problem ceases to be stiff and a classical integrator gives
+accurate result in a reasonable time.  The true difficulty emerges
+for intermediate values of $\varepsilon$, for which averaging
+techniques are not accurate enough and, due to computational cost,
+standard methods are inefficient. Thus, a new paradigm has been
+recently introduced, the so-called uniform accuracy: uniformly
+accurate (UA) methods are indeed able to solve the original highly
+oscillatory problem with a precision and a computational cost that
+are independent of the value $\varepsilon$.  In particular, these
+methods allows to skip several oscillations in a single time step,
+reducing the number of iterations (and then the cost of the simulation)
+drastically. 
 
 
 `HOODESolver.jl` intends to gather and unify recent research around
@@ -137,7 +136,7 @@ introduced in `HOODESolver.jl` includes
 
 # Related research and software 
 
-The development of the HOODESolver package was initially motivated
+The development of the `HOODESolver.jl` package was initially motivated
 by the need of efficient multiscale solvers for the charged particles
 dynamics in an external strong magnetic field. Indeed, due to the
 Lorentz force, charged particles undergo rapid circular motion
