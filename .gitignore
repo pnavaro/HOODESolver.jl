@@ -7,7 +7,5 @@ out/*
 outext/*
 docs/Manifest.toml
 benchmark/Manifest.toml
-.benchmarkci/benchmarks_wrapper.jl
-.benchmarkci/result-baseline.json
-.benchmarkci/result-target.json
+.benchmarkci/
 benchmark/tune.json
