@@ -153,7 +153,7 @@ prob = HOODEProblem(fct, u0, tspan, missing, A, epsilon);
 sol = solve(prob) 
 plot(sol) 
 ```
-![](paper.png)
+![Hénon-Heiles solution.](paper.png){ width=50% }
 
 # Related research and software 
 
