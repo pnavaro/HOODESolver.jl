@@ -129,11 +129,13 @@ object which can be evaluated in an arbitrary time $t$, not just
 at the discrete times. In addition to the methodology
 introduced in `HOODESolver.jl` includes
 
-- the use of BigFloat types (optional), 
-- a new technique to compute the first iterations required for the initialization of the Adams-Bashforth method,    
-- the extension of the two-scale method to non-homogeneous problems.  
+1. Arbitrary precision arithmetic via BigFloats,
+2. New technique to compute the first iterations required for the initialization of the Adams-Bashforth method,    
+3. Extension of the two-scale method to non-homogeneous problems.  
 
-The following is an example with the system of Hénon-Heiles
+The following is an example with the system of Hénon-Heiles[^3]:
+
+[^3]: https://ymocquar.github.io/HOODESolver.jl/stable/quickstart/
 
 ```julia
 using HOODESolver, Plots
@@ -170,10 +172,10 @@ ensure a user-specified tolerance.
 
 `HOODESolver.jl` has been thought to be in close connection to 
 `DifferentialEquation.jl`.  We plan to offer a common interface with it
-by extending the Split ODE problem type [^3]. Future users could use our
+by extending the Split ODE problem type [^4]. Future users could use our
 package more easily and compare our method with others. 
 
-[^3]: https://diffeq.sciml.ai/stable/types/split_ode_types/
+[^4]: https://diffeq.sciml.ai/stable/types/split_ode_types/
 
 The following research projects are connected to `HOODESolver.jl` in the
 sense that most of which have led to its development [@vlasov_beam;
