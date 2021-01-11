@@ -32,7 +32,7 @@ prob1 = SplitODEProblem(f1, f2, u0, tspan);
 sol1 = solve(prob1, CNAB2(), dt=0.0001);
 
 
-prob2 = HOODEProblem(h, u0, tspan, nothing, A, ϵ);
+prob2 = HOODEProblem(f2, u0, tspan, nothing, A, ϵ);
 
 
 sol2 = solve(prob2, nb_t=10);
