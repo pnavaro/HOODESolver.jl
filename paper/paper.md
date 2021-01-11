@@ -172,7 +172,7 @@ ensure a user-specified tolerance.
 
 `HOODESolver.jl` has been thought to be in close connection to
 `DifferentialEquation.jl`.  We plan to offer a common interface
-with it by extending the Split ODE problem type [^4]. Future users
+with it by extending the `SplitODE` problem type[^4]. Future users
 could use our package more easily wich will facilitate the cross
 comparisons with other methods.
 
