@@ -9,16 +9,16 @@ tags:
 authors:
   - name: Yves Mocquard^[Corresponding author.]
     #orcid: 0000-0003-0872-7098
-    affiliation: "1" # (Multiple affiliations must be quoted)
+    affiliation: 1 
   - name: Pierre Navaro 
-    affiliation: "1, 2"
+    affiliation: 2
   - name: Nicolas Crouseilles 
     affiliation: 1
 affiliations:
- - name: Inria (MINGuS team) Rennes - Bretagne Atlantique, and IRMAR CNRS, UMR 6625, France.
-   index: 1
- - name: University of Rennes 1, IRMAR CNRS, UMR 6625, France 
-   index: 2
+  - name: Univ Rennes, Inria, IRMAR - UMR 6625, France.
+    index: 1
+  - name: Univ Rennes, CNRS, IRMAR - UMR 6625, France.
+    index: 2
 # - name: Independent Researcher
 #  index: 3
 date: 10 January 2021 
@@ -47,11 +47,11 @@ unacceptable computational cost.
 
 We present here `HOODESolver.jl`[^1], a general-purpose library
 written in Julia dedicated to the efficient resolution of highly
-oscillatory ODEs.  In the documentation [^2] you will see how to
-simulate highly oscillatory ODEs using a Uniformly Accurate (UA)
-method *ie* the method able to capture the solution while keeping
-the time step (and then the computational cost) independent of the
-degree of stiffness $\varepsilon$.
+oscillatory ODEs.  In the documentation [^2] details are given to
+explain how to simulate highly oscillatory ODEs using a Uniformly
+Accurate (UA) method *ie* the method able to capture the solution
+while keeping the time step (and then the computational cost)
+independent of the degree of stiffness $\varepsilon$.
 
 [^1]: https://github.com/ymocquar/HOODESolver.jl
 [^2]: https://ymocquar.github.io/HOODESolver.jl/stable/
@@ -61,44 +61,43 @@ degree of stiffness $\varepsilon$.
 The Julia package `DifferentialEquations.jl`
 [@rackauckas2017differentialequations] efficiently solves many ODE
 problems using recent and advanced numerical techniques. However
-the available algorithms do not easily solve this type of problem
-because of the highly oscillatory character of the solution.
-
-The solution presents oscillations whose period is proportional to
-$\varepsilon$.  If $\varepsilon$ is small, conventional methods 
-struggle to solve such multi-scale phenomena since they require to use tiny
-time steps to capture high oscillations and become computationally
-very costly.  On the one side, specific methods inspired by the
-averaging theory have been designed to deal with the regime
-$\varepsilon \ll 1$. On the other side, when $\varepsilon \sim
-1$ the problem ceases to be stiff and a classical integrator gives
-accurate result in a reasonable time.  The true difficulty emerges
-for intermediate values of $\varepsilon$, for which averaging
-techniques are not accurate enough and, due to computational cost,
-standard methods are inefficient. Thus, a new paradigm has been
-recently introduced, the so-called uniform accuracy: uniformly
-accurate (UA) methods are indeed able to solve the original highly
-oscillatory problem with a precision and a computational cost that
-are independent of the value $\varepsilon$.  In particular, these
-methods allows to skip several oscillations in a single time step,
-reducing the number of iterations (and then the cost of the simulation)
-drastically. 
+the available algorithms do not easily solve this type of stiff
+problems, because they do not take into account the highly oscillatory
+character of the solution. Indeed, the solution presents oscillations
+whose period is proportional to $\varepsilon$.  If $\varepsilon$
+is small, conventional methods struggle to solve such multi-scale
+phenomena since they require to use tiny time steps to capture high
+oscillations and become computationally very costly.  On the one
+side, specific methods inspired by the averaging theory have been
+designed to deal with the regime $\varepsilon \ll 1$. On the other
+side, when $\varepsilon \sim 1$ the problem ceases to be stiff and
+a classical integrator gives accurate result in a reasonable time.
+The true difficulty emerges for intermediate values of $\varepsilon$,
+for which averaging techniques are not accurate enough and, due to
+computational cost, standard methods are inefficient. Thus, a new
+paradigm has been recently introduced, the so-called uniform accuracy:
+uniformly accurate (UA) methods are indeed able to solve the original
+highly oscillatory problem with a precision and a computational
+cost that are independent of the value $\varepsilon$.  In particular,
+these methods allows to skip several oscillations in a single time
+step, reducing the number of iterations (and then the cost of the
+simulation) drastically.
 
 
 `HOODESolver.jl` intends to gather and unify recent research around
 highly oscillatory problems [@bao_zhao; @vlasov_pic1; @vlasov_pic2;
-@numer_math] its development has been motivated by these research
-needs and it has already been used in some papers [@derivative_free]
-`HOODESolver.jl` is written entirely in Julia and provides software
-implementations of several theoretical ideas contained in the recent
-literature around the so-called *two-scale* method. In particular,
-a very recent extension proposed in [@derivative_free] enables to
-reach high order accuracy.  The implementation focuses on a multistep
-method (namely Adams-Bashforth method) coupled a spectral method
-for the discretization of the additional variable representing the
-fast scale.  Hence, `HOODESolver.jl` provides an efficient way for
-researchers to solve a highly oscillatory ODE system, and as such
-it can be used by the scientific community
+@numer_math]; its development has been motivated by these research
+needs and it has already been used in some papers [@derivative_free].
+`HOODESolver.jl` provides software implementations of several
+theoretical ideas contained in the recent literature around the
+so-called *two-scale* method. In particular, a very recent extension
+proposed in [@derivative_free] enables to reach high order accuracy.
+The implementation focuses on a multistep method (namely Adams-Bashforth
+method) coupled with a spectral method for the discretization of
+the additional variable representing the fast scale.  Hence,
+`HOODESolver.jl` provides an efficient way for researchers to solve
+a highly oscillatory ODE system, and as such it can be used by the
+scientific community:
 
 - researchers interested in solving highly oscillatory problems arising in their research field (electromagnetic waves, quantum mechanics, plasma physics, molecular dynamics, $\dots$), 
 - it can guide some future possible numerical or theoretical developments, 
@@ -109,16 +108,16 @@ it can be used by the scientific community
 `HOODESolver.jl` is designed to solve the following highly oscillatory ordinary differential system 
 
 \begin{equation}\label{orig}
-\dot{u}(t) = \frac{1}{\varepsilon} A u(t) + f(t, u), \qquad t\in [t_{start}, t_{end}],  \qquad u(t=t_{start}) = u_{in},
+\dot{u}(t) = \frac{1}{\varepsilon} A u(t) + f(t, u), \qquad t\in [t_{start}, t_{end}],  
+\qquad u(t=t_{start}) = u_{in},
 \end{equation}
 
 where 
 
-- $u \colon [t_{start}, t_{end}] \mapsto  \mathbb{R}^n, \qquad t_{start}, t_{end}\in \mathbb{R}$, 
-  $t \mapsto u(t)$.
+- $u \colon t \in [t_{start}, t_{end}] \mapsto  u(t) \in \mathbb{R}^n, \qquad t_{start}, t_{end}\in \mathbb{R}$.
 - $u_{in}\in \mathbb{R}^n$, 
 - $A\in {\cal M}_{n,n}(\mathbb{R})$ such that $\tau \mapsto \exp(\tau A)$ is periodic,  
-- $f \colon \mathbb{R} \times \mathbb{R}^n   \mapsto \mathbb{R}^n$, $(t, u)  \mapsto f(t, u)$.
+- $f \colon (t,u) \in \mathbb{R} \times \mathbb{R}^n   \mapsto f(t,u) \in \mathbb{R}^n$.
 
 The numerical solution of \autoref{orig} is computed by simply
 entering the different components of the equation ($A$, $f$,
@@ -127,7 +126,7 @@ format.  The user simply chooses an order of the Adams-Bashforth
 time integrator and the time step.  The result is given as a function
 object which can be evaluated in an arbitrary time $t$, not just
 at the discrete times. In addition to the methodology
-introduced in `HOODESolver.jl` includes
+introduced in `HOODESolver.jl`, the package includes:
 
 1. Arbitrary precision arithmetic via BigFloats,
 2. New technique to compute the first iterations required for the initialization of the Adams-Bashforth method,    
@@ -149,8 +148,9 @@ fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ]
 epsilon = 0.0001
 tspan = (0.0, 3.0)
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEProblem(fct, u0, tspan, missing, A, epsilon); 
-sol = solve(prob) 
+p = nothing
+prob = HOODEProblem(fct, u0, tspan, p, A, epsilon); 
+sol = solve(prob, nb_t = 100, order = 4) 
 plot(sol) 
 ```
 ![Hénon-Heiles solution.](paper.png){ width=50% }
@@ -164,16 +164,17 @@ Lorentz force, charged particles undergo rapid circular motion
 around the magnetic field lines. This constitutes the basis of the
 magnetic confinement of a plasma in a chamber. Obviously, computing
 a highly oscillatory dynamics is a long-standing problem occurring
-in many relevant applications [@hairer_lubich_wanner; @engquist]
+in many relevant applications [@hairer_lubich_wanner; @engquist].
 However, we are not aware of other software packages with similar
 purpose, excepting the very recent (py)oscode package [@joss_ode]
 which combines WKB techniques and standard integration methods to
 ensure a user-specified tolerance.
 
-`HOODESolver.jl` has been thought to be in close connection to 
-`DifferentialEquation.jl`.  We plan to offer a common interface with it
-by extending the Split ODE problem type [^4]. Future users could use our
-package more easily and compare our method with others. 
+`HOODESolver.jl` has been thought to be in close connection to
+`DifferentialEquation.jl`.  We plan to offer a common interface
+with it by extending the Split ODE problem type [^4]. Future users
+could use our package more easily wich will facilitate the cross
+comparisons with other methods.
 
 [^4]: https://diffeq.sciml.ai/stable/types/split_ode_types/
 
@@ -189,7 +190,7 @@ sense that most of which have led to its development [@vlasov_beam;
 # Aknowledgements
 
 Much of `HOODESolver.jl` was implemented by Y. Mocquard
-while he was supported by Inria through the AdT (Aide au developpement
+while he was supported by Inria through the AdT (Aide au développement
 technologique) J-Plaff of the center Rennes-Bretagne Atlantique.
 
 # References
