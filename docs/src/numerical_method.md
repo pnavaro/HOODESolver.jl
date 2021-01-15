@@ -40,7 +40,7 @@ Similarly, if $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1}
     - For $k=1$ to $k=r'-1$
          - With the method $AB_{r'}$, from $u_{k-1}, u_{k-2}, \ldots,u_{k-r'}$, we calculate $u_{k}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$
 
-At the end of this algorithm, the values $u_0, u_1, \ldots u_{r-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r+1})$, we can launch the algorithm $AB_r$. Note that this technique requires that the function $f$ has to be smooth enough (namely $f\in {\cal C}^r([t_{start} - r \Delta t, t_{end}])$).  
+At the end of this algorithm, the values $u_0, u_1, \ldots u_{r-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r+1})$, we can launch the algorithm $AB_r$. Note that this technique requires that the function $f$ has to be smooth enough (namely $f\in {\mathcal C}^r([t_{start} - r \Delta t, t_{end}])$).  
 
 
 ### The Adams-Bashforth Method
