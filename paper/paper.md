@@ -122,14 +122,15 @@ where
 The numerical solution of \autoref{orig} is computed by simply
 entering the different components of the equation ($A$, $f$,
 $\varepsilon$, $t_{start}, t_{end}$, $u_{in}$) following the required
-format.  The user simply chooses an order of the Adams-Bashforth
-time integrator and the time step.  The result is given as a function
+format.  The user simply chooses an order ``order`` of the Adams-Bashforth 
+time integrator and the time step ``h`` $= (t_{start}-t_{end})/$``nb_t``.  The result is given as a function
 object which can be evaluated in an arbitrary time $t$, not just
 at the discrete times. In addition to the methodology
 introduced in `HOODESolver.jl`, the package includes:
 
 1. Arbitrary precision arithmetic via BigFloats,
-2. New technique to compute the first iterations required for the initialization of the Adams-Bashforth method,    
+2. New technique to compute the first iterations required for the initialization of the Adams-Bashforth method 
+(this requires that $f$ has to be ``order`` times differentiable on $[t_{start}-$ ``order`` $h, t_{end}]$,    
 3. Extension of the two-scale method to non-homogeneous problems.  
 
 The following is an example with the system of Hénon-Heiles[^3]:
@@ -173,19 +174,12 @@ ensure a user-specified tolerance.
 `HOODESolver.jl` has been thought to be in close connection to
 `DifferentialEquation.jl`.  We plan to offer a common interface
 with it by extending the `SplitODE` problem type[^4]. Future users
-could use our package more easily wich will facilitate the cross
+could use our package more easily which will facilitate the cross
 comparisons with other methods.
 
 [^4]: https://diffeq.sciml.ai/stable/types/split_ode_types/
 
-The following research projects are connected to `HOODESolver.jl` in the
-sense that most of which have led to its development [@vlasov_beam;
-@numer_math; @vlasov_pic1; @vlasov_pic2; @derivative_free]
 
-- Introduction of two-scale method to design Uniformly Accurate methods.
-- Numerical analysis of the two-scale method.
-- Coupling of the two-scale method with Particle-In-Cell approach.
-- Extension to high order.
 
 # Aknowledgements
 
