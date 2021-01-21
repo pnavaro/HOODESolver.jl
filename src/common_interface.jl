@@ -44,10 +44,6 @@ isSplitODEProblem(probtype::Any)=false
 isSplitODEProblem(probtype::SplitODEProblem)=true
 
 
-
-
-
-
 struct HOODEAB{order, ntau} <: DiffEqBase.AbstractODEAlgorithm 
 HOODEAB(order::Int=4; ntau=32)=new{order, ntau}()
 end
