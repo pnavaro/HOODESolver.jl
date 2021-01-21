@@ -6,20 +6,25 @@ version = "0.1.0"
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+DoubleFloats = "497a8b3b-efae-58df-a0af-a86822472b78"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
+GenericSchur = "c145ed77-6b09-5dd9-b285-bf645a82121e"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Polynomials = "f27b6e38-b328-58d1-80ce-0feddd5e7a45"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
-julia = "^1"
 DiffEqBase = "^6"
 FFTW = "^1"
 Polynomials = "^1"
 Reexport = "^0.2"
+julia = "^1"
 
 [extras]
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
