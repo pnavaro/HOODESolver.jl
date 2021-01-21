@@ -4,7 +4,7 @@
 
 We consider the system of Hénon-Heiles satisfied by $u(t)=(u_1, u_2, u_3, u_4)(t)$.
 
-$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(u), \;\;\; u(0)=u_0\in\mathbb{R}^4,$$
+$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(u), \;\;\; u(t_{start})=u_{inn}\in\mathbb{R}^4,$$
 
 where $A$ and $f$ are selected as follows
 
@@ -27,7 +27,7 @@ u_4\\
 \right).$$
 
 one chooses for example, $\varepsilon=0.001$
-and $u_0 = (0.12, 0.12, 0.12, 0.12)$
+and $u_{in} = (0.12, 0.12, 0.12, 0.12)$
 
 ```@setup 1
 using Plots
@@ -40,8 +40,8 @@ The input arguments use the same format as the ODE package.
 Thus, first of all, we must define the arguments necessary to construct the problem (1), namely
 
 - the $f$ function (in the form *Julia*) 
-- the initial condition $u_{0}$.
-- the initial time $t_{0}$ and final time $t_{fin}$. 
+- the initial condition $u_{in}$.
+- the initial time $t_{start}$ and final time $t_{end}$. 
 - the second parameter of the 
 - the $A$ matrix 
 -  $\varepsilon \in ]0, 1]$
@@ -58,17 +58,17 @@ fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ]
 
 epsilon= 0.0001
 
-t_min=0.0
-t_max=3.0
+t_start=0.0
+t_end=3.0
 
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon); 
+prob = HOODEProblem(fct, u0, (t_start,t_end), missing, A, epsilon); 
 ```
 
 From the ```prob``` problem, we can now switch to its digital resolution. 
 
 To do this, the numerical parameters are defined 
-- the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_0}{N_t}$ 
+- the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_{start}}{N_t}$ 
 - the $r$ order of the method 
 - the number of $N_\tau$ points in the $\tau$ direction... 
 - the order of preparation $q$ of the initial condition 
@@ -135,7 +135,7 @@ plot(sol)
 
 The following non-homogeneous linear system is considered to be satisfied by $u(t)=(u_1, u_2, u_3, u_4)(t)$
 
-$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(t, u), \;\;\; u(0)=u_0\in\mathbb{R}^4,$$
+$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(t, u), \;\;\; u(0)=u_in\in\mathbb{R}^4,$$
 
 where $A$ and $f$ are selected as follows
 
@@ -172,10 +172,10 @@ alpha = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
 beta = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
 fct = (u,p,t)-> B*u + t*p[1] +p[2]
 u0 = [big"0.5", big"-0.123", big"0.8", big"0.7"]
-t_min=big"0.0"
-t_max=big"1.0"
+t_start=big"0.0"
+t_end=big"1.0"
 epsilon=big"0.017"
-prob = HOODEProblem(fct, u0, (t_min,t_max), (alpha, beta), A, epsilon, B)
+prob = HOODEProblem(fct, u0, (t_start,t_end), (alpha, beta), A, epsilon, B)
 sol = solve(prob, nb_t=10000, order=8)
 sol.absprec
 ```
@@ -193,13 +193,13 @@ plot(sol.t,sol.u_tr)
 
 This involves calculating the exact solution $u(t)$ of the following equation at the instant $t$
 
-$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + Bu +\alpha t +\beta, \;\;\; u(0)=u_0\in\mathbb{R}^4\text{, } A \text{ and }B \text{ are defined above }$$
+$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + Bu +\alpha t +\beta, \;\;\; u(t_{start})=u_{in}\in\mathbb{R}^4\text{, } A \text{ and }B \text{ are defined above }$$
 
 Let
 
 $$\begin{aligned}
     M &= \frac{1}{\varepsilon} A + B\\
-    C &= e^{-t_0 M}u_0 +M^{-1} e^{-t_0 M} (t_0\alpha+\beta)+ M^{-2} e^{-t_0 M} \alpha\\
+    C &= e^{-t_{start} M}u_{in} +M^{-1} e^{-t_{start} M} (t_{start}\alpha+\beta)+ M^{-2} e^{-t_{start} M} \alpha\\
     C_t &= -M^{-1} e^{-t M} (t\alpha+\beta)-M^{-2} e^{-t M} \alpha\\
     u(t) &= e^{t M} ( C + C_t)
 \end{aligned}$$
@@ -211,15 +211,15 @@ function getexactsol(par::PreparePhi, u0, t)
     @assert !ismissing(par.matrix_B) "The debug matrix is not defined"
     sparse_A = par.sparse_Ap[1:(end-1),1:(end-1)]
     m = (1/par.epsilon)*sparse_A+par.matrix_B
-    t0 = par.t_0
+    t_start = par.t_0
     if ismissing(par.paramfct)
         return exp((t-t0)*m)*u0
     end
     a, b = par.paramfct
     mm1 = m^(-1)
     mm2 = mm1^2
-    e_t0 = exp(-t0*m)
-    C = e_t0*u0 + mm1*e_t0*(t0*a+b)+mm2*e_t0*a
+    e_t0 = exp(-t_start*m)
+    C = e_t0*u0 + mm1*e_t0*(t_start*a+b)+mm2*e_t0*a
     e_inv = exp(-t*m)
     e = exp(t*m)
     C_t = -mm1*e_inv*(t*a+b)-mm2*e_inv*a
@@ -253,11 +253,11 @@ beta =  BigFloat.([-4//100, 48//100, 23//100, -87//100])
 
 epsilon = 0.015
 
-t_max = big"1.0"
+t_end = big"1.0"
 
 fct = (u,p,t)-> B*u + t*p[1] +p[2]
 
-prob = HOODEProblem(fct,u0, (big"0.0",t_max), (alpha, beta), A, epsilon, B)
+prob = HOODEProblem(fct,u0, (big"0.0",t_end), (alpha, beta), A, epsilon, B)
 ```
 
 Note that the floats are coded on 512 bits.\
@@ -278,11 +278,11 @@ Here floats are coded on 256 bits.
 
 ```jl
 u0=BigFloat.([90, -44, 83, 13]//100)
-t_max = big"1.0"
+t_end = big"1.0"
 epsilon=big"0.0017"
 fct = u -> [0, u[4], -2u[1]*u[2], -u[2]-u[1]^2+u[2]^2]
 A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-prob = HOODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
+prob = HOODEProblem(fct, u0, (big"0.0",t_end), missing, A, epsilon)
 ```
 The float are coded on 512 bits.
 
