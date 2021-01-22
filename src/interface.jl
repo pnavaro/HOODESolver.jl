@@ -66,6 +66,7 @@ struct HOODEInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
     parphi::PreparePhi
     order::Any
 end
+(interp::HOODEInterpolation)(t,idxs,deriv,p,continuity)=interp(t)
 function (interp::HOODEInterpolation)(t)
     return _getresult(
         interp.t,
@@ -105,16 +106,16 @@ struct HOODESolution{T} <: AbstractHOODESolution{T,T}
 end
 function HOODESolution(retcode::Symbol)
     return HOODESolution(
-        undef,
-        undef,
-        undef,
-        undef,
-        undef,
-        undef,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
+        nothing,
         retcode,
-        undef,
-        undef,
-        undef,
+        nothing,
+        nothing,
+        nothing,
     )
 end
 (sol::HOODESolution)(t) = sol.dense ? sol.interp(t) : undef
@@ -301,7 +302,7 @@ function DiffEqBase.solve(
         retcode,
         interp,
         0,
-        undef,
-        undef,
+        nothing,
+        nothing,
     )
 end

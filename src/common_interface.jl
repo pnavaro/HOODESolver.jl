@@ -12,7 +12,6 @@ end
 DiffEqBase.isinplace(linop::LinearHOODEOperator, n::Int)=false
 
 function LinearHOODEOperator(mat::Matrix{T}) where{T}
- println("trace")   
     tab = zeros(Int,size(mat,1))
     sz = 0
     testlgn(x)=count(y->y!=0,x)!=0
@@ -53,18 +52,23 @@ HOODEAB(order::Int=4; ntau=32)=new{order, ntau}()
 end
 export HOODEAB
 
+struct PrecHOODE
+    absprec::Float64
+    relprec::Float64
+end
+
+
 function DiffEqBase.solve(prob::ODEProblem,
                           alg::HOODEAB{order, ntau};
-                          dt = missing,
-                          nb_t = missing) where{order, ntau}
+                          dt = nothing, kwargs...) where{order, ntau}
     isSplitODEProblem(prob.problem_type) || error("HOODEAB alg need SplitODEProblem type")
-    (!ismissing(dt) && !ismissing(nb_t)) && error("Only one of dt and nb_t must be defined")
+    (!isnothing(dt) && haskey(kwargs, :nb_t)) && error("Only one of dt and nb_t must be defined")
     linop = LinearHOODEOperator(prob.f.f1)   
     fct = prob.f.f2.f
     p = typeof(prob.p) == DiffEqBase.NullParameters ? missing : prob.p
     ho_prob = HOODEProblem(fct, prob.u0, prob.tspan, p, linop.A, linop.epsilon)
-    if ismissing(nb_t)
-        nb_t = ismissing(dt) ? 100 : Int64(round((prob.tspan[2]-prob.tspan[1])/dt))
+    if !haskey(kwargs, :nb_t) && !isnothing(dt)
+        kwargs = (kwargs..., nb_t=Int64(round((prob.tspan[2]-prob.tspan[1])/dt)))
     end
 
     sol = DiffEqBase.solve(
@@ -72,9 +76,18 @@ function DiffEqBase.solve(prob::ODEProblem,
         HOODETwoScalesAB();
         nb_tau = ntau,
         order = order,
-        nb_t = nb_t
+        kwargs...
     )
-    return sol
+    return DiffEqBase.build_solution(
+    prob, # prob::Union{AbstractODEProblem,AbstractDDEProblem},
+    HOODETwoScalesAB(), # alg,
+    sol.t, # t,
+    sol.u, # u,
+    dense = sol.dense,
+    interp = sol.interp,
+    retcode = sol.retcode,
+    destats = isnothing(sol.absprec) ? nothing : PrecHOODE(sol.absprec,sol.relprec),
+)
 end
 
 
