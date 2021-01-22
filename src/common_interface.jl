@@ -2,17 +2,17 @@ using LinearAlgebra
 using GenericSchur
 
 include("interface.jl")
-abstract type AbstractDiffEqOperator{T} end
-abstract type AbstractDiffEqLinearOperator{T} <: AbstractDiffEqOperator{T} end
+# abstract type AbstractDiffEqOperator{T} end
+# abstract type AbstractDiffEqLinearOperator{T} <: AbstractDiffEqOperator{T} end
 
-struct LinearHOODEOperator{T} <: AbstractDiffEqLinearOperator{T}
+struct LinearHOODEOperator{T} <: DiffEqBase.AbstractDiffEqLinearOperator{T}
     epsilon::T
     A::Matrix
 end
 DiffEqBase.isinplace(linop::LinearHOODEOperator, n::Int)=false
 
 function LinearHOODEOperator(mat::Matrix{T}) where{T}
-    
+ println("trace")   
     tab = zeros(Int,size(mat,1))
     sz = 0
     testlgn(x)=count(y->y!=0,x)!=0
@@ -35,11 +35,15 @@ function LinearHOODEOperator(mat::Matrix{T}) where{T}
     LinearHOODEOperator{T}(epsilon, A)
 end
 function LinearHOODEOperator(linop::DiffEqArrayOperator)
-    linop.update_func != DEFAULT_UPDATE_FUNC && error("no update operator function for HOODEAB Alg")
+    linop.update_func != DiffEqBase.DEFAULT_UPDATE_FUNC && error("no update operator function for HOODEAB Alg")
     LinearHOODEOperator(linop.A)
 end
 LinearHOODEOperator(linop::LinearHOODEOperator)=linop
-LinearHOODEOperator(odefct::ODEFunction{false,LinearHOODEOperator{T}}) where{T}=odefct.f
+function LinearHOODEOperator(
+    odefct::ODEFunction{iip,LinOp}
+) where{iip, LinOp <: DiffEqBase.AbstractDiffEqLinearOperator}
+    return LinearHOODEOperator(odefct.f)
+end
 isSplitODEProblem(probtype::Any)=false
 isSplitODEProblem(probtype::SplitODEProblem)=true
 
@@ -54,13 +58,13 @@ function DiffEqBase.solve(prob::ODEProblem,
                           dt = missing,
                           nb_t = missing) where{order, ntau}
     isSplitODEProblem(prob.problem_type) || error("HOODEAB alg need SplitODEProblem type")
-    (!ismissing(dt) || !ismissing(nb_t)) && error("Only one of dt and nb_t must be defined")
+    (!ismissing(dt) && !ismissing(nb_t)) && error("Only one of dt and nb_t must be defined")
     linop = LinearHOODEOperator(prob.f.f1)   
     fct = prob.f.f2.f
     p = typeof(prob.p) == DiffEqBase.NullParameters ? missing : prob.p
     ho_prob = HOODEProblem(fct, prob.u0, prob.tspan, p, linop.A, linop.epsilon)
     if ismissing(nb_t)
-        nb_t = ismissing(dt) ? 100 : (Int)round((prob.tspan[2]-prob.tspan[1])/dt)
+        nb_t = ismissing(dt) ? 100 : Int64(round((prob.tspan[2]-prob.tspan[1])/dt))
     end
 
     sol = DiffEqBase.solve(

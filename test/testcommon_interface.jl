@@ -42,16 +42,17 @@ function fct4bis( du, u, p, t)
 end
 
 function testcommon_interface_fct(linop)
+    linopok = LinearHOODEOperator(linop)
     B=[0.1 1.1 0.2 05 ; -0.9 -0.12 -0.7 0.4 ; 0.5 0.66 0.7 0.8 ; -0.34 0.8 0 0.3]
     u0 = 2rand(4)-ones(4)
-    sol_ref = exp(1.0*(1/linop.epsilon*linop.A+B))*u0
+    sol_ref = exp(1.0*(1/linopok.epsilon*linopok.A+B))*u0
     fct = (u,p,t) -> B*u
     prob = SplitODEProblem{false}(linop, fct, u0, (0.0, 1.0))
-    sol = solve(prob, HOODEAB())
+    sol = solve(prob, HOODEAB(), nb_t=100)
     @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
     fct = (u,p) -> B*u
     prob = SplitODEProblem{false}(linop, fct, u0, (0.0, 1.0))
-    sol = solve(prob, HOODEAB())
+    sol = solve(prob, HOODEAB(), dt=0.01)
     @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
     fct = (u) -> B*u
     prob = SplitODEProblem{false}(linop, fct, u0, (0.0, 1.0))
@@ -68,6 +69,7 @@ end
     epsilon = 0.0001
     linop = LinearHOODEOperator(epsilon,A)
     testcommon_interface_fct(linop)
+    testcommon_interface_fct(DiffEqArrayOperator((1/epsilon)*A))
 end
 
 
