@@ -52,14 +52,34 @@ HOODEAB(order::Int=4; ntau=32)=new{order, ntau}()
 end
 export HOODEAB
 
+# OtherHOODE : structure used to store HOODESolution data in the dstats fields
 struct OtherHOODE
     par_u0::PrepareU0
     p_coef::CoefExpAB
     absprec::Union{Nothing,Float64}
     relprec::Union{Nothing,Float64}
 end
+"""
+    function DiffEqBase.solve(prob::ODEProblem, alg::HOODEAB{order, ntau}; 
+    dt=nothing,
+    kwargs...
+    ) where T<:AbstractFloat
 
+solver for Highly oscillatory problems, that an ODE of this form
+``\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)``
+where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
+``A`` must be a periodic matrix i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
 
+# Argument :
+- `prob::ODEProblem` : The problem to solve
+- `alg::HOODEAB{order, ntau}` : the Adams-Bashforth HOODE algorithm
+
+# Keywords :
+- `dt` : duration of a time interval
+- `kwargs...` : other keywords
+
+# Examples :
+"""
 function DiffEqBase.solve(prob::ODEProblem,
                           alg::HOODEAB{order, ntau};
                           dt = nothing, kwargs...) where{order, ntau}
