@@ -52,9 +52,11 @@ HOODEAB(order::Int=4; ntau=32)=new{order, ntau}()
 end
 export HOODEAB
 
-struct PrecHOODE
-    absprec::Float64
-    relprec::Float64
+struct OtherHOODE
+    par_u0::PrepareU0
+    p_coef::CoefExpAB
+    absprec::Union{Nothing,Float64}
+    relprec::Union{Nothing,Float64}
 end
 
 
@@ -63,10 +65,15 @@ function DiffEqBase.solve(prob::ODEProblem,
                           dt = nothing, kwargs...) where{order, ntau}
     isSplitODEProblem(prob.problem_type) || error("HOODEAB alg need SplitODEProblem type")
     (!isnothing(dt) && haskey(kwargs, :nb_t)) && error("Only one of dt and nb_t must be defined")
+    haskey(kwargs, :order) && error("order must defined as parameter of algorithm : HOODEAB(order)")
     linop = LinearHOODEOperator(prob.f.f1)   
     fct = prob.f.f2.f
     p = typeof(prob.p) == DiffEqBase.NullParameters ? missing : prob.p
-    ho_prob = HOODEProblem(fct, prob.u0, prob.tspan, p, linop.A, linop.epsilon)
+    ho_prob = if haskey(prob.kwargs, :B)
+        HOODEProblem(fct, prob.u0, prob.tspan, p, linop.A, linop.epsilon, prob.kwargs[:B])
+    else
+        HOODEProblem(fct, prob.u0, prob.tspan, p, linop.A, linop.epsilon)
+    end
     if !haskey(kwargs, :nb_t) && !isnothing(dt)
         kwargs = (kwargs..., nb_t=Int64(round((prob.tspan[2]-prob.tspan[1])/dt)))
     end
@@ -78,6 +85,7 @@ function DiffEqBase.solve(prob::ODEProblem,
         order = order,
         kwargs...
     )
+    other = OtherHOODE(sol.par_u0,sol.p_coef, sol.absprec, sol.relprec)
     return DiffEqBase.build_solution(
     prob, # prob::Union{AbstractODEProblem,AbstractDDEProblem},
     HOODETwoScalesAB(), # alg,
@@ -86,7 +94,7 @@ function DiffEqBase.solve(prob::ODEProblem,
     dense = sol.dense,
     interp = sol.interp,
     retcode = sol.retcode,
-    destats = isnothing(sol.absprec) ? nothing : PrecHOODE(sol.absprec,sol.relprec),
+    destats = other,
 )
 end
 
