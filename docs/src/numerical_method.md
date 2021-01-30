@@ -3,19 +3,19 @@
 
 ## Two-scale formulation 
 
-First, rewrite equation (1) using the variable change $w(t)=\exp(-(t-t_{0})A/\varepsilon) u(t)$ to obtain
+First, rewrite equation (1) using the variable change $w(t)=\exp(-(t-t_{start})A/\varepsilon) u(t)$ to obtain
 
-$$\frac{d w(t)}{dt} = F\Big( \frac{t-t_{0}}{\varepsilon}, w(t) \Big), \;\;\; w(t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1],$$
+$$\frac{d w(t)}{dt} = F\Big(\frac{t-t_{start}}{\varepsilon}, w(t) \Big), \;\;\; w(t_{start})=u_{in}, \;\; \varepsilon\in ]0, 1],$$
 
 where the function $F$ is expressed from the data of the original problem (1)
 
 $$F\Big( \frac{s}{\varepsilon}, w \Big) = \exp(-sA/\varepsilon) \; f( \exp(sA/\varepsilon), \; w).$$
 
-We then introduce the function $U(t, \tau), \tau\in [0, 2 \pi]$ such that $U(t, \tau=(t-t_{0})/\varepsilon) = w(t)$. The two-scale function is then the solution of the following equation
+We then introduce the function $U(t, \tau), \tau\in [0, 2 \pi]$ such that $U(t, \tau=(t-t_{start})/\varepsilon) = w(t)$. The two-scale function is then the solution of the following equation
 
-$$\frac{\partial U}{\partial t} + \frac{1}{\varepsilon} \frac{\partial U}{\partial \tau} =  F( \tau, U), \;\;\; U(t=t_{0}, \tau)=\Phi(\tau), \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\; (2)$$
+$$\frac{\partial U}{\partial t} + \frac{1}{\varepsilon} \frac{\partial U}{\partial \tau} =  F( \tau, U), \;\;\; U(t=t_{start}, \tau)=\Phi(\tau), \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\; (2)$$
 
-where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is regular (see [chartier2015](@cite) and [chartier2020](@cite).
+where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is smooth (see [chartier2015](@cite) and [chartier2020](@cite).
 
 ## Discretization  
 
@@ -25,7 +25,7 @@ The numerical method is based on a discretization of equation (2). In the direct
 
 Let r be the order of the method $AB_r$.\
 Let $\Delta t$ the time step, for $i \in \{r, -(r-1), \ldots, r-1, r\}$,
-we note $u_i = u(t_0+i \Delta t)$.\
+we note $u_i = u(t_{start}+i \Delta t)$.\
 Let $r'$ be the orders of the intermediate AB methods we will use.\
 If $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k-1}, \ldots, u_{k-r'+1}$ are known with a precision of ${\mathcal O}(\Delta t^{r'})$ then we can calculate $u_{k+1}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.\
 Similarly, if $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1})$, and for $r' \geq 2, u_{k+1}, \ldots, u_{k+r'-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r'})$ then we can calculate $u_{k-1}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$ with the method $AB_{r'}$.
@@ -40,7 +40,7 @@ Similarly, if $u_{k}$ is known with a precision of ${\mathcal O}(\Delta t^{r'+1}
     - For $k=1$ to $k=r'-1$
          - With the method $AB_{r'}$, from $u_{k-1}, u_{k-2}, \ldots,u_{k-r'}$, we calculate $u_{k}$ with a precision of ${\mathcal O}(\Delta t^{r'+1})$
 
-At the end of this algorithm, the values $u_0, u_1, \ldots u_{r-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r+1})$, we can launch the algorithm $AB_r$.
+At the end of this algorithm, the values $u_0, u_1, \ldots u_{r-1}$ are known with a precision of ${\mathcal O}(\Delta t^{r+1})$, we can launch the algorithm $AB_r$. Note that this technique requires that the function $f$ has to be smooth enough (namely $f\in {\mathcal C}^r([t_{start} - r \Delta t, t_{end}])$).  
 
 
 ### The Adams-Bashforth Method
@@ -85,26 +85,26 @@ with $\hat{U}_{\ell}^n \approx \hat{U}_{\ell}(t_n)$ and $\hat{F}_\ell^{n-j}\appr
 
 We can verify that the truncation error in this schema is  ${\mathcal O}(\Delta t^{r+1})$, once the initial values  $\hat{U}_\ell^1, \dots, \hat{U}_\ell^r$ have been calculated.  
 
-## Non-homogeneous case $f(u, t)$
+## Non-homogeneous case $f(t, u)$
 
 Here we consider the case where $f$ depends on the variable $t$.
 
-$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(u(t), t), \;\;\; u(t=t_{0})=u_{0}, \;\; \varepsilon\in ]0, 1] \;\;\;\; (3)$$
+$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(t, u(t)), \;\;\; u(t=t_{start})=u_{in}, \;\; \varepsilon\in ]0, 1] \;\;\;\; (3)$$
 
 The non-homogeneous case (3) falls under (1), by entering the variable 
-$\theta : t \in [t_{0}, t_{\text{end}}] \mapsto \theta(t) = t\in \mathbb{R}$ 
+$\theta : t \in [t_{start}, t_{end}] \mapsto \theta(t) = t\in \mathbb{R}$ 
 which allows us to reformulate the non-homogeneous case (3) into a homogeneous problem of the form (1).
 Indeed, we rephrase (3) as follows
 
 $$\begin{aligned}
-\frac{d u(t) }{dt}  & = \frac{1}{\varepsilon} Au(t) + f(u(t), \theta(t)), \\
+\frac{d u(t) }{dt}  & = \frac{1}{\varepsilon} Au(t) + f(\theta(t), u(t)), \\
 \frac{d \theta(t) }{dt}  & = 1
 \end{aligned}\;\;\;\;(4)$$
 
-with the initial condition  $u(t_{0})=u_{0}, \theta(t_{0})=t_{0}$. Thus, the problem (4) is rewritten into an equation\
-satisfied by $y: t\in [t_{0}, t_{fin}] \mapsto y(t) =(u(t), \theta(t))\in \mathbb{R}^{n+1}$
+with the initial condition  $u(t_{start})=u_{in}, \theta(t_{start})=t_{start}$. Thus, the problem (4) is rewritten into an equation\
+satisfied by $y: t\in [t_{start}, t_{end}] \mapsto y(t) =(u(t), \theta(t))\in \mathbb{R}^{n+1}$
 
-$$\frac{d y}{dt} = \frac{1}{\varepsilon} \tilde{A} y + g(y), \;\; y(t_{0})=(u_{0}, t_{0}),$$
+$$\frac{d y}{dt} = \frac{1}{\varepsilon} \tilde{A} y + g(y), \;\; y(t_{start})=(u_{in}, t_{start}),$$
 
 with $\tilde{A}\in{\mathcal M}_{n+1, n+1}(\mathbb{R})$
 
@@ -119,7 +119,7 @@ $$\tilde{A}=
 \right) \;\;\;\; \text{ and } \;\;\;\;
 g(y)=g(u, \theta) = \left(
 \begin{array}{cccccc}
-f(u, \theta) \\
+f(\theta, u) \\
 1
 \end{array}
 \right) \in \mathbb{R}^{n+1}.$$
