@@ -3,7 +3,8 @@ using LinearAlgebra
 using Random
 using Test
 
-function testexp()
+@testset "Exponential matrices" begin
+
     A=zeros(Int64, 4, 4)
     A[1,3] = 1
     A[3,1] = -1
@@ -59,4 +60,3 @@ function testexp()
         setprecision(prec_old)
     end
 end
-testexp()

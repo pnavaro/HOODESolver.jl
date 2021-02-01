@@ -157,7 +157,7 @@ struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
     p_coef::Union{CoefExpAB,Missing}=missing
     ) where T<:AbstractFloat
 
-solver for Highly oscillatory problems, that an ODE of this form
+specific interface solver for Highly oscillatory problems, that an ODE of this form
 ``\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)``
 where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 ``A`` must be a periodic matrix i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
