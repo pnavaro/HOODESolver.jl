@@ -62,7 +62,8 @@ t_start=0.0
 t_end=3.0
 
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEProblem(fct, u0, (t_start,t_end), missing, A, epsilon); 
+prob = HOODEProblem(fct, u0, (t_start,t_end), missing, A, epsilon);
+nothing # hide
 ```
 
 From the ```prob``` problem, we can now switch to its digital resolution. 
