@@ -43,8 +43,8 @@ With our method we need to give the value of `epsilon` so we can't use the
 using HOODESolver
 
 linop = LinearHOODEOperator(epsilon,A)
-prob2 = SplitODEProblem(linop, fct, u0, (0.0, 1.0))
-sol2 = solve(prob2, HOODEAB(), nb_t=100)
+prob2 = SplitODEProblem(linop, f2, u0, (0.0, 1.0))
+sol2 = solve(prob2, HOODEAB(), nb_t=10)
 
 plot(sol1, vars=[3])
 plot!(sol2, vars=[3])
