@@ -33,7 +33,7 @@ u0 = [0.55, 0.12, 0.03, 0.89]
 
 prob1 = SplitODEProblem(f1, f2, u0, tspan);
 sol1 = solve(prob1, CNAB2(), dt=0.0001);
-
+nothing # hide
 ```
 
 With our method we need to give the value of `epsilon` so we can't use the 
