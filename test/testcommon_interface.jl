@@ -16,15 +16,29 @@ function test_operator(T::DataType)
 ]
         epsilon = T(1//1024)
         linop = LinearHOODEOperator((1/epsilon)*mat)
-        @test linop.epsilon == epsilon
-        @test linop.A == mat
+        @test isconstant(linop)
+        @test isapprox(linop.epsilon, epsilon)
+        @test isapprox(linop.A, mat)
+        L = T(1//16) * linop
+        @test isconstant(L)
+        @test isapprox(L.epsilon, epsilon*16)
+        @test isapprox(L.A, mat)       
         linop2 = LinearHOODEOperator(linop)
-        @test linop2.epsilon == epsilon
-        @test linop2.A == mat
+        @test isconstant(linop2)
+        @test isapprox(linop2.epsilon, epsilon)
+        @test isapprox(linop2.A, mat)
+        L = T(1//16) * linop2
+        @test isconstant(L)
+        @test isapprox(L.epsilon, epsilon*16)
+        @test isapprox(L.A, mat)       
         linop3 = LinearHOODEOperator(epsilon, mat)
-        @test linop3.epsilon == epsilon
-        @test linop3.A == mat
-
+        @test isconstant(linop3)
+        @test isapprox(linop3.epsilon, epsilon)
+        @test isapprox(linop3.A, mat)
+        L = T(1//16) * linop3
+        @test isconstant(L)
+        @test isapprox(L.epsilon, epsilon*16)
+        @test isapprox(L.A, mat)       
     end
 end
 
@@ -264,7 +278,7 @@ end
 @time @testset "test interface type of function" begin
     A =  [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0]
     epsilon = 0.0001
-    linop = LinearHOODEOperator(epsilon,A)
+    linop = LinearHOODEOperator(epsilon, A)
     testcommon_interface_fct(linop)
     testcommon_interface_fct(DiffEqArrayOperator((1/epsilon)*A))
 end
