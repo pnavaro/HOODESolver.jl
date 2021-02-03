@@ -42,10 +42,11 @@ With our method we need to give the value of `epsilon` so we can't use the
 ```@example 4
 using HOODESolver
 
-linop = LinearHOODEOperator(epsilon,A)
-prob2 = SplitODEProblem(linop, f2, u0, (0.0, 1.0))
-sol2 = solve(prob2, HOODEAB(), nb_t=10)
+linop = LinearHOODEOperator(epsilon, A)
+prob2 = SplitODEProblem(linop, f2, u0, tspan)
+sol2 = solve(prob2, HOODEAB(), dt=0.01)
 
 plot(sol1, vars=[3])
 plot!(sol2, vars=[3])
+plot!(sol2.t, getindex.(sol2.u, 3), m=:o)
 ```
