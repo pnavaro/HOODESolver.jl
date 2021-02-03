@@ -9,5 +9,6 @@ docs/Manifest.toml
 benchmark/Manifest.toml
 .benchmarkci/
 benchmark/tune.json
+docs/notebooks/.ipynb_checkpoints/split_ode_example-checkpoint.jl
 docs/notebooks/.ipynb_checkpoints/heron-heiles-checkpoint.jl
 docs/notebooks/.ipynb_checkpoints/henon-heiles-checkpoint.ipynb
