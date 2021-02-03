@@ -1,6 +1,6 @@
 # SplitODEProblem
 
-The [SplitODEProblem] type from package [DifferentialEquations.jl](https://diffeq.sciml.ai/stable/types/split_ode_types/) offers a interface for problems similar to the ones we are trying to solve.
+The `SplitODEProblem` type from package [DifferentialEquations.jl](https://diffeq.sciml.ai/stable/types/split_ode_types/) offers a interface for problems similar to the ones we are trying to solve.
 
 Consider the Henon-Heiles system we can use one of the solvers dedicated to split problems, see [Split ODE Solvers](https://diffeq.sciml.ai/stable/solvers/split_ode_solve/#split_ode_solve):
 
