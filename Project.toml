@@ -1,7 +1,7 @@
 name = "HOODESolver"
 uuid = "217528c2-21c4-4222-9975-97f0b0cbd7c1"
 authors = ["Yves Mocquard <yves.mocquard@inria.fr>"]
-version = "0.1.1"
+version = "0.2.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
