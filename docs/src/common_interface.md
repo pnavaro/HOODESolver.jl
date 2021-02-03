@@ -1,9 +1,8 @@
 # SplitODEProblem
 
-The package [DifferentialEquations.jl](https://diffeq.sciml.ai/stable/types/split_ode_types/) 
-offers a interface for problems similar to the ones we are trying to solve.
+The [SplitODEProblem] type from package [DifferentialEquations.jl](https://diffeq.sciml.ai/stable/types/split_ode_types/) offers a interface for problems similar to the ones we are trying to solve.
 
-To solve the Henon-Heiles system, you can :
+Consider the Henon-Heiles system we can use one of the solvers dedicated to split problems, see [Split ODE Solvers](https://diffeq.sciml.ai/stable/solvers/split_ode_solve/#split_ode_solve):
 
 ```@setup 4
 using Plots
@@ -32,7 +31,7 @@ tspan = (0.0, 0.1)
 u0 = [0.55, 0.12, 0.03, 0.89]
 
 prob1 = SplitODEProblem(f1, f2, u0, tspan);
-sol1 = solve(prob1, CNAB2(), dt=0.0001);
+sol1 = solve(prob1, ETDRK4(), dt=0.001);
 nothing # hide
 ```
 
