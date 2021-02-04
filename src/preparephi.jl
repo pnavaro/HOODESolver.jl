@@ -101,7 +101,7 @@ struct PreparePhi
                     end,
                 )
         end
-        @assert tau_Ap[div(n_tau, 2)+1]^2 == I "The matrix must be periodic A=$matrix_A"
+        @assert tau_Ap[div(n_tau, 2)+1]^2 == I "exp(t A) must be 2π-periodic, A=$matrix_A"
         tau_list = [collect(0:(div(n_tau, 2)-1)); collect(-div(n_tau, 2):-1)]
         tau_int = collect(transpose(vcat([0], -im ./ tau_list[2:end])))
         par_fft_big = PrepareFftBig(n_tau, big(epsilon))
