@@ -79,27 +79,14 @@ To do this, the numerical parameters are defined
 The default settings are : $N_t=100$, $r=4$, $N_\tau=32$ and $q=r+2=6$
 To solve the problem with the default parameters, just call the `solve` command with the problem already defined as parameter
 ```jl     
-sol = solve(prob, alg=HOODEAB()) 
+sol = solve(prob, alg=HOODEAB(), dt=0.1) 
 ```
-Which is equivalent to this call
-```jl     
-sol = solve(
-    prob;
-    nb_tau=32, 
-    order=4, 
-    order_prep=6, # by default : order + 2
-    dense=true, 
-    nb_t=100, 
-    getprecision=true, # by default : dense 
-    verbose=100,    
-    par_u0=missing,
-    p_coef=missing,
-) 
-```
+Which is equivalent to `HOODEAB( order=4, nb_tau=32 )`
+
 
 ### Exhaustive definition of the parameters
 
-- `prob` : problem defined by `HOODEProblem` 
+- `prob` : problem defined by `SplitODEProblem` 
 - `nb_tau=32` : $N_{\tau}$
 - `order=4` : order $r$ of the method
 - `order_prep=order+2` : order of preparation of initial data
@@ -176,12 +163,16 @@ A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 B = 2rand(rng, BigFloat, 4, 4) - ones(BigFloat, 4, 4)
 alpha = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
 beta = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
-fct = (u,p,t)-> B*u + t*p[1] +p[2]
 u0 = [big"0.5", big"-0.123", big"0.8", big"0.7"]
 t_start=big"0.0"
 t_end=big"1.0"
 epsilon=big"0.017"
-prob = HOODEProblem(fct, u0, (t_start,t_end), (alpha, beta), A, epsilon, B)
+
+f1 = LinearHOODEOperator( epsilon, A)
+f2 = (u,p,t)-> B*u + t*p[1] +p[2]
+
+# prob = HOODEProblem(fct, u0, (t_start,t_end), (alpha, beta), A, epsilon, B)
+prob = SplitODEProblem(f1, f2, u0, (t_start,t_end), (alpha, beta), B)
 sol = solve(prob, nb_t=10000, order=8)
 sol.absprec
 ```
@@ -266,7 +257,8 @@ t_end = big"1.0"
 
 fct = (u,p,t)-> B*u + t*p[1] +p[2]
 
-prob = HOODEProblem(fct,u0, (big"0.0",t_end), (alpha, beta), A, epsilon, B)
+# prob = HOODEProblem(fct,u0, (big"0.0",t_end), (alpha, beta), A, epsilon, B)
+prob = SPlitODEProblem(fct,u0, (big"0.0",t_end), (alpha, beta), A, epsilon, B)
 ```
 
 Note that the floats are coded on 512 bits.\
@@ -291,7 +283,8 @@ t_end = big"1.0"
 epsilon=big"0.0017"
 fct = u -> [0, u[4], -2u[1]*u[2], -u[2]-u[1]^2+u[2]^2]
 A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
-prob = HOODEProblem(fct, u0, (big"0.0",t_end), missing, A, epsilon)
+# prob = HOODEProblem(fct, u0, (big"0.0",t_end), missing, A, epsilon)
+prob = SplitODEProblem(fct, u0, (big"0.0",t_end), missing, A, epsilon)
 ```
 The float are coded on 512 bits.
 
