@@ -54,19 +54,21 @@ A = [ 0 0 1 0 ;
      -1 0 0 0 ; 
       0 0 0 0 ]
 
-fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
+f1 = LinearHOODEOperator( epsilon, A)
+
+f2 = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 
 epsilon= 0.0001
 
-t_start=0.0
-t_end=3.0
+tspan = (0.0, 3.0)
 
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEProblem(fct, u0, (t_start,t_end), missing, A, epsilon);
+
+prob = SplitODEProblem(f1, f2, u0, tspan);
 nothing # hide
 ```
 
-From the ```prob``` problem, we can now switch to its digital resolution. 
+From the ```prob``` problem, we can now switch to its numerical resolution. 
 
 To do this, the numerical parameters are defined 
 - the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_{start}}{N_t}$ 
