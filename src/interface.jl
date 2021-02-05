@@ -66,7 +66,7 @@ struct HOODEInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
     parphi::PreparePhi
     order::Any
 end
-(interp::HOODEInterpolation)(t,idxs,deriv,p,continuity)=interp(t)
+(interp::HOODEInterpolation)(t, idxs, deriv, p, continuity) = interp(t)
 function (interp::HOODEInterpolation)(t)
     return _getresult(
         interp.t,

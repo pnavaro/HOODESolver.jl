@@ -79,7 +79,7 @@ To do this, the numerical parameters are defined
 The default settings are : $N_t=100$, $r=4$, $N_\tau=32$ and $q=r+2=6$
 To solve the problem with the default parameters, just call the `solve` command with the problem already defined as parameter
 ```jl     
-sol = solve(prob) 
+sol = solve(prob, alg=HOODEAB()) 
 ```
 Which is equivalent to this call
 ```jl     

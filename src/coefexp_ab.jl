@@ -105,11 +105,9 @@ struct CoefExpAB
                             # in this case the exponentiel value is always 1
                             Polynomials.integrate(pol2)
                         else
-                            Polynomials.integrate(PolyExp(
-                                pol2,
-                                im * ell / epsilon,
-                                -im * ell * dt / epsilon,
-                            ))
+                            Polynomials.integrate(
+                                PolyExp(pol2, im * ell / epsilon, -im * ell * dt / epsilon),
+                            )
                         end
                         res[ind] = pol_int(dt) - pol_int(0)
                     end
