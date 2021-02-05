@@ -59,7 +59,6 @@ jobs:
             using Documenter: doctest
             using HOODESolver
             doctest(HOODESolver)'
-      - run: julia --project=docs docs/make.jl
+      - run: julia --color=no --project=docs docs/make.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}

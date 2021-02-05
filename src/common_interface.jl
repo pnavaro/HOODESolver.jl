@@ -12,27 +12,33 @@ end
 DiffEqBase.isinplace(linop::LinearHOODEOperator, n::Int)=false
 
 function LinearHOODEOperator(mat::Matrix{T}) where{T}
-    tab = zeros(Int,size(mat,1))
-    sz = 0
-    testlgn(x)=count(y->y!=0,x)!=0
-    for i=1:size(mat,1)
-        if testlgn(mat[i,:]) && testlgn(mat[:,i])
-            sz += 1
-            tab[sz] = i
-        end
-    end
-    newmat = zeros(T,sz,sz)
-    for i=1:sz, j=1:sz
-        newmat[i,j] = mat[tab[i],tab[j]]
-    end
-    P=eigvecs(newmat)
-    Ad = inv(P)*newmat*P
+    # tab = zeros(Int,size(mat,1))
+    # sz = 0
+    # testlgn(x)=count(y->y!=0,x)!=0
+    # for i=1:size(mat,1)
+    #     if testlgn(mat[i,:]) && testlgn(mat[:,i])
+    #         sz += 1
+    #         tab[sz] = i
+    #     end
+    # end
+    # newmat = zeros(T,sz,sz)
+    # for i=1:sz, j=1:sz
+    #     newmat[i,j] = mat[tab[i],tab[j]]
+    # end
+    P=eigvecs(mat .+ 0im) # ca bug avec les reels
+    Ad = inv(P)*mat*P
 
 #    epsilon = 1/norm(Ad, Inf) ca bug avec Double64
     epsilon = 1/maximum(abs.(Ad))
     A = epsilon * mat
-    LinearHOODEOperator{T}(epsilon, A)
+    Aint = round.(A)
+    @assert norm(A-Aint,Inf) <= eps(T) "The A matrix must be with integers A=$A"
+    epsilon = norm(Aint,Inf)/norm(mat,Inf)
+    LinearHOODEOperator{T}(epsilon, Aint)
 end
+*(v::T, L::LinearHOODEOperator{T}) where {T<:Number}=LinearHOODEOperator(L.epsilon/v, L.A)
+Base.@propagate_inbounds Base.convert(::Type{AbstractMatrix}, L::LinearHOODEOperator) = (1/L.epsilon)*L.A
+isconstant(_::LinearHOODEOperator)=true
 function LinearHOODEOperator(linop::DiffEqArrayOperator)
     linop.update_func != DiffEqBase.DEFAULT_UPDATE_FUNC && error("no update operator function for HOODEAB Alg")
     LinearHOODEOperator(linop.A)

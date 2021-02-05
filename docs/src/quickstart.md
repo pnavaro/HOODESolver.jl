@@ -54,18 +54,21 @@ A = [ 0 0 1 0 ;
      -1 0 0 0 ; 
       0 0 0 0 ]
 
-fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
+f1 = LinearHOODEOperator( epsilon, A)
+
+f2 = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 
 epsilon= 0.0001
 
-t_start=0.0
-t_end=3.0
+tspan = (0.0, 3.0)
 
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEProblem(fct, u0, (t_start,t_end), missing, A, epsilon); 
+
+prob = SplitODEProblem(f1, f2, u0, tspan);
+nothing # hide
 ```
 
-From the ```prob``` problem, we can now switch to its digital resolution. 
+From the ```prob``` problem, we can now switch to its numerical resolution. 
 
 To do this, the numerical parameters are defined 
 - the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_{start}}{N_t}$ 
@@ -135,11 +138,14 @@ plot(sol)
 
 The following non-homogeneous linear system is considered to be satisfied by $u(t)=(u_1, u_2, u_3, u_4)(t)$
 
-$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(t, u), \;\;\; u(0)=u_in\in\mathbb{R}^4,$$
+```math
+\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(t, u), \;\;\; u(0)=u_in\in\mathbb{R}^4,
+```
 
-where $A$ and $f$ are selected as follows
+where ``A`` and ``f`` are selected as follows
 
-$$A=
+```math
+A=
 \left(
 \begin{array}{cccc}
 0 & 0 & 1 & 0  \\
@@ -149,12 +155,12 @@ $$A=
 \end{array}
 \right) \;\;\; \text{ and } \;\;\;
 f(t, u) = Bu +\alpha t +\beta \;\; \text{ with  } \;\;
-B\in {\mathcal M}_{4, 4}(\mathbb{R}), \alpha, \beta \in \mathbb{R}^4,$$
+B\in {\mathcal M}_{4, 4}(\mathbb{R}), \alpha, \beta \in \mathbb{R}^4,
+```
 
- $B, \alpha, \beta$ are chosen randomly.
+``B, \alpha, \beta`` are chosen randomly.
 
-We wish to obtain a high precision, so we will use BigFloat real numbers, they are encoded on 256 bits by default which gives a precision bound of about $2^{-256}. \approx 10^{-77}$.\
-At the end, we compare a calculated result with an exact result.
+We wish to obtain a high precision, so we will use BigFloat real numbers, they are encoded on 256 bits by default which gives a precision bound of about ``2^{-256}. \approx 10^{-77}``.  At the end, we compare a calculated result with an exact result.
 
 ```@setup 2
 using HOODESolver
@@ -193,16 +199,20 @@ plot(sol.t,sol.u_tr)
 
 This involves calculating the exact solution $u(t)$ of the following equation at the instant $t$
 
-$$\frac{d u }{dt} = \frac{1}{\varepsilon} Au + Bu +\alpha t +\beta, \;\;\; u(t_{start})=u_{in}\in\mathbb{R}^4\text{, } A \text{ and }B \text{ are defined above }$$
+```math
+\frac{d u }{dt} = \frac{1}{\varepsilon} Au + Bu +\alpha t +\beta, \;\;\; u(t_{start})=u_{in}\in\mathbb{R}^4\text{, } A \text{ and }B \text{ are defined above }
+```
 
 Let
 
-$$\begin{aligned}
+```math
+\begin{aligned}
     M &= \frac{1}{\varepsilon} A + B\\
     C &= e^{-t_{start} M}u_{in} +M^{-1} e^{-t_{start} M} (t_{start}\alpha+\beta)+ M^{-2} e^{-t_{start} M} \alpha\\
     C_t &= -M^{-1} e^{-t M} (t\alpha+\beta)-M^{-2} e^{-t M} \alpha\\
     u(t) &= e^{t M} ( C + C_t)
-\end{aligned}$$
+\end{aligned}
+```
 
 Which, translated into Julia language, gives the code of the function `getexactsol` : 
 
@@ -225,7 +235,6 @@ function getexactsol(par::PreparePhi, u0, t)
     C_t = -mm1*e_inv*(t*a+b)-mm2*e_inv*a
     return e*C+e*C_t
 end
-
 ```
 
 ## Accuracy of the result according to the time interval
