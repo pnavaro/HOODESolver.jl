@@ -21,7 +21,11 @@ end
 """
     HOODEProblem(f, u0, tspan, p, A, epsilon, B)
 
-The HOODE is ``du/dt = (1/epsilon)*A*u + f(u,p,t)``.
+The HOODE problem is :
+
+```math
+\\frac{du}{dt} = ( \\frac{1}{\\epsilon} A + B)  u + f(u,p,t)
+```
 
 - The initial condition is ``u(tspan[1]) = u0``.
 - The solution ``u(t)`` will be computed for ``tspan[1] ≤ t ≤ tspan[2]``
