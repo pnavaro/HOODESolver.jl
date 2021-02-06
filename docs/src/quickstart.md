@@ -105,7 +105,6 @@ As an output, a structure of type `ODESolution` from [DifferentialEquations.jl](
 This structure can be seen as a function of t, it can also be seen as an array. Example:
 
 ```@repl 1     
-sol = solve(prob);
 sol.prob
 sol.alg
 t=2.541451547
