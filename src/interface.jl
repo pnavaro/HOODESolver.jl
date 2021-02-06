@@ -152,7 +152,6 @@ struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
 
 
 
-# function DiffEqBase.solve(prob::HOODEProblem{T};
 """
     function DiffEqBase.solve(prob::HOODEProblem{T}; 
     nb_tau::Integer=32, 
@@ -166,15 +165,17 @@ struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
     p_coef::Union{CoefExpAB,Missing}=missing
     ) where T<:AbstractFloat
 
-specific interface solver for Highly oscillatory problems, that an ODE of this form
-``\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)``
+specific interface solver for Highly oscillatory problems, that an ODE of this form:
+```math
+\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)
+```
 where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
-``A`` must be a periodic matrix i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
+``A`` must be a **periodic matrix** i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
 
-# Argument :
+## Argument :
 - `prob::HOODEProblem{T}` : The problem to solve
 
-# Keywords :
+## Keywords :
 - `nb_tau::Integer=32` : number of values of FFT transform, must be power of twoscales_pure_ab
 - `order::Integer=4` : order of Adams-Bashforth method, and also of the interpolatation
 - `order_prep::Integer=order+2` : order of the preparation
@@ -184,7 +185,7 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 - `par_u0::Union{PrepareU0,Missing}=missing` : preparation data for u0
 - `p_coef::Union{CoefExpAB,Missing}=missing` : coefficients for Adams-Bashforth method
 
-# Examples :
+## Examples :
 """
 function DiffEqBase.solve(prob::HOODEProblem{T}; kwargs...) where {T<:AbstractFloat}
     return DiffEqBase.solve(prob, HOODETwoScalesAB(); kwargs...)
