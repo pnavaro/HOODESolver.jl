@@ -49,6 +49,8 @@ Thus, first of all, we must define the arguments necessary to construct the prob
 ```@example 1
 using HOODESolver
 
+epsilon= 0.0001
+
 A = [ 0 0 1 0 ; 
       0 0 0 0 ; 
      -1 0 0 0 ; 
@@ -58,8 +60,6 @@ f1 = LinearHOODEOperator( epsilon, A)
 
 f2 = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 
-epsilon= 0.0001
-
 tspan = (0.0, 3.0)
 
 u0 = [0.55, 0.12, 0.03, 0.89]
@@ -68,7 +68,7 @@ prob = SplitODEProblem(f1, f2, u0, tspan);
 nothing # hide
 ```
 
-From the ```prob``` problem, we can now switch to its numerical resolution. 
+From the `prob` problem, we can now switch to its numerical resolution. 
 
 To do this, the numerical parameters are defined 
 - the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_{start}}{N_t}$ 
@@ -78,28 +78,16 @@ To do this, the numerical parameters are defined
 
 The default settings are : $N_t=100$, $r=4$, $N_\tau=32$ and $q=r+2=6$
 To solve the problem with the default parameters, just call the `solve` command with the problem already defined as parameter
-```jl     
-sol = solve(prob, alg=HOODEAB()) 
+
+```@example 1     
+sol = solve(prob, HOODEAB(), dt=0.1) 
 ```
-Which is equivalent to this call
-```jl     
-sol = solve(
-    prob;
-    nb_tau=32, 
-    order=4, 
-    order_prep=6, # by default : order + 2
-    dense=true, 
-    nb_t=100, 
-    getprecision=true, # by default : dense 
-    verbose=100,    
-    par_u0=missing,
-    p_coef=missing,
-) 
-```
+Which is equivalent to `HOODEAB( order=4, nb_tau=32 )`
+
 
 ### Exhaustive definition of the parameters
 
-- `prob` : problem defined by `HOODEProblem` 
+- `prob` : problem defined by `SplitODEProblem` 
 - `nb_tau=32` : $N_{\tau}$
 - `order=4` : order $r$ of the method
 - `order_prep=order+2` : order of preparation of initial data
@@ -130,7 +118,6 @@ sol.relprec
 To view the result, you can also use Plot, for example
 
 ```@example 1     
-using Plots
 plot(sol) 
 ```
 
@@ -160,7 +147,11 @@ B\in {\mathcal M}_{4, 4}(\mathbb{R}), \alpha, \beta \in \mathbb{R}^4,
 
 ``B, \alpha, \beta`` are chosen randomly.
 
-We wish to obtain a high precision, so we will use BigFloat real numbers, they are encoded on 256 bits by default which gives a precision bound of about ``2^{-256}. \approx 10^{-77}``.  At the end, we compare a calculated result with an exact result.
+We wish to obtain a high precision, so we will use BigFloat real
+numbers, they are encoded on 256 bits by default which gives a
+precision bound of about ``2^{-256}. \approx 10^{-77}``.  At the
+end, we compare a calculated result with an exact result. For this, you must
+use the dedicated [`HOODEProblem`](@ref) type:
 
 ```@setup 2
 using HOODESolver
@@ -176,12 +167,15 @@ A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
 B = 2rand(rng, BigFloat, 4, 4) - ones(BigFloat, 4, 4)
 alpha = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
 beta = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
-fct = (u,p,t)-> B*u + t*p[1] +p[2]
 u0 = [big"0.5", big"-0.123", big"0.8", big"0.7"]
 t_start=big"0.0"
 t_end=big"1.0"
 epsilon=big"0.017"
+
+fct = (u,p,t)-> B*u + t*p[1] +p[2]
+
 prob = HOODEProblem(fct, u0, (t_start,t_end), (alpha, beta), A, epsilon, B)
+
 sol = solve(prob, nb_t=10000, order=8)
 sol.absprec
 ```

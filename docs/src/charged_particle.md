@@ -68,6 +68,8 @@ using Plots
 ```
 
 ```@example 12
+epsilon = 0.05
+
 A = [0 0 0  1 0 0; 
      0 0 0  0 1 0;
      0 0 0  0 0 0; 
@@ -75,19 +77,19 @@ A = [0 0 0  1 0 0;
      0 0 0 -1 0 0; 
      0 0 0  0 0 0]
 
-function fparticle(u, p, t)
+f1 = LinearHOODEOperator( epsilon, A)
+
+function f2(u, p, t)
     s1, c1 = sincos(u[1]/2)
     s2, c2 = sincos(u[2])
     s3, c3 = sincos(u[3])
     return [0, 0, u[6], c1*s2*s3/2, s1*c2*s3, s1*s2*c3]
 end
 
-epsilon = 0.05
-t_min = 0.0
-t_max = 1.0
+tspan = (0.0, 1.0)
 u0 = [1.0, 1.5, -0.5, 0, -1.2, 0.8]
-prob = HOODEProblem(fparticle, u0, (t_min,t_max), missing, A, epsilon)
-sol = solve(prob)
+prob = SplitODEProblem(f1, f2, u0, tspan)
+sol = solve(prob, HOODEAB() )
 plot(sol)
 ```
 

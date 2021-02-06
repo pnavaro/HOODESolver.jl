@@ -15,11 +15,11 @@ We then introduce the function $U(t, \tau), \tau\in [0, 2 \pi]$ such that $U(t, 
 
 $$\frac{\partial U}{\partial t} + \frac{1}{\varepsilon} \frac{\partial U}{\partial \tau} =  F( \tau, U), \;\;\; U(t=t_{start}, \tau)=\Phi(\tau), \;\; \varepsilon\in ]0, 1], \;\;\;\;\;\;\;\;\;\; (2)$$
 
-where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is smooth (see [chartier2015](@cite) and [chartier2020](@cite).
+where $\Phi$ is a function checking $\Phi(\tau=0)=u_{0}$ chosen so that the $U$ solution of (2) is smooth (see [Chartier2015](@cite) and [Chartier2020](@cite).
 
 ## Discretization  
 
-The numerical method is based on a discretization of equation (2). In the direction $\tau$, a spectral method is used, while for the time $t$, an exponential Adams-Bashforth method allows to build a high order method (see [chartier2020](@cite)). The initialization is based on a "butterfly" technique (going back and forth around the initial time).
+The numerical method is based on a discretization of equation (2). In the direction $\tau$, a spectral method is used, while for the time $t$, an exponential Adams-Bashforth method allows to build a high order method (see [Chartier2020](@cite)). The initialization is based on a "butterfly" technique (going back and forth around the initial time).
 
 ### Initialization 
 
