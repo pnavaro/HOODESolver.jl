@@ -1,8 +1,7 @@
 using DiffEqBase
 
-
-#using Reexport
-# @reexport using DiffEqBase
+using Reexport
+@reexport using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
@@ -19,20 +18,26 @@ function (fct::HOODEFunction{true,4})(u, p, t)
 end
 
 
+"""
+    HOODEProblem(f, u0, tspan, p, A, epsilon, B)
+
+The HOODE is ``du/dt = (1/epsilon)*A*u + f(u,p,t)``.
+
+- The initial condition is ``u(tspan[1]) = u0``.
+- The solution ``u(t)`` will be computed for ``tspan[1] ≤ t ≤ tspan[2]``
+- Constant parameters to be supplied as the second argument of ``f``.
+- Periodic Matrix of the problem.
+- epsilon of the problem.
+- Matrix of linear problem to get the exact solution
+
+"""
 struct HOODEProblem{T} <: DiffEqBase.DEProblem
-    """The HOODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
     f::HOODEFunction
-    """The initial condition is `u(tspan[1]) = u0`."""
     u0::Vector{T}
-    """The solution `u(t)` will be computed for `tspan[1] ≤ t ≤ tspan[2]`."""
     tspan::Tuple{T,T}
-    """Constant parameters to be supplied as the second argument of `f`."""
     p::Any
-    """Periodic Matrix of the problem"""
     A::Matrix
-    """epsilon of the problem"""
     epsilon::T
-    """Matrix of linear problem to get the exact solution"""
     B::Union{Matrix,Missing}
     function HOODEProblem(
         f,
