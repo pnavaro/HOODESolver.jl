@@ -72,10 +72,9 @@ struct PreparePhi
         #        "function fct is not correct"
         N = typeof(matrix_A[1, 1])
         size_vect = size(matrix_A, 1) + 1
-        sparse_Ap = sparse(vcat(
-            hcat(matrix_A, zeros(N, size_vect - 1)),
-            transpose(zeros(N, size_vect)),
-        ))
+        sparse_Ap = sparse(
+            vcat(hcat(matrix_A, zeros(N, size_vect - 1)), transpose(zeros(N, size_vect))),
+        )
         tau_Ap = Vector{SparseMatrixCSC{T,Int64}}(undef, n_tau)
         tau_Ap_inv = Vector{SparseMatrixCSC{T,Int64}}(undef, n_tau)
         prec = precision(T)
@@ -101,7 +100,7 @@ struct PreparePhi
                     end,
                 )
         end
-        @assert tau_Ap[div(n_tau, 2)+1]^2 == I "The matrix must be periodic"
+        @assert tau_Ap[div(n_tau, 2)+1]^2 == I "exp(t A) must be 2π-periodic, A=$matrix_A"
         tau_list = [collect(0:(div(n_tau, 2)-1)); collect(-div(n_tau, 2):-1)]
         tau_int = collect(transpose(vcat([0], -im ./ tau_list[2:end])))
         par_fft_big = PrepareFftBig(n_tau, big(epsilon))
@@ -162,12 +161,11 @@ filtred_f(u, mat_inv, mat, par) = mat_inv * homogeneousfct(par, mat * u)
 function filtredfct(par::PreparePhi, u_mat::Array{T,2}) where {T<:Number}
     #   println("size=$(size(u_mat)) paramfct=$(par.paramfct)")
     return reshape(
-        collect(Iterators.flatten(filtred_f.(
-            eachcol(u_mat),
-            par.tau_Ap_inv,
-            par.tau_Ap,
-            (par,),
-        ))),
+        collect(
+            Iterators.flatten(
+                filtred_f.(eachcol(u_mat), par.tau_Ap_inv, par.tau_Ap, (par,)),
+            ),
+        ),
         par.size_vect,
         par.n_tau,
     )

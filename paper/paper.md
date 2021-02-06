@@ -140,18 +140,22 @@ The following is an example with the system of Hénon-Heiles[^3]:
 ```julia
 using HOODESolver, Plots
 
+epsilon = 0.0001
+
 A = [ 0 0 1 0 ; 
       0 0 0 0 ; 
      -1 0 0 0 ; 
       0 0 0 0 ]
 
-fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
-epsilon = 0.0001
+f1 = LinearHOODEOperator( epsilon, A)
+
+f2 = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
+
 tspan = (0.0, 3.0)
 u0 = [0.55, 0.12, 0.03, 0.89]
-p = nothing
-prob = HOODEProblem(fct, u0, tspan, p, A, epsilon); 
-sol = solve(prob, nb_t = 100, order = 4) 
+prob = SplitODEProblem(f1, f2, u0, tspan); 
+
+sol = solve(prob, HOODEAB()) 
 plot(sol) 
 ```
 ![Hénon-Heiles solution.](paper.png){ width=50% }
@@ -172,14 +176,12 @@ which combines WKB techniques and standard integration methods to
 ensure a user-specified tolerance.
 
 `HOODESolver.jl` has been thought to be in close connection to
-`DifferentialEquation.jl`.  We plan to offer a common interface
-with it by extending the `SplitODE` problem type[^4]. Future users
-could use our package more easily which will facilitate the cross
+`DifferentialEquation.jl`.  We offer a common interface
+with it by extending the `SplitODE` problem type[^4]. Users
+can use our package more easily and it facilitates the cross
 comparisons with other methods.
 
 [^4]: https://diffeq.sciml.ai/stable/types/split_ode_types/
-
-
 
 # Aknowledgements
 
