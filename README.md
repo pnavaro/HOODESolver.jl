@@ -25,26 +25,27 @@ The following is an example with the system of Hénon-Heiles. Please see the [do
 using HOODESolver
 using Plots
 
+epsilon= 0.0001
+
 A = [ 0 0 1 0 ; 
       0 0 0 0 ; 
      -1 0 0 0 ; 
       0 0 0 0 ]
 
-fct = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
+f1 = LinearHOODEOperator( epsilon, A)
 
-epsilon= 0.0001
+f2 = (u,p,t) ->  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ] 
 
-t_min=0.0
-t_max=3.0
+tspan = (0.0, 3.0)
 
 u0 = [0.55, 0.12, 0.03, 0.89]
-prob = HOODEProblem(fct, u0, (t_min,t_max), missing, A, epsilon); 
+prob = SplitODEProblem(f1, f2, u0, tspan)
 ```
 
 solve the defined problem
 
 ```julia
-sol = solve(prob) 
+sol = solve(prob, HOODEAB()) 
 plot(sol) 
 ```
 ![](docs/src/img/example.png)
