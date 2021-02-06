@@ -10,7 +10,7 @@ with
 -  $A\in {\mathcal{M}}_{n,n}(\mathbb{R})$ is such that $\tau \mapsto \exp(\tau A)$ is $2 \pi$-periodic,  
 -  $f : (t, u) \in  \mathbb{R}\times \mathbb{R}^n \mapsto \mathbb{R}^n$.
 
-The purpose here is to write an explanatory documentation of the *Julia* package containing the two-scale method (see [chartier2020](@cite), [chartier2015](@cite) and [crouseilles2013](@cite). This package is inspired by the Differential Equations package [SciML](https://diffeq.sciml.ai/dev/index.html).
+The purpose here is to write an explanatory documentation of the *Julia* package containing the two-scale method (see [Chartier2020](@cite), [Chartier2015](@cite) and [Crouseilles2013](@cite). This package is inspired by the Differential Equations package [SciML](https://diffeq.sciml.ai/dev/index.html).
 
 
 ## References
