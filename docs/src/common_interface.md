@@ -41,8 +41,8 @@ so we define a new type called `LinearHOODEOperator`:
 ```@example 4
 using HOODESolver
 
-linop = LinearHOODEOperator(epsilon, A)
-prob2 = SplitODEProblem(linop, f2, u0, tspan)
+f1 = LinearHOODEOperator(epsilon, A)
+prob2 = SplitODEProblem(f1, f2, u0, tspan)
 sol2 = solve(prob2, HOODEAB(), dt=0.01)
 
 plot(sol1, vars=[3])
