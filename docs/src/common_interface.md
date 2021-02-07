@@ -45,7 +45,7 @@ f1 = LinearHOODEOperator(epsilon, A)
 prob2 = SplitODEProblem(f1, f2, u0, tspan)
 sol2 = solve(prob2, HOODEAB(), dt=0.01)
 
-plot(sol1, vars=[3])
-plot!(sol2, vars=[3])
+plot(sol1, vars=[3], label="EDTRK4")
+plot!(sol2, vars=[3], label="HOODEAB")
 plot!(sol2.t, getindex.(sol2.u, 3), m=:o)
 ```
