@@ -1,8 +1,7 @@
 using DiffEqBase
 
-
-#using Reexport
-# @reexport using DiffEqBase
+using Reexport
+@reexport using DiffEqBase
 
 include("twoscales_pure_ab.jl")
 
@@ -19,20 +18,30 @@ function (fct::HOODEFunction{true,4})(u, p, t)
 end
 
 
+"""
+    HOODEProblem(f, u0, tspan, p, A, epsilon, B)
+
+The HOODE problem is :
+
+```math
+\\frac{du}{dt} = ( \\frac{1}{\\epsilon} A + B)  u + f(u,p,t)
+```
+
+- The initial condition is ``u(tspan[1]) = u0``.
+- The solution ``u(t)`` will be computed for ``tspan[1] ≤ t ≤ tspan[2]``
+- Constant parameters to be supplied as the second argument of ``f``.
+- Periodic Matrix of the problem.
+- epsilon of the problem.
+- Matrix of linear problem to get the exact solution
+
+"""
 struct HOODEProblem{T} <: DiffEqBase.DEProblem
-    """The HOODE is `du/dt = (1/epsilon)*A*u + f(u,p,t)`."""
     f::HOODEFunction
-    """The initial condition is `u(tspan[1]) = u0`."""
     u0::Vector{T}
-    """The solution `u(t)` will be computed for `tspan[1] ≤ t ≤ tspan[2]`."""
     tspan::Tuple{T,T}
-    """Constant parameters to be supplied as the second argument of `f`."""
     p::Any
-    """Periodic Matrix of the problem"""
     A::Matrix
-    """epsilon of the problem"""
     epsilon::T
-    """Matrix of linear problem to get the exact solution"""
     B::Union{Matrix,Missing}
     function HOODEProblem(
         f,
@@ -66,7 +75,7 @@ struct HOODEInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
     parphi::PreparePhi
     order::Any
 end
-(interp::HOODEInterpolation)(t,idxs,deriv,p,continuity)=interp(t)
+(interp::HOODEInterpolation)(t, idxs, deriv, p, continuity) = interp(t)
 function (interp::HOODEInterpolation)(t)
     return _getresult(
         interp.t,
@@ -143,7 +152,6 @@ struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
 
 
 
-# function DiffEqBase.solve(prob::HOODEProblem{T};
 """
     function DiffEqBase.solve(prob::HOODEProblem{T}; 
     nb_tau::Integer=32, 
@@ -157,15 +165,17 @@ struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
     p_coef::Union{CoefExpAB,Missing}=missing
     ) where T<:AbstractFloat
 
-specific interface solver for Highly oscillatory problems, that an ODE of this form
-``\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)``
+specific interface solver for Highly oscillatory problems, that an ODE of this form:
+```math
+\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)
+```
 where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
-``A`` must be a periodic matrix i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
+``A`` must be a **periodic matrix** i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
 
-# Argument :
+## Argument :
 - `prob::HOODEProblem{T}` : The problem to solve
 
-# Keywords :
+## Keywords :
 - `nb_tau::Integer=32` : number of values of FFT transform, must be power of twoscales_pure_ab
 - `order::Integer=4` : order of Adams-Bashforth method, and also of the interpolatation
 - `order_prep::Integer=order+2` : order of the preparation
@@ -175,7 +185,7 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 - `par_u0::Union{PrepareU0,Missing}=missing` : preparation data for u0
 - `p_coef::Union{CoefExpAB,Missing}=missing` : coefficients for Adams-Bashforth method
 
-# Examples :
+## Examples :
 """
 function DiffEqBase.solve(prob::HOODEProblem{T}; kwargs...) where {T<:AbstractFloat}
     return DiffEqBase.solve(prob, HOODETwoScalesAB(); kwargs...)

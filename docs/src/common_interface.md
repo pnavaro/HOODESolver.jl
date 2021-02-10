@@ -34,18 +34,18 @@ prob1 = SplitODEProblem(f1, f2, u0, tspan);
 sol1 = solve(prob1, ETDRK4(), dt=0.001);
 nothing # hide
 ```
-
-With our method we need to give the value of `epsilon` so we can't use the 
-`DiffEqArrayOperator` so we define a new type:
+With our method we need to give the value of `epsilon`. In some case, you can get this value from `f1`.
+You can pass a `DiffEqArrayOperator` as argument to the problem but the method is not always valid 
+so we define a new type called `LinearHOODEOperator`:
 
 ```@example 4
 using HOODESolver
 
-linop = LinearHOODEOperator(epsilon, A)
-prob2 = SplitODEProblem(linop, f2, u0, tspan)
+f1 = LinearHOODEOperator(epsilon, A)
+prob2 = SplitODEProblem(f1, f2, u0, tspan)
 sol2 = solve(prob2, HOODEAB(), dt=0.01)
 
-plot(sol1, vars=[3])
-plot!(sol2, vars=[3])
+plot(sol1, vars=[3], label="EDTRK4")
+plot!(sol2, vars=[3], label="HOODEAB")
 plot!(sol2.t, getindex.(sol2.u, 3), m=:o)
 ```
