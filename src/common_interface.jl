@@ -36,22 +36,27 @@ function LinearHOODEOperator(mat::Matrix{T}) where {T}
     epsilon = norm(Aint, Inf) / norm(mat, Inf)
     LinearHOODEOperator{T}(epsilon, Aint)
 end
+
 *(v::T, L::LinearHOODEOperator{T}) where {T<:Number} =
     LinearHOODEOperator(L.epsilon / v, L.A)
 Base.@propagate_inbounds Base.convert(::Type{AbstractMatrix}, L::LinearHOODEOperator) =
     (1 / L.epsilon) * L.A
 isconstant(_::LinearHOODEOperator) = true
+
 function LinearHOODEOperator(linop::DiffEqArrayOperator)
     linop.update_func != DiffEqBase.DEFAULT_UPDATE_FUNC &&
         error("no update operator function for HOODEAB Alg")
     LinearHOODEOperator(linop.A)
 end
+
 LinearHOODEOperator(linop::LinearHOODEOperator) = linop
+
 function LinearHOODEOperator(
     odefct::ODEFunction{iip,LinOp},
 ) where {iip,LinOp<:DiffEqBase.AbstractDiffEqLinearOperator}
     return LinearHOODEOperator(odefct.f)
 end
+
 isSplitODEProblem(probtype::Any) = false
 isSplitODEProblem(probtype::SplitODEProblem) = true
 
@@ -73,26 +78,30 @@ struct OtherHOODE
     absprec::Union{Nothing,Float64}
     relprec::Union{Nothing,Float64}
 end
+
 """
-    function DiffEqBase.solve(prob::ODEProblem, alg::HOODEAB{order, ntau}; 
+    solve(prob::ODEProblem, alg::HOODEAB{order, ntau}; 
     dt=nothing,
     kwargs...
     ) where {order,ntau}
 
 common interface solver for Highly oscillatory problems, that an ODE of this form
-``\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)``
-where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
-``A`` must be a periodic matrix i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
 
-# Argument :
+```math
+\\frac{\\delta u(t)}{\\delta t} = \\frac{1}{\\varepsilon} A + F(u(t), t)
+```
+
+where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
+``A`` must be a **periodic matrix** i.e. ``e^{t A} = e^{(t+\\pi) A}`` for any ``t \\in \\R``
+
+## Argument :
 - `prob::ODEProblem` : The problem to solve
 - `alg::HOODEAB{order, ntau}` : the Adams-Bashforth HOODE algorithm
 
-# Keywords :
+## Keywords :
 - `dt` : duration of a time interval
 - `kwargs...` : other keywords
 
-# Examples :
 """
 function DiffEqBase.solve(
     prob::ODEProblem,

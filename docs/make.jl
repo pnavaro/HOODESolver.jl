@@ -20,7 +20,7 @@ makedocs(
     modules = [HOODESolver],
     pages = ["Documentation"    => "index.md",
              "Numerical Method" => "numerical_method.md",
-             "SplitODEProblem"  => "common_interface.md",
+             "DifferentialEquations"  => "common_interface.md",
              "Quickstart"       => "quickstart.md",
              "Charged Particle" => "charged_particle.md",
              "Future work"      => "future_work.md",

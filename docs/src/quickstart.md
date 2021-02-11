@@ -71,7 +71,7 @@ nothing # hide
 From the `prob` problem, we can now switch to its numerical resolution. 
 
 To do this, the numerical parameters are defined 
-- the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_{start}}{N_t}$ 
+- the number of time slots $N_t$ which defines the time step $\Delta t = \frac{t_{\text{end}}-t_{start}}{N_t}$ but you can set the value of time step `dt` in the `solve` call.
 - the $r$ order of the method 
 - the number of $N_\tau$ points in the $\tau$ direction... 
 - the order of preparation $q$ of the initial condition 
@@ -80,7 +80,8 @@ The default settings are : $N_t=100$, $r=4$, $N_\tau=32$ and $q=r+2=6$
 To solve the problem with the default parameters, just call the `solve` command with the problem already defined as parameter
 
 ```@example 1     
-sol = solve(prob, HOODEAB(), dt=0.1) 
+sol = solve(prob, HOODEAB(), dt=0.1);
+nothing # hide
 ```
 Which is equivalent to `HOODEAB( order=4, nb_tau=32 )`
 
@@ -100,19 +101,16 @@ Which is equivalent to `HOODEAB( order=4, nb_tau=32 )`
 
 ## Exit arguments
 
-As an output, a structure of type `HOODESolution`.
-This structure can be seen as a function of t, it can also be seen as an array of size $N_t + 1$. This structure also contains the `absprec` and `relprec` fields which are the absolute and relative precisions, respectively, calculated.
-
-### Example
+As an output, a structure of type `ODESolution` from [DifferentialEquations.jl](https://diffeq.sciml.ai/stable/basics/solution/).
+This structure can be seen as a function of t, it can also be seen as an array. Example:
 
 ```@repl 1     
-sol = solve(prob);
+sol.prob
+sol.alg
 t=2.541451547
 sol(t)
 sol[end]
 sol(3.0)
-sol.absprec
-sol.relprec
 ```
 
 To view the result, you can also use Plot, for example
