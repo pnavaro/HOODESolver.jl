@@ -116,14 +116,15 @@ where
 
 - $u \colon t \in [t_{start}, t_{end}] \mapsto  u(t) \in \mathbb{R}^n, \qquad t_{start}, t_{end}\in \mathbb{R}$.
 - $u_{in}\in \mathbb{R}^n$, 
-- $A\in {\cal M}_{n,n}(\mathbb{R})$ such that $\tau \mapsto \exp(\tau A)$ is periodic,  
+- $A\in {\cal M}_{n,n}(\mathbb{R})$ such that $\tau \mapsto \exp(\tau A)$ is $2\pi-periodic$,  
 - $f \colon (t,u) \in \mathbb{R} \times \mathbb{R}^n   \mapsto f(t,u) \in \mathbb{R}^n$.
 
 The numerical solution of \autoref{orig} is computed by simply
 entering the different components of the equation ($A$, $f$,
 $\varepsilon$, $t_{start}, t_{end}$, $u_{in}$) following the required
 format.  The user simply chooses an order ``order`` of the Adams-Bashforth 
-time integrator and the time step ``h`` $= (t_{start}-t_{end})/$``nb_t``.  The result is given as a function
+time integrator and the time step ``h`` $= (t_{start}-t_{end})/$``nb_t``. 
+The result is given as a function
 object which can be evaluated in an arbitrary time $t$, not just
 at the discrete times. In addition to the methodology
 introduced in `HOODESolver.jl`, the package includes:
@@ -132,6 +133,16 @@ introduced in `HOODESolver.jl`, the package includes:
 2. New technique to compute the first iterations required for the initialization of the Adams-Bashforth method 
 (this requires that $f$ has to be ``order`` times differentiable on $[t_{start}-$ ``order`` $h, t_{end}]$,    
 3. Extension of the two-scale method to non-homogeneous problems.  
+
+The package has been thought to be in close connection to
+`DifferentialEquation.jl`.  We offer a common interface
+with it by extending the `SplitODE` problem type[^4]. Users
+can use our package more easily and it facilitates the cross
+comparisons with other methods.
+
+The function `LinearHOODEOperator` has been introduced in order to sove a `SplitODEProblem` using the `HOODEAB` algorithm. It defines the stiff operator $\frac{1}{\varepsilon} A$ with both $\varepsilon$ and $A$ from the studied \autoref{orig}.
+
+# Example
 
 The following is an example with the system of Hénon-Heiles[^3]:
 
@@ -175,11 +186,6 @@ purpose, excepting the very recent (py)oscode package [@joss_ode]
 which combines WKB techniques and standard integration methods to
 ensure a user-specified tolerance.
 
-`HOODESolver.jl` has been thought to be in close connection to
-`DifferentialEquation.jl`.  We offer a common interface
-with it by extending the `SplitODE` problem type[^4]. Users
-can use our package more easily and it facilitates the cross
-comparisons with other methods.
 
 [^4]: https://diffeq.sciml.ai/stable/types/split_ode_types/
 
