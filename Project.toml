@@ -1,7 +1,7 @@
 name = "HOODESolver"
 uuid = "217528c2-21c4-4222-9975-97f0b0cbd7c1"
 authors = ["Yves Mocquard <yves.mocquard@inria.fr>"]
-version = "0.2.1"
+version = "0.2.2"
 
 [deps]
 DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
