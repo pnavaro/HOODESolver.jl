@@ -139,11 +139,9 @@ with it by extending the `SplitODE` problem type[^4]. Users
 can use our package more easily and it facilitates the cross
 comparisons with other methods.
 
-The function `LinearHOODEOperator` has been written following the interface `AbstractdiffEqLinearOperator`[^5] in order to solve a `SplitODEProblem`.
+The function `LinearHOODEOperator` has been written following the interface `AbstractdiffEqLinearOperator`[^5] in order to solve a `SplitODEProblem` using the `HOODEAB` algorithm. It defines the stiff operator $\frac{1}{\varepsilon} A$ with both $\varepsilon$ and $A$ from the studied \autoref{orig}.
 
 [^5]: https://diffeq.sciml.ai/stable/features/diffeq_operator/#DiffEqOperators
-
-The function `LinearHOODEOperator` has been introduced in order to solve a `SplitODEProblem` using the `HOODEAB` algorithm. It defines the stiff operator $\frac{1}{\varepsilon} A$ with both $\varepsilon$ and $A$ from the studied \autoref{orig}.
 
 # Example
 
