@@ -116,7 +116,7 @@ where
 
 - $u \colon t \in [t_{start}, t_{end}] \mapsto  u(t) \in \mathbb{R}^n, \qquad t_{start}, t_{end}\in \mathbb{R}$.
 - $u_{in}\in \mathbb{R}^n$, 
-- $A\in {\cal M}_{n,n}(\mathbb{R})$ such that $\tau \mapsto \exp(\tau A)$ is $2\pi-periodic$,  
+- $A\in {\cal M}_{n,n}(\mathbb{R})$ such that $\tau \mapsto \exp(\tau A)$ is $2\pi$-periodic,  
 - $f \colon (t,u) \in \mathbb{R} \times \mathbb{R}^n   \mapsto f(t,u) \in \mathbb{R}^n$.
 
 The numerical solution of \autoref{orig} is computed by simply
@@ -140,7 +140,7 @@ with it by extending the `SplitODE` problem type[^4]. Users
 can use our package more easily and it facilitates the cross
 comparisons with other methods.
 
-The function `LinearHOODEOperator` has been introduced in order to sove a `SplitODEProblem` using the `HOODEAB` algorithm. It defines the stiff operator $\frac{1}{\varepsilon} A$ with both $\varepsilon$ and $A$ from the studied \autoref{orig}.
+The function `LinearHOODEOperator` has been introduced in order to solve a `SplitODEProblem` using the `HOODEAB` algorithm. It defines the stiff operator $\frac{1}{\varepsilon} A$ with both $\varepsilon$ and $A$ from the studied \autoref{orig}.
 
 # Example
 
