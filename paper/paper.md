@@ -130,8 +130,7 @@ at the discrete times. In addition to the methodology
 introduced in `HOODESolver.jl`, the package includes:
 
 1. Arbitrary precision arithmetic via BigFloats,
-2. New technique to compute the first iterations required for the initialization of the Adams-Bashforth method 
-(this requires that $f$ has to be ``order`` times differentiable on $[t_{start}-$ ``order`` $h, t_{end}]$,    
+2. New technique to compute the first iterations required for the initialization of the Adams-Bashforth method, this requires that $f$ has to be `order` times differentiable on $[t_{start}-$ `order` $h, t_{end}]$,    
 3. Extension of the two-scale method to non-homogeneous problems.  
 
 The package has been thought to be in close connection to
@@ -139,6 +138,10 @@ The package has been thought to be in close connection to
 with it by extending the `SplitODE` problem type[^4]. Users
 can use our package more easily and it facilitates the cross
 comparisons with other methods.
+
+The function `LinearHOODEOperator` has been written following the interface `AbstractdiffEqLinearOperator`[^5] in order to solve a `SplitODEProblem`.
+
+[^5]: https://diffeq.sciml.ai/stable/features/diffeq_operator/#DiffEqOperators
 
 The function `LinearHOODEOperator` has been introduced in order to solve a `SplitODEProblem` using the `HOODEAB` algorithm. It defines the stiff operator $\frac{1}{\varepsilon} A$ with both $\varepsilon$ and $A$ from the studied \autoref{orig}.
 
@@ -185,7 +188,6 @@ However, we are not aware of other software packages with similar
 purpose, excepting the very recent (py)oscode package [@joss_ode]
 which combines WKB techniques and standard integration methods to
 ensure a user-specified tolerance.
-
 
 [^4]: https://diffeq.sciml.ai/stable/types/split_ode_types/
 
