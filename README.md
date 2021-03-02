@@ -7,6 +7,7 @@
 [![Build Status](https://github.com/ymocquar/HOODESolver.jl/workflows/CI/badge.svg)](https://github.com/ymocquar/HOODESolver.jl/actions)
 [![Coverage](https://codecov.io/gh/ymocquar/HOODESolver.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ymocquar/HOODESolver.jl)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![status](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978/status.svg)](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978)
 
 ## Installation
 
