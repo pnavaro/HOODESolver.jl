@@ -53,4 +53,14 @@ plot(sol)
 
 For support with using HOODESolver.jl, please open an [issue](https://github.com/ymocquar/HOODESolver.jl/issues/new/) describing the problem and steps to reproduce it.
 
+## How to Contribute
+
+Here's an outline of the workflow you should use if you want to make contributions to this package.
+
+1. Fork this repository
+2. Make a new branch on your fork, named after whatever changes you'll be making
+3. Apply your code changes to the branch on your fork
+4. When you're done, submit a PR to `HOODESolver.jl` to merge your fork into master branch.
+
+
 This package is licensed under the MIT Expat license. See [LICENSE](LICENSE) for more information.
