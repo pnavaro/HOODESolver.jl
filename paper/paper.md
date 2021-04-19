@@ -32,15 +32,15 @@ bibliography: paper.bib
 
 # Summary
 
-Highly oscillatory ordinary differential equations (ODEs) has a
+Highly oscillatory ordinary differential equations (ODEs) have a
 long history since they are ubiquitous  to describe dynamical
 multi-scale physical phenomena in physics or chemistry. They can
 be obtained by appropriate spatial discretization of a partial
 differential equations or can directly describe the behavior of
 dynamical quantities.  In addition to the standard difficulties
-coming their numerical resolution, highly oscillatory ODEs involve
+relating to their numerical resolution, highly oscillatory ODEs involve
 a stiffness (characterized by a parameter $\varepsilon\in \, ]0, 1]$) 
-creating high oscillations in the solution.  Hence, to capture
+which gives rise to high oscillations in the solution.  Hence, to capture
 these small scales (or high oscillations), conventional methods
 have to consider a time step smaller than $\varepsilon$ leading to
 unacceptable computational cost.
@@ -49,7 +49,7 @@ We present here `HOODESolver.jl`[^1], a general-purpose library
 written in Julia dedicated to the efficient resolution of highly
 oscillatory ODEs.  In the documentation [^2] details are given to
 explain how to simulate highly oscillatory ODEs using a Uniformly
-Accurate (UA) method *ie* the method able to capture the solution
+Accurate (UA) method *ie* the method which is able to capture the solution
 while keeping the time step (and then the computational cost)
 independent of the degree of stiffness $\varepsilon$.
 
@@ -61,9 +61,9 @@ independent of the degree of stiffness $\varepsilon$.
 The Julia package `DifferentialEquations.jl`
 [@rackauckas2017differentialequations] efficiently solves many ODE
 problems using recent and advanced numerical techniques. However
-the available algorithms do not easily solve this type of stiff
-problems, because they do not take into account the highly oscillatory
-character of the solution. Indeed, the solution presents oscillations
+the available algorithms do not easily solve the stiff problems 
+discussed above, because they do not take into account the highly oscillatory
+character of the solutions. Indeed, the solution presents oscillations
 whose period is proportional to $\varepsilon$.  If $\varepsilon$
 is small, conventional methods struggle to solve such multi-scale
 phenomena since they require to use tiny time steps to capture high
@@ -75,11 +75,11 @@ a classical integrator gives accurate result in a reasonable time.
 The true difficulty emerges for intermediate values of $\varepsilon$,
 for which averaging techniques are not accurate enough and, due to
 computational cost, standard methods are inefficient. Thus, a new
-paradigm has been recently introduced, the so-called uniform accuracy:
-uniformly accurate (UA) methods are indeed able to solve the original
+paradigm has been recently introduced, the so-called
+uniformly accurate (UA) methods which are indeed able to solve the original
 highly oscillatory problem with a precision and a computational
 cost that are independent of the value $\varepsilon$.  In particular,
-these methods allows to skip several oscillations in a single time
+these methods allows skipping several oscillations each time
 step, reducing the number of iterations (and then the cost of the
 simulation) drastically.
 
