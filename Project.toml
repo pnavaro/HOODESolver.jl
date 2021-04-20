@@ -20,7 +20,7 @@ DiffEqBase = "^6"
 DoubleFloats = "1"
 FFTW = "^1"
 GenericSchur = "0.4"
-Polynomials = "^1"
+Polynomials = "^1, 2.0"
 Reexport = "^0.2"
 julia = "^1"
 
