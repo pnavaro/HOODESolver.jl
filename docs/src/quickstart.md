@@ -29,10 +29,6 @@ u_4\\
 one chooses for example, $\varepsilon=0.001$
 and $u_{in} = (0.12, 0.12, 0.12, 0.12)$
 
-```@setup 1
-using Plots
-```
-
 ## Input parameters
 
 The input arguments use the same format as the ODE package. 
@@ -47,7 +43,7 @@ Thus, first of all, we must define the arguments necessary to construct the prob
 -  $\varepsilon \in ]0, 1]$
 
 ```@example 1
-using HOODESolver
+using HOODESolver, Plots
 
 epsilon= 0.0001
 
@@ -151,7 +147,7 @@ precision bound of about ``2^{-256}. \approx 10^{-77}``.  At the
 end, we compare a calculated result with an exact result. For this, you must
 use the dedicated [`HOODEProblem`](@ref) type:
 
-```@setup 2
+```@example 2
 using HOODESolver
 using Plots
 using Random
