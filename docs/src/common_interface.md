@@ -4,7 +4,7 @@ The `SplitODEProblem` type from package [DifferentialEquations.jl](https://diffe
 
 Consider the Henon-Heiles system we can use one of the solvers dedicated to split problems, see [Split ODE Solvers](https://diffeq.sciml.ai/stable/solvers/split_ode_solve/#split_ode_solve):
 
-```@setup 4
+```@example 4
 using Plots
 ```
 
