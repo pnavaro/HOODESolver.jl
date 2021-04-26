@@ -40,7 +40,7 @@ struct HOODEProblem{T} <: DiffEqBase.DEProblem
     u0::Vector{T}
     tspan::Tuple{T,T}
     p::Any
-    A::Matrix
+    A::AbstractMatrix
     epsilon::T
     B::Union{Matrix,Missing}
     function HOODEProblem(
@@ -48,7 +48,7 @@ struct HOODEProblem{T} <: DiffEqBase.DEProblem
         u0::Vector{T},
         tspan::Tuple{T,T},
         p,
-        A::Matrix,
+        A::AbstractMatrix,
         epsilon::T,
         B::Union{Matrix,Missing},
     ) where {T}

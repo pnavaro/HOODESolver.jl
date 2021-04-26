@@ -2,8 +2,10 @@ using HOODESolver
 using LinearAlgebra
 using DoubleFloats
 using Random
+using SparseArrays
 using Test
 using DiffEqBase
+
 
 
 function test_operator(T::DataType)
@@ -280,6 +282,8 @@ end
     epsilon = 0.0001
     linop = LinearHOODEOperator(epsilon, A)
     testcommon_interface_fct(linop)
+    linop2 = LinearHOODEOperator(epsilon, sparse(A))
+    testcommon_interface_fct(linop2)
     testcommon_interface_fct(DiffEqArrayOperator((1/epsilon)*A))
 end
 

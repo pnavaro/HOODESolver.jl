@@ -7,11 +7,11 @@ include("interface.jl")
 
 struct LinearHOODEOperator{T} <: DiffEqBase.AbstractDiffEqLinearOperator{T}
     epsilon::T
-    A::Matrix
+    A::AbstractMatrix
 end
 DiffEqBase.isinplace(linop::LinearHOODEOperator, n::Int) = false
 
-function LinearHOODEOperator(mat::Matrix{T}) where {T}
+function LinearHOODEOperator(mat::AbstractMatrix{T}) where {T}
     # tab = zeros(Int,size(mat,1))
     # sz = 0
     # testlgn(x)=count(y->y!=0,x)!=0

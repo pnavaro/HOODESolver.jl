@@ -59,7 +59,7 @@ struct PreparePhi
     function PreparePhi(
         epsilon::AbstractFloat,
         n_tau::Integer,
-        matrix_A::Matrix,
+        matrix_A::AbstractMatrix,
         fct::Function,
         matrix_B::Union{Matrix,Missing};
         mode = 1,
@@ -126,7 +126,7 @@ struct PreparePhi
     function PreparePhi(
         epsilon::AbstractFloat,
         n_tau::Integer,
-        matrix_A::Matrix,
+        matrix_A::AbstractMatrix,
         fct::Function;
         mode = 1,
         paramfct = missing,
