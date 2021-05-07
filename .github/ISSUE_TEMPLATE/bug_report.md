@@ -6,8 +6,6 @@ labels: 'bug'
 assignees: '@pnavaro'
 ---
 
-Describe the bug
-
 A clear and concise description of what the bug is.
 
 Give us your environment
