@@ -35,7 +35,7 @@ bibliography: paper.bib
 Highly oscillatory ordinary differential equations (ODEs) have a
 long history since they are ubiquitous  to describe dynamical
 multi-scale physical phenomena in physics or chemistry. They can
-be obtained by appropriate spatial discretization of a partial
+be obtained by an appropriate spatial discretization of partial
 differential equations or can directly describe the behavior of
 dynamical quantities.  In addition to the standard difficulties
 relating to their numerical resolution, highly oscillatory ODEs involve
@@ -49,7 +49,7 @@ We present here `HOODESolver.jl`[^1], a general-purpose library
 written in Julia dedicated to the efficient resolution of highly
 oscillatory ODEs.  In the documentation [^2] details are given to
 explain how to simulate highly oscillatory ODEs using a Uniformly
-Accurate (UA) method *ie* the method which is able to capture the solution
+Accurate (UA) method *ie* a method which is able to capture the solution
 while keeping the time step (and then the computational cost)
 independent of the degree of stiffness $\varepsilon$.
 
@@ -71,7 +71,7 @@ oscillations and become computationally very costly.  On the one
 side, specific methods inspired by the averaging theory have been
 designed to deal with the regime $\varepsilon \ll 1$. On the other
 side, when $\varepsilon \sim 1$ the problem ceases to be stiff and
-a classical integrator gives accurate result in a reasonable time.
+a classical integrator gives accurate result in reasonable time.
 The true difficulty emerges for intermediate values of $\varepsilon$,
 for which averaging techniques are not accurate enough and, due to
 computational cost, standard methods are inefficient. Thus, a new
@@ -79,7 +79,7 @@ paradigm has been recently introduced, the so-called
 uniformly accurate (UA) methods which are indeed able to solve the original
 highly oscillatory problem with a precision and a computational
 cost that are independent of the value $\varepsilon$.  In particular,
-these methods allows skipping several oscillations each time
+these methods allows skipping several oscillations per time
 step, reducing the number of iterations (and then the cost of the
 simulation) drastically.
 
@@ -100,7 +100,7 @@ a highly oscillatory ODE system, and as such it can be used by the
 scientific community:
 
 - researchers interested in solving highly oscillatory problems arising in their research field (electromagnetic waves, quantum mechanics, plasma physics, molecular dynamics, $\dots$), 
-- it can guide some future possible numerical or theoretical developments, 
+- it can guide some future potential numerical or theoretical developments, 
 - it will serve as a reference to benchmark a new method designed by researchers.  
 
 # Features 
