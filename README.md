@@ -9,6 +9,16 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![status](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978/status.svg)](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978)
 
+This Julia package implements Uniformly Accurate numerical methods (UA) for highly oscillating problems. We propose to solve the following equation:
+
+$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(t, u(t)), \qquad u(t=t_{start})=u_{in}, \qquad \varepsilon\in ]0, 1], \qquad (1)$$
+
+with 
+-  $u : t\in [t_{start}, t_{end}] \mapsto u(t)\in \mathbb{R}^n, \quad t_{start}, t_{end}\in \mathbb{R}$, 
+-  $u_{in}\in \mathbb{R}^n$, 
+-  $A\in {\mathcal{M}}_{n,n}(\mathbb{R})$ is such that $\tau \mapsto \exp(\tau A)$ is $2 \pi$-periodic,  
+-  $f : (t, u) \in  \mathbb{R}\times \mathbb{R}^n \mapsto \mathbb{R}^n$.
+
 ## Installation
 
 HOODESolver.jl is a registered package and can be installed using the Julia package manager. From the Julia REPL, enter Pkg mode (by pressing `]`)
