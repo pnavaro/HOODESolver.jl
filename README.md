@@ -5,7 +5,7 @@
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://pnavaro.github.io/HOODESolver.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://pnavaro.github.io/HOODESolver.jl/dev)
 [![Build Status](https://github.com/pnavaro/HOODESolver.jl/workflows/CI/badge.svg)](https://github.com/pnavaro/HOODESolver.jl/actions)
-[![Coverage](https://codecov.io/gh/pnavaro/HOODESolver.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/pnavaro/HOODESolver.jl)
+[![codecov](https://codecov.io/gh/pnavaro/HOODESolver.jl/branch/master/graph/badge.svg?token=c9fhq9zwc3)](https://codecov.io/gh/pnavaro/HOODESolver.jl)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![status](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978/status.svg)](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978)
 
