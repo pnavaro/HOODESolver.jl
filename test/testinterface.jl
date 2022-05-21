@@ -129,7 +129,7 @@ function testinterface_interpolate_float()
                 res_ap=sol(t)
 #                println("type ex=$(typeof(res_ex)) type ap=$(typeof(res_ap))")
 #                println("t=$t norm=$(norm(res_ex-res_ap, Inf))")
-                @test isapprox(res_ex, res_ap, atol=reftol, rtol=reftol*10)
+                @test res_ex ≈ res_ap  rtol = 100reftol
             end
         end
     end
