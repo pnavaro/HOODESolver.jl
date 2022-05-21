@@ -2,10 +2,10 @@
 
 *A Julia package for solving numerically highly-oscillatory ODE problems*
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://ymocquar.github.io/HOODESolver.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://ymocquar.github.io/HOODESolver.jl/dev)
-[![Build Status](https://github.com/ymocquar/HOODESolver.jl/workflows/CI/badge.svg)](https://github.com/ymocquar/HOODESolver.jl/actions)
-[![Coverage](https://codecov.io/gh/ymocquar/HOODESolver.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/ymocquar/HOODESolver.jl)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://pnavaro.github.io/HOODESolver.jl/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://pnavaro.github.io/HOODESolver.jl/dev)
+[![Build Status](https://github.com/pnavaro/HOODESolver.jl/workflows/CI/badge.svg)](https://github.com/pnavaro/HOODESolver.jl/actions)
+[![Coverage](https://codecov.io/gh/pnavaro/HOODESolver.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/pnavaro/HOODESolver.jl)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![status](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978/status.svg)](https://joss.theoj.org/papers/816cd9b9f4815a78a08ede5e46fd2978)
 
@@ -20,7 +20,7 @@ julia>]
 
 ## Usage
 
-The following is an example with the system of Hénon-Heiles. Please see the [documentation](https://ymocquar.github.io/HOODESolver.jl/stable/) for further usage, tutorials, and api reference.
+The following is an example with the system of Hénon-Heiles. Please see the [documentation](https://pnavaro.github.io/HOODESolver.jl/stable/) for further usage, tutorials, and api reference.
 
 ```julia
 using HOODESolver
@@ -51,7 +51,7 @@ plot(sol)
 ```
 ![](docs/src/img/example.png)
 
-For support with using HOODESolver.jl, please open an [issue](https://github.com/ymocquar/HOODESolver.jl/issues/new/) describing the problem and steps to reproduce it.
+For support with using HOODESolver.jl, please open an [issue](https://github.com/pnavaro/HOODESolver.jl/issues/new/) describing the problem and steps to reproduce it.
 
 ## How to Contribute
 

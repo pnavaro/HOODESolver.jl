@@ -14,7 +14,7 @@ makedocs(
     authors="Yves Mocquard",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://ymocquar.github.io/HOODESolver.jl",
+        canonical="https://pnavaro.github.io/HOODESolver.jl",
         assets=String[],
     ),
     modules = [HOODESolver],
@@ -26,11 +26,11 @@ makedocs(
              "Future work"      => "future_work.md",
              "Types"            => "types.md",
              "Functions"        => "functions.md"],
-    repo = "https://github.com/ymocquar/HOODESolver.jl/blob/{commit}{path}#{line}"
+    repo = "https://github.com/pnavaro/HOODESolver.jl/blob/{commit}{path}#{line}"
 )
 
 deploydocs(;
 branch = "gh-pages",
     devbranch = "master",
-    repo="github.com/ymocquar/HOODESolver.jl",
+    repo="github.com/pnavaro/HOODESolver.jl",
 )
