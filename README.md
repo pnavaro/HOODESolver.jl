@@ -11,13 +11,13 @@
 
 This Julia package implements Uniformly Accurate numerical methods (UA) for highly oscillating problems. We propose to solve the following equation:
 
-$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(t, u(t)), \qquad u(t=t_{start})=u_{in}, \qquad \varepsilon\in ]0, 1], \qquad (1)$$
+$$\frac{d u(t)}{dt} = \frac{1}{\varepsilon} A u(t) + f(t, u(t)), \qquad u(t=t_{start})=u_{in}, \qquad \varepsilon \in ]0, 1],$$
 
-with 
--  $u : t\in [t_{start}, t_{end}] \mapsto u(t)\in \mathbb{R}^n, \quad t_{start}, t_{end}\in \mathbb{R}$, 
--  $u_{in}\in \mathbb{R}^n$, 
--  $A\in {\mathcal{M}}_{n,n}(\mathbb{R})$ is such that $\tau \mapsto \exp(\tau A)$ is $2 \pi$-periodic,  
--  $f : (t, u) \in  \mathbb{R}\times \mathbb{R}^n \mapsto \mathbb{R}^n$.
+with
+
+$u : t \in [t_{start}, t_{end}] \mapsto u(t) \in \mathbb{R}^n, t_{start}, t_{end} \in \mathbb{R}, \qquad u_{in}\in \mathbb{R}^n$, 
+
+$A\in {\mathcal{M}}_{n,n}(\mathbb{R})\quad $ is such that $\quad \tau \mapsto e^{\tau A}$ is $2 \pi$-periodic,  $\quad f : (t, u) \in  \mathbb{R} \times \mathbb{R}^n \mapsto \mathbb{R}^n$.
 
 ## Installation
 
