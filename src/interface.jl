@@ -1,11 +1,11 @@
-using DiffEqBase
+using SciMLBase
 
 using Reexport
-@reexport using DiffEqBase
+@reexport using SciMLBase
 
 include("twoscales_pure_ab.jl")
 
-struct HOODEFunction{iip,N} <: DiffEqBase.AbstractODEFunction{iip}
+struct HOODEFunction{iip,N} <: SciMLBase.AbstractODEFunction{iip}
     f::Any
 end
 (fct::HOODEFunction{false,3})(u, p, t) = fct.f(u, p, t)
@@ -35,7 +35,7 @@ The HOODE problem is :
 - Matrix of linear problem to get the exact solution
 
 """
-struct HOODEProblem{T} <: DiffEqBase.DEProblem
+struct HOODEProblem{T} <: SciMLBase.DEProblem
     f::HOODEFunction
     u0::Vector{T}
     tspan::Tuple{T,T}
@@ -69,7 +69,7 @@ end # end of struct
 function HOODEProblem(f, u0, tspan, p, A, epsilon)
     return HOODEProblem(f, u0, tspan, p, A, epsilon, missing)
 end
-struct HOODEInterpolation{T} <: DiffEqBase.AbstractDiffEqInterpolation
+struct HOODEInterpolation{T} <: SciMLBase.AbstractDiffEqInterpolation
     t::Vector{T}
     u_caret::Vector{Array{Complex{T},2}}
     parphi::PreparePhi
@@ -93,10 +93,10 @@ function (interp::HOODEInterpolation)(t)
 end
 (interp::HOODEInterpolation)(vt::Vector{Float64}) = interp.(vt)
 (interp::HOODEInterpolation)(vt::Vector{BigFloat}) = interp.(vt)
-if typeof(DiffEqBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == DataType
-    abstract type AbstractHOODESolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N,N} end
+if typeof(SciMLBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == DataType
+    abstract type AbstractHOODESolution{T,N} <: SciMLBase.AbstractTimeseriesSolution{T,N,N} end
 else
-    abstract type AbstractHOODESolution{T,N} <: DiffEqBase.AbstractTimeseriesSolution{T,N} end
+    abstract type AbstractHOODESolution{T,N} <: SciMLBase.AbstractTimeseriesSolution{T,N} end
 end
 struct HOODESolution{T} <: AbstractHOODESolution{T,T}
     u::Vector{Vector{T}}
@@ -136,24 +136,10 @@ struct HOODEETDRK2 <: AbstractHOODEAlgorithm end
 struct HOODEETDRK3 <: AbstractHOODEAlgorithm end
 struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
 
-
-# function DiffEqBase.build_solution{T}(prob::HOODEProblem{T}, 
-#     sol::Vector{Vector{T}}, 
-#     t::Vector{T}, 
-#     fftsol::Vector{Array{T,2}}) where T<:AbstractFloat
-#     return HOODESolution(sol, t, fftsol)
-# end
-# function DiffEqBase.build_solution{T}(prob::HOODEProblem{T}, 
-#     sol::Vector{Vector{T}}, 
-#     t::Vector{T}) where T<:AbstractFloat
-#     return HOODESolution(sol, t, undef)
-# end
-
-
-
+import SciMLBase:solve
 
 """
-    function DiffEqBase.solve(prob::HOODEProblem{T}; 
+    function solve(prob::HOODEProblem{T}; 
     nb_tau::Integer=32, 
     order::Integer=4, 
     order_prep::Integer=order+2, 
@@ -187,10 +173,12 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 
 ## Examples :
 """
-function DiffEqBase.solve(prob::HOODEProblem{T}; kwargs...) where {T<:AbstractFloat}
-    return DiffEqBase.solve(prob, HOODETwoScalesAB(); kwargs...)
+function SciMLBase.solve(prob::HOODEProblem{T}; kwargs...) where {T<:AbstractFloat}
+    return SciMLBase.solve(prob, HOODETwoScalesAB(); kwargs...)
 end
-function DiffEqBase.solve(
+
+
+function SciMLBase.solve(
     prob::HOODEProblem{T},
     alg::HOODETwoScalesAB;
     nb_tau::Integer = 32,
@@ -203,7 +191,7 @@ function DiffEqBase.solve(
     par_u0::Union{PrepareU0,Missing} = missing,
     p_coef::Union{CoefExpAB,Missing} = missing,
 ) where {T<:AbstractFloat}
-    retcode = :Success
+    retcode = SciMLBase.ReturnCode.Success
     nb_tau = prevpow(2, nb_tau)
     traceln(
         100,
@@ -211,7 +199,7 @@ function DiffEqBase.solve(
         verbose = verbose,
     )
     if getprecision
-        s1 = DiffEqBase.solve(
+        s1 = SciMLBase.solve(
             prob;
             nb_tau = nb_tau,
             order = order,
@@ -223,7 +211,7 @@ function DiffEqBase.solve(
             par_u0 = par_u0,
         )
         n_nb_t = Integer(floor(1.1373 * nb_t + 1))
-        s2 = DiffEqBase.solve(
+        s2 = SciMLBase.solve(
             prob;
             nb_tau = nb_tau,
             order = order,

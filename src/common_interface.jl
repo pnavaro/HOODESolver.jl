@@ -2,33 +2,16 @@ using LinearAlgebra
 using GenericSchur
 
 include("interface.jl")
-# abstract type AbstractDiffEqOperator{T} end
-# abstract type AbstractDiffEqLinearOperator{T} <: AbstractDiffEqOperator{T} end
 
-struct LinearHOODEOperator{T} <: DiffEqBase.AbstractDiffEqLinearOperator{T}
+struct LinearHOODEOperator{T} <: SciMLBase.AbstractDiffEqLinearOperator{T}
     epsilon::T
     A::AbstractMatrix
 end
-DiffEqBase.isinplace(linop::LinearHOODEOperator, n::Int) = false
+SciMLBase.isinplace(linop::LinearHOODEOperator, n::Int) = false
 
 function LinearHOODEOperator(mat::AbstractMatrix{T}) where {T}
-    # tab = zeros(Int,size(mat,1))
-    # sz = 0
-    # testlgn(x)=count(y->y!=0,x)!=0
-    # for i=1:size(mat,1)
-    #     if testlgn(mat[i,:]) && testlgn(mat[:,i])
-    #         sz += 1
-    #         tab[sz] = i
-    #     end
-    # end
-    # newmat = zeros(T,sz,sz)
-    # for i=1:sz, j=1:sz
-    #     newmat[i,j] = mat[tab[i],tab[j]]
-    # end
     P = eigvecs(mat .+ 0im) # ca bug avec les reels
     Ad = inv(P) * mat * P
-
-    #    epsilon = 1/norm(Ad, Inf) ca bug avec Double64
     epsilon = 1 / maximum(abs.(Ad))
     A = epsilon * mat
     Aint = round.(A)
@@ -41,19 +24,20 @@ end
     LinearHOODEOperator(L.epsilon / v, L.A)
 Base.@propagate_inbounds Base.convert(::Type{AbstractMatrix}, L::LinearHOODEOperator) =
     (1 / L.epsilon) * L.A
+
+import SciMLBase: isconstant
+
 isconstant(_::LinearHOODEOperator) = true
 
 function LinearHOODEOperator(linop::DiffEqArrayOperator)
-    linop.update_func != DiffEqBase.DEFAULT_UPDATE_FUNC &&
+    linop.update_func != SciMLBase.DEFAULT_UPDATE_FUNC &&
         error("no update operator function for HOODEAB Alg")
     LinearHOODEOperator(linop.A)
 end
 
 LinearHOODEOperator(linop::LinearHOODEOperator) = linop
 
-function LinearHOODEOperator(
-    odefct::ODEFunction{iip,LinOp},
-) where {iip,LinOp<:DiffEqBase.AbstractDiffEqLinearOperator}
+function LinearHOODEOperator(odefct::ODEFunction)
     return LinearHOODEOperator(odefct.f)
 end
 
@@ -66,7 +50,7 @@ isSplitODEProblem(probtype::SplitODEProblem) = true
 
 Algorithm for High-Oscillatory equation
 """
-struct HOODEAB{order,ntau} <: DiffEqBase.AbstractODEAlgorithm
+struct HOODEAB{order,ntau} <: SciMLBase.AbstractODEAlgorithm
     HOODEAB(order::Int = 4; ntau = 32) = new{order,ntau}()
 end
 export HOODEAB
@@ -103,7 +87,7 @@ where ``u \\in \\R^n`` and  ``0 < \\varepsilon < 1``
 - `kwargs...` : other keywords
 
 """
-function DiffEqBase.solve(
+function SciMLBase.solve(
     prob::ODEProblem,
     alg::HOODEAB{order,ntau};
     dt = nothing,
@@ -116,7 +100,7 @@ function DiffEqBase.solve(
         error("order must defined as parameter of algorithm : HOODEAB(order)")
     linop = LinearHOODEOperator(prob.f.f1)
     fct = prob.f.f2.f
-    p = typeof(prob.p) == DiffEqBase.NullParameters ? missing : prob.p
+    p = typeof(prob.p) == SciMLBase.NullParameters ? missing : prob.p
     ho_prob = if haskey(prob.kwargs, :B)
         HOODEProblem(fct, prob.u0, prob.tspan, p, linop.A, linop.epsilon, prob.kwargs[:B])
     else
@@ -126,7 +110,7 @@ function DiffEqBase.solve(
         kwargs = (kwargs..., nb_t = Int64(round((prob.tspan[2] - prob.tspan[1]) / dt)))
     end
 
-    sol = DiffEqBase.solve(
+    sol = SciMLBase.solve(
         ho_prob,
         HOODETwoScalesAB();
         nb_tau = ntau,
@@ -134,7 +118,7 @@ function DiffEqBase.solve(
         kwargs...,
     )
     other = OtherHOODE(sol.par_u0, sol.p_coef, sol.absprec, sol.relprec)
-    return DiffEqBase.build_solution(
+    return SciMLBase.build_solution(
         prob, # prob::Union{AbstractODEProblem,AbstractDDEProblem},
         HOODETwoScalesAB(), # alg,
         sol.t, # t,
