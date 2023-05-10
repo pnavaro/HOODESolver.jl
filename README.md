@@ -17,7 +17,7 @@ with
 
 $u : t \in [t_{start}, t_{end}] \mapsto u(t) \in \mathbb{R}^n, t_{start}, t_{end} \in \mathbb{R}, \qquad u_{in}\in \mathbb{R}^n$, 
 
-$A\in {\mathcal{M}}_{n,n}(\mathbb{R})\quad $ is such that $\quad \tau \mapsto e^{\tau A}$ is $2 \pi$-periodic,  $\quad f : (t, u) \in  \mathbb{R} \times \mathbb{R}^n \mapsto \mathbb{R}^n$.
+$A\in {\mathcal{M}}_{n,n}(\mathbb{R})\quad$ is such that $\quad \tau \mapsto e^{\tau A}$ is $2 \pi$-periodic,  $\quad f : (t, u) \in  \mathbb{R} \times \mathbb{R}^n \mapsto \mathbb{R}^n$.
 
 ## Installation
 

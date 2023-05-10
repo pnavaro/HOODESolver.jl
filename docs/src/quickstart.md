@@ -290,6 +290,6 @@ The float are coded on 512 bits.
 Now with the same initial data, order being setted to 6, and $\varepsilon = 0.19, 0.019, \ldots, 1.9\times 10^{-8}$.\
 Here floats are coded on 256 bits.
 
-#### Precision of the result with ordre = 6
+#### Precision of the result with order 6
 
 ![](img/error_epsilon_hh.png)
