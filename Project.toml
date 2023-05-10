@@ -1,7 +1,7 @@
 name = "HOODESolver"
 uuid = "217528c2-21c4-4222-9975-97f0b0cbd7c1"
-authors = ["Yves Mocquard <yves.mocquard@inria.fr>"]
-version = "0.2.4"
+authors = ["Yves Mocquard"]
+version = "0.2.5"
 
 [deps]
 DoubleFloats = "497a8b3b-efae-58df-a0af-a86822472b78"
