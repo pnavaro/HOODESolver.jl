@@ -2,6 +2,7 @@ using SciMLBase
 
 using Reexport
 @reexport using SciMLBase
+import RecursiveArrayTools
 
 include("twoscales_pure_ab.jl")
 
