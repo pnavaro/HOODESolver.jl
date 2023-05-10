@@ -2,6 +2,7 @@ using SciMLBase
 
 using Reexport
 @reexport using SciMLBase
+import RecursiveArrayTools
 
 include("twoscales_pure_ab.jl")
 
@@ -91,8 +92,7 @@ function (interp::HOODEInterpolation)(t)
     #    interp.t[1], interp.t[end], 
     #    interp.order)
 end
-(interp::HOODEInterpolation)(vt::Vector{Float64}) = interp.(vt)
-(interp::HOODEInterpolation)(vt::Vector{BigFloat}) = interp.(vt)
+(interp::HOODEInterpolation)(vt::Vector{<:Number}) = RecursiveArrayTools.DiffEqArray(interp.(vt),vt)
 if typeof(SciMLBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == DataType
     abstract type AbstractHOODESolution{T,N} <: SciMLBase.AbstractTimeseriesSolution{T,N,N} end
 else
