@@ -1,6 +1,7 @@
 using HOODESolver
 using Test
 
+include("testplot.jl")
 include("testcommon_interface.jl")
 include("testfftbig.jl")
 include("testexpmatrices.jl")

@@ -126,6 +126,6 @@ function SciMLBase.solve(
         dense = sol.dense,
         interp = sol.interp,
         retcode = sol.retcode,
-        destats = other,
+        stats = other,
     )
 end
