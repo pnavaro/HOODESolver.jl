@@ -23,7 +23,7 @@ GenericSchur = "0.4, 0.5"
 Polynomials = "^1, 2.0, 3, 4"
 RecursiveArrayTools = "2, 3"
 Reexport = "^0.2, 1.0"
-SciMLBase = "1"
+SciMLBase = "1, 2"
 Statistics = "1"
 julia = "^1"
 
