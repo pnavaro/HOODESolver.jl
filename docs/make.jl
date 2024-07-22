@@ -12,6 +12,7 @@ makedocs(
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
         canonical="https://pnavaro.github.io/HOODESolver.jl",
+        repolink = "https://github.com/pnavaro/HOODESolver.jl/blob/{commit}{path}#{line}",
         assets=String[],
     ),
     modules = [HOODESolver],
@@ -23,7 +24,6 @@ makedocs(
              "Future work"      => "future_work.md",
              "Types"            => "types.md",
              "Functions"        => "functions.md"],
-    repo = "https://github.com/pnavaro/HOODESolver.jl/blob/{commit}{path}#{line}",
     plugins = [bib], 
 )
 
