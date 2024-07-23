@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Quickstart · HOODESolver.jl</title><meta name="title" content="Quickstart · HOODESolver.jl"/><meta property="og:title" content="Quickstart · HOODESolver.jl"/><meta property="twitter:title" content="Quickstart · HOODESolver.jl"/><meta name="description" content="Documentation for HOODESolver.jl."/><meta property="og:description" content="Documentation for HOODESolver.jl."/><meta property="twitter:description" content="Documentation for HOODESolver.jl."/><meta property="og:url" content="https://pnavaro.github.io/HOODESolver.jl/quickstart/"/><meta property="twitter:url" content="https://pnavaro.github.io/HOODESolver.jl/quickstart/"/><link rel="canonical" href="https://pnavaro.github.io/HOODESolver.jl/quickstart/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="HOODESolver.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">HOODESolver.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Documentation</a></li><li><a class="tocitem" href="../numerical_method/">Numerical Method</a></li><li><a class="tocitem" href="../common_interface/">DifferentialEquations</a></li><li class="is-active"><a class="tocitem" href>Quickstart</a><ul class="internal"><li><a class="tocitem" href="#Hénon-Heiles-Example"><span>Hénon-Heiles Example</span></a></li><li><a class="tocitem" href="#Input-parameters"><span>Input parameters</span></a></li><li><a class="tocitem" href="#Exit-arguments"><span>Exit arguments</span></a></li><li><a class="tocitem" href="#Linear-non-homogeneous-case"><span>Linear non-homogeneous case</span></a></li><li><a class="tocitem" href="#Accuracy-of-the-result-according-to-the-time-interval"><span>Accuracy of the result according to the time interval</span></a></li></ul></li><li><a class="tocitem" href="../charged_particle/">Charged Particle</a></li><li><a class="tocitem" href="../future_work/">Future work</a></li><li><a class="tocitem" href="../types/">Types</a></li><li><a class="tocitem" href="../functions/">Functions</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Quickstart</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Quickstart</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/pnavaro/HOODESolver.jl/blob/{commit}{path}#{line}" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/pnavaro/HOODESolver.jl/blob/master/docs/src/quickstart.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Quickstart"><a class="docs-heading-anchor" href="#Quickstart">Quickstart</a><a id="Quickstart-1"></a><a class="docs-heading-anchor-permalink" href="#Quickstart" title="Permalink"></a></h1><h2 id="Hénon-Heiles-Example"><a class="docs-heading-anchor" href="#Hénon-Heiles-Example">Hénon-Heiles Example</a><a id="Hénon-Heiles-Example-1"></a><a class="docs-heading-anchor-permalink" href="#Hénon-Heiles-Example" title="Permalink"></a></h2><p>We consider the system of Hénon-Heiles satisfied by <span>$u(t)=(u_1, u_2, u_3, u_4)(t)$</span>.</p><p class="math-container">\[\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(u), \;\;\; u(t_{start})=u_{inn}\in\mathbb{R}^4,\]</p><p>where <span>$A$</span> and <span>$f$</span> are selected as follows</p><p class="math-container">\[A=
+\left(
+\begin{array}{cccc}
+0 &amp; 0 &amp; 1 &amp; 0  \\
+0 &amp; 0 &amp; 0 &amp; 0  \\
+-1 &amp; 0 &amp; 0 &amp; 0  \\
+0 &amp; 0 &amp; 0 &amp; 0  
+\end{array}
+\right) \;\;\;\; \text{ and } \;\;\;\;
+f(u) = \left(
+\begin{array}{cccc}
+0 \\
+u_4\\
+-2 u_1 u_2\\
+-u_2-u_1^2+u_2^2
+\end{array}
+\right).\]</p><p>one chooses for example, <span>$\varepsilon=0.001$</span> and <span>$u_{in} = (0.12, 0.12, 0.12, 0.12)$</span></p><h2 id="Input-parameters"><a class="docs-heading-anchor" href="#Input-parameters">Input parameters</a><a id="Input-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Input-parameters" title="Permalink"></a></h2><p>The input arguments use the same format as the ODE package. </p><p>Thus, first of all, we must define the arguments necessary to construct the problem (1), namely</p><ul><li>the <span>$f$</span> function (in the form <em>Julia</em>) </li><li>the initial condition <span>$u_{in}$</span>.</li><li>the initial time <span>$t_{start}$</span> and final time <span>$t_{end}$</span>. </li><li>the second parameter of the </li><li>the <span>$A$</span> matrix </li><li><span>$\varepsilon \in ]0, 1]$</span></li></ul><pre><code class="language-julia hljs">using HOODESolver, Plots
+
+epsilon= 0.0001
+
+A = [ 0 0 1 0 ;
+      0 0 0 0 ;
+     -1 0 0 0 ;
+      0 0 0 0 ]
+
+f1 = LinearHOODEOperator( epsilon, A)
+
+f2 = (u,p,t) -&gt;  [ 0, u[4], 2*u[1]*u[2], -u[2] - u[1]^2 + u[2]^2 ]
+
+tspan = (0.0, 3.0)
+
+u0 = [0.55, 0.12, 0.03, 0.89]
+
+prob = SplitODEProblem(f1, f2, u0, tspan);</code></pre><p>From the <code>prob</code> problem, we can now switch to its numerical resolution. </p><p>To do this, the numerical parameters are defined </p><ul><li>the number of time slots <span>$N_t$</span> which defines the time step <span>$\Delta t = \frac{t_{\text{end}}-t_{start}}{N_t}$</span> but you can set the value of time step <code>dt</code> in the <code>solve</code> call.</li><li>the <span>$r$</span> order of the method </li><li>the number of <span>$N_\tau$</span> points in the <span>$\tau$</span> direction... </li><li>the order of preparation <span>$q$</span> of the initial condition </li></ul><p>The default settings are : <span>$N_t=100$</span>, <span>$r=4$</span>, <span>$N_\tau=32$</span> and <span>$q=r+2=6$</span> To solve the problem with the default parameters, just call the <code>solve</code> command with the problem already defined as parameter</p><pre><code class="language-julia hljs">sol = solve(prob, HOODEAB(), dt=0.1);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">solve function prob=HOODEProblem{Float64}(HOODESolver.HOODEFunction{false, 3}(Main.var&quot;#1#2&quot;()), [0.55, 0.12, 0.03, 0.89], (0.0, 3.0), missing, [0 0 1 0; 0 0 0 0; -1 0 0 0; 0 0 0 0], 0.0001, missing),
+ nb_tau=32, order=4, order_prep=6, dense=true,
+ nb_t=30, getprecision=true, verbose=100
+
+ 30/30
+
+ 35/35</code></pre><p>Which is equivalent to <code>HOODEAB( order=4, nb_tau=32 )</code></p><h3 id="Exhaustive-definition-of-the-parameters"><a class="docs-heading-anchor" href="#Exhaustive-definition-of-the-parameters">Exhaustive definition of the parameters</a><a id="Exhaustive-definition-of-the-parameters-1"></a><a class="docs-heading-anchor-permalink" href="#Exhaustive-definition-of-the-parameters" title="Permalink"></a></h3><ul><li><code>prob</code> : problem defined by <code>SplitODEProblem</code> </li><li><code>nb_tau=32</code> : <span>$N_{\tau}$</span></li><li><code>order=4</code> : order <span>$r$</span> of the method</li><li><code>order_prep=order+2</code> : order of preparation of initial data</li><li><code>dense=true</code> : indicates whether or not to keep the data from the fourier transform, if <code>dense=false</code>, processing is faster but interpolation can no longer be done.</li><li><code>nb_t=100</code> : <span>$N_t$</span></li><li><code>getprecision=dense</code> : indicates whether the accuracy is calculated, the method used to calculate the accuracy multiplies the processing time by 2.</li><li><code>verbose=100</code> : trace level, if <code>verbose=0</code> then nothing is displayed.</li><li><code>par_u0</code> : If we have to make several calls to <code>solve</code> with the same initial data and in the same order, we can pass in parameter the already calculated data.</li><li><code>p_coef</code> : table with the coefficients of the Adams-Bashforth method. This array can be used to optimize several calls with the same parameters.</li></ul><h2 id="Exit-arguments"><a class="docs-heading-anchor" href="#Exit-arguments">Exit arguments</a><a id="Exit-arguments-1"></a><a class="docs-heading-anchor-permalink" href="#Exit-arguments" title="Permalink"></a></h2><p>As an output, a structure of type <code>ODESolution</code> from <a href="https://diffeq.sciml.ai/stable/basics/solution/">DifferentialEquations.jl</a>. This structure can be seen as a function of t, it can also be seen as an array. Example:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; sol.prob</code><code class="nohighlight hljs ansi" style="display:block;"><span class="sgr38_2" style="color:#56b6c2">ODEProblem</span> with uType <span class="sgr38_2" style="color:#56b6c2">Vector{Float64}</span> and tType <span class="sgr38_2" style="color:#56b6c2">Float64</span>. In-place: <span class="sgr38_2" style="color:#56b6c2">false</span>
+timespan: (0.0, 3.0)
+u0: 4-element Vector{Float64}:
+ 0.55
+ 0.12
+ 0.03
+ 0.89</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sol.alg</code><code class="nohighlight hljs ansi" style="display:block;">HOODESolver.HOODETwoScalesAB()</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; t=2.541451547</code><code class="nohighlight hljs ansi" style="display:block;">2.541451547</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sol(t)</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{Float64}:
+ -0.5364409361971507
+  1.5936478973290051
+ -0.124482679360465
+  0.7189258982198888</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sol[end]</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{Float64}:
+  0.36354863065271914
+  2.0384405589059846
+ -0.4134978102269046
+  1.3093799931994603</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; sol(3.0)</code><code class="nohighlight hljs ansi" style="display:block;">4-element Vector{Float64}:
+  0.36354863070081406
+  2.0384405592395702
+ -0.4134978103117947
+  1.3093799933948773</code></pre><p>To view the result, you can also use Plot, for example</p><pre><code class="language-julia hljs">plot(sol)</code></pre><img src="48899fbe.svg" alt="Example block output"/><h2 id="Linear-non-homogeneous-case"><a class="docs-heading-anchor" href="#Linear-non-homogeneous-case">Linear non-homogeneous case</a><a id="Linear-non-homogeneous-case-1"></a><a class="docs-heading-anchor-permalink" href="#Linear-non-homogeneous-case" title="Permalink"></a></h2><p>The following non-homogeneous linear system is considered to be satisfied by <span>$u(t)=(u_1, u_2, u_3, u_4)(t)$</span></p><p class="math-container">\[\frac{d u }{dt} = \frac{1}{\varepsilon} Au + f(t, u), \;\;\; u(0)=u_in\in\mathbb{R}^4,\]</p><p>where <span>$A$</span> and <span>$f$</span> are selected as follows</p><p class="math-container">\[A=
+\left(
+\begin{array}{cccc}
+0 &amp; 0 &amp; 1 &amp; 0  \\
+0 &amp; 0 &amp; 0 &amp; 0  \\
+-1 &amp; 0 &amp; 0 &amp; 0  \\
+0 &amp; 0 &amp; 0 &amp; 0  
+\end{array}
+\right) \;\;\; \text{ and } \;\;\;
+f(t, u) = Bu +\alpha t +\beta \;\; \text{ with  } \;\;
+B\in {\mathcal M}_{4, 4}(\mathbb{R}), \alpha, \beta \in \mathbb{R}^4,\]</p><p><span>$B, \alpha, \beta$</span> are chosen randomly.</p><p>We wish to obtain a high precision, so we will use BigFloat real numbers, they are encoded on 256 bits by default which gives a precision bound of about <span>$2^{-256}. \approx 10^{-77}$</span>.  At the end, we compare a calculated result with an exact result. For this, you must use the dedicated <a href="../types/#HOODESolver.HOODEProblem"><code>HOODEProblem</code></a> type:</p><pre><code class="language-julia hljs">using HOODESolver
+using Plots
+using Random</code></pre><pre><code class="language-julia hljs">rng = MersenneTwister(1111)
+
+A=[0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
+B = 2rand(rng, BigFloat, 4, 4) - ones(BigFloat, 4, 4)
+alpha = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
+beta = 2rand(rng, BigFloat, 4) - ones(BigFloat, 4)
+u0 = [big&quot;0.5&quot;, big&quot;-0.123&quot;, big&quot;0.8&quot;, big&quot;0.7&quot;]
+t_start=big&quot;0.0&quot;
+t_end=big&quot;1.0&quot;
+epsilon=big&quot;0.017&quot;
+
+fct = (u,p,t)-&gt; B*u + t*p[1] +p[2]
+
+prob = HOODEProblem(fct, u0, (t_start,t_end), (alpha, beta), A, epsilon, B)
+
+sol = solve(prob, nb_t=10000, order=8)
+sol.absprec</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">7.505703231386974e-36</code></pre><pre><code class="language-julia hljs">t=big&quot;0.9756534187771&quot;
+sol(t)-getexactsol(sol.par_u0.parphi, u0, t)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{BigFloat}:
+ -6.64279126151980067153161931580208824742979191850982976277636805334408440721282e-38
+ -1.327107408073326332811625797831592452956281353022802107039719778171152704756572e-36
+  1.238667480493066160810452633414763319915191588129214458039465492274383051382844e-36
+ -1.155162591602066199571638849512682488383976241147967286559990246684758104590784e-35</code></pre><pre><code class="language-julia hljs">plot(sol.t,sol.u_tr)</code></pre><img src="713aae52.svg" alt="Example block output"/><h3 id="Calculation-of-the-exact-solution"><a class="docs-heading-anchor" href="#Calculation-of-the-exact-solution">Calculation of the exact solution</a><a id="Calculation-of-the-exact-solution-1"></a><a class="docs-heading-anchor-permalink" href="#Calculation-of-the-exact-solution" title="Permalink"></a></h3><p>This involves calculating the exact solution <span>$u(t)$</span> of the following equation at the instant <span>$t$</span></p><p class="math-container">\[\frac{d u }{dt} = \frac{1}{\varepsilon} Au + Bu +\alpha t +\beta, \;\;\; u(t_{start})=u_{in}\in\mathbb{R}^4\text{, } A \text{ and }B \text{ are defined above }\]</p><p>Let</p><p class="math-container">\[\begin{aligned}
+    M &amp;= \frac{1}{\varepsilon} A + B\\
+    C &amp;= e^{-t_{start} M}u_{in} +M^{-1} e^{-t_{start} M} (t_{start}\alpha+\beta)+ M^{-2} e^{-t_{start} M} \alpha\\
+    C_t &amp;= -M^{-1} e^{-t M} (t\alpha+\beta)-M^{-2} e^{-t M} \alpha\\
+    u(t) &amp;= e^{t M} ( C + C_t)
+\end{aligned}\]</p><p>Which, translated into Julia language, gives the code of the function <code>getexactsol</code> : </p><pre><code class="language-julia hljs">function getexactsol(par::PreparePhi, u0, t)
+    @assert !ismissing(par.matrix_B) &quot;The debug matrix is not defined&quot;
+    sparse_A = par.sparse_Ap[1:(end-1),1:(end-1)]
+    m = (1/par.epsilon)*sparse_A+par.matrix_B
+    t_start = par.t_0
+    if ismissing(par.paramfct)
+        return exp((t-t0)*m)*u0
+    end
+    a, b = par.paramfct
+    mm1 = m^(-1)
+    mm2 = mm1^2
+    e_t0 = exp(-t_start*m)
+    C = e_t0*u0 + mm1*e_t0*(t_start*a+b)+mm2*e_t0*a
+    e_inv = exp(-t*m)
+    e = exp(t*m)
+    C_t = -mm1*e_inv*(t*a+b)-mm2*e_inv*a
+    return e*C+e*C_t
+end</code></pre><h2 id="Accuracy-of-the-result-according-to-the-time-interval"><a class="docs-heading-anchor" href="#Accuracy-of-the-result-according-to-the-time-interval">Accuracy of the result according to the time interval</a><a id="Accuracy-of-the-result-according-to-the-time-interval-1"></a><a class="docs-heading-anchor-permalink" href="#Accuracy-of-the-result-according-to-the-time-interval" title="Permalink"></a></h2><h3 id="Linear-problem"><a class="docs-heading-anchor" href="#Linear-problem">Linear problem</a><a id="Linear-problem-1"></a><a class="docs-heading-anchor-permalink" href="#Linear-problem" title="Permalink"></a></h3><p>From a problem of the previous type, as long as we can calculate the exact solution, it is possible to know exactly what the error is. The initialization data being</p><pre><code class="language-jl hljs">using HOODESolver
+
+A = [0 0 1 0 ; 0 0 0 0 ; -1 0 0 0 ; 0 0 0 0]
+
+u0 = BigFloat.([-34//100, 78//100, 67//100, -56//10])
+
+B = BigFloat.([12//100 -78//100 91//100 34//100
+    -45//100 56//100 3//100 54//100
+    -67//100 09//100 18//100 89//100
+    -91//100 -56//100 11//100 -56//100])
+
+alpha =  BigFloat.([12//100, -98//100, 45//100, 26//100])
+
+beta =  BigFloat.([-4//100, 48//100, 23//100, -87//100])
+
+epsilon = 0.015
+
+t_end = big&quot;1.0&quot;
+
+fct = (u,p,t)-&gt; B*u + t*p[1] +p[2]
+
+prob = HOODEProblem(fct,u0, (big&quot;0.0&quot;,t_end), (alpha, beta), A, epsilon, B)</code></pre><p>Note that the floats are coded on 512 bits.<br/>By varying <span>$\Delta t$</span> from <span>$10^{-2}$</span> to <span>$5.10^{-6}$</span> (i.e. <code>nb_t</code> from <code>100</code> to <code>204800</code>) on a logarithmic scale, for odd orders from 3 to 17 we get these errors</p><h4 id="Precision-of-the-result-with-ε-0.015"><a class="docs-heading-anchor" href="#Precision-of-the-result-with-ε-0.015">Precision of the result with ε = 0.015</a><a id="Precision-of-the-result-with-ε-0.015-1"></a><a class="docs-heading-anchor-permalink" href="#Precision-of-the-result-with-ε-0.015" title="Permalink"></a></h4><p><img src="../img/error_order.png" alt/></p><p>Now with the same initial data, order being setted to 6, and <span>$\varepsilon = 0.15, 0.015, \ldots, 1.5\times 10^{-7}$</span>.<br/>Here floats are coded on 256 bits.</p><h4 id="Precision-of-the-result-with-order-6"><a class="docs-heading-anchor" href="#Precision-of-the-result-with-order-6">Precision of the result with order = 6</a><a id="Precision-of-the-result-with-order-6-1"></a><a class="docs-heading-anchor-permalink" href="#Precision-of-the-result-with-order-6" title="Permalink"></a></h4><p><img src="../img/error_epsilon.png" alt/></p><h3 id="Problem-with-Hénon-Heiles-function"><a class="docs-heading-anchor" href="#Problem-with-Hénon-Heiles-function">Problem with Hénon-Heiles function</a><a id="Problem-with-Hénon-Heiles-function-1"></a><a class="docs-heading-anchor-permalink" href="#Problem-with-Hénon-Heiles-function" title="Permalink"></a></h3><pre><code class="language-jl hljs">u0=BigFloat.([90, -44, 83, 13]//100)
+t_end = big&quot;1.0&quot;
+epsilon=big&quot;0.0017&quot;
+fct = u -&gt; [0, u[4], -2u[1]*u[2], -u[2]-u[1]^2+u[2]^2]
+A = [0 0 1 0; 0 0 0 0;-1 0 0 0; 0 0 0 0]
+prob = HOODEProblem(fct, u0, (big&quot;0.0&quot;,t_end), missing, A, epsilon)</code></pre><p>The float are coded on 512 bits.</p><h4 id="Precision-of-the-result-with-ε-0.0017"><a class="docs-heading-anchor" href="#Precision-of-the-result-with-ε-0.0017">Precision of the result with ε = 0.0017</a><a id="Precision-of-the-result-with-ε-0.0017-1"></a><a class="docs-heading-anchor-permalink" href="#Precision-of-the-result-with-ε-0.0017" title="Permalink"></a></h4><p><img src="../img/error_order_hh.png" alt/></p><p>Now with the same initial data, order being setted to 6, and <span>$\varepsilon = 0.19, 0.019, \ldots, 1.9\times 10^{-8}$</span>.<br/>Here floats are coded on 256 bits.</p><h4 id="Precision-of-the-result-with-order-6-2"><a class="docs-heading-anchor" href="#Precision-of-the-result-with-order-6-2">Precision of the result with order 6</a><a class="docs-heading-anchor-permalink" href="#Precision-of-the-result-with-order-6-2" title="Permalink"></a></h4><p><img src="../img/error_epsilon_hh.png" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../common_interface/">« DifferentialEquations</a><a class="docs-footer-nextpage" href="../charged_particle/">Charged Particle »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Tuesday 23 July 2024 07:43">Tuesday 23 July 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
