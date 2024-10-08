@@ -20,18 +20,18 @@ function testinterface_fct()
         fct = (u,p,t) -> B*u
         prob = HOODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
-        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+        @test isapprox(sol_ref, sol.u[end], atol=1e-7, rtol=1e-6)
         fct = (u,p) -> B*u
         prob = HOODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
-        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+        @test isapprox(sol_ref, sol.u[end], atol=1e-7, rtol=1e-6)
         fct = (u) -> B*u
         prob = HOODEProblem(fct, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
-        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+        @test isapprox(sol_ref, sol.u[end], atol=1e-7, rtol=1e-6)
         prob = HOODEProblem(fct4, u0, (0.0, 1.0), missing, A, epsilon)
         sol = solve(prob)
-        @test isapprox(sol_ref, sol[end], atol=1e-7, rtol=1e-6)
+        @test isapprox(sol_ref, sol.u[end], atol=1e-7, rtol=1e-6)
     end
 end
 
@@ -57,7 +57,7 @@ function testinterface_epsilon()
             ind = 1
             while nb <= 1000
                 sol = solve(prob, nb_t=nb, order=5, dense=false)
-                res_err[ind] = norm(sol[end]-sol_ref,Inf)
+                res_err[ind] = norm(sol.u[end]-sol_ref,Inf)
  #               println("\nnb=$nb epsilon=$eps_v err=$(res_err[ind])")
                 nb *= 10
                 ind += 1
@@ -89,7 +89,7 @@ function testinterface_interpolate()
    #         sol = solve(prob, getprecision=false)
             sol = solve(prob)
             m = 1/epsilon*A+B
-            reftol=norm(exp(t_max*m)*u0-sol[end], Inf)*10
+            reftol=norm(exp(t_max*m)*u0-sol.u[end], Inf)*10
             for j=1:10
                 t=rand(BigFloat)
                 res_ex=exp(t*m)*u0
@@ -121,7 +121,7 @@ function testinterface_interpolate_float()
    #         sol = solve(prob, getprecision=false)
             sol = solve(prob)
             m = 1/epsilon*A+B
-            reftol=norm(exp(t_max*m)*u0-sol[end], Inf)*10
+            reftol=norm(exp(t_max*m)*u0-sol.u[end], Inf)*10
             @test reftol < 1e-6
             for j=1:10
                 t=rand()
@@ -151,8 +151,8 @@ function testinterface_short()
         t_max = big"0.01"
         prob = HOODEProblem(fct, u0, (big"0.0",t_max), missing, A, epsilon)
         sol = solve(prob, getprecision=false, order=order, nb_t=nb)
-        resnorm=norm(exp(t_max*(1/epsilon*A+B))*u0-sol[end], Inf)
-        println("sol=$(sol[end])")
+        resnorm=norm(exp(t_max*(1/epsilon*A+B))*u0-sol.u[end], Inf)
+        println("sol=$(sol.u[end])")
         println("solexact=$(exp(t_max*(1/epsilon*A+B))*u0)")
         println("resnorm=$resnorm")
         @test resnorm < 1e-10
@@ -169,8 +169,8 @@ function tts_time(t_begin, t_end)
         sol = solve(prob, getprecision=false, nb_t=100, order=4)
         m = 1/epsilon*A+B
         solref = exp((t_end-t_begin)*m)*u0
-        println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
-        @test isapprox(sol[end], solref,atol=1e-8, rtol=1e-7)
+        println("sol=$(sol.u[end]) solref=$solref norm=$(norm(sol.u[end]-solref,Inf))")
+        @test isapprox(sol.u[end], solref,atol=1e-8, rtol=1e-7)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=exp((t-t_begin)*m)*u0
@@ -193,8 +193,8 @@ function tts_time_time(t_begin, t_end)
         prob = HOODEProblem(fct, u0, (t_begin,t_end), tuple_p, A, epsilon, B)
         sol = solve(prob, getprecision=false, nb_t=100, order=4)
         solref = getexactsol(sol.par_u0.parphi, u0, t_end)
-        println("sol=$(sol[end]) solref=$solref norm=$(norm(sol[end]-solref,Inf))")
-        @test isapprox(sol[end], solref,atol=1e-8, rtol=1e-7)
+        println("sol=$(sol.u[end]) solref=$solref norm=$(norm(sol.u[end]-solref,Inf))")
+        @test isapprox(sol.u[end], solref,atol=1e-8, rtol=1e-7)
         for i=1:10
             t = rand(BigFloat)*(t_end-t_begin) + t_begin
             res_ex=getexactsol(sol.par_u0.parphi, u0, t)

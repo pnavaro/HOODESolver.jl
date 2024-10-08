@@ -1,6 +1,6 @@
 using HOODESolver: PreparePhi, isexactsol, PrepareTwoScalesPureAB
 using HOODESolver: twoscales_pure_ab, _getresult
-using DifferentialEquations
+using OrdinaryDiffEq
 using LinearAlgebra
 using Random
 using Test

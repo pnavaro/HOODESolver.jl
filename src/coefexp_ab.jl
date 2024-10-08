@@ -33,7 +33,7 @@ function getpolylagrange(t::Vector{T}, k, j) where {T<:Number}
     end
     return result
 end
-function interpolate(tab_time::Vector{T}, tab, order, value) where {T<:Number}
+function interpolate(tab_time::Vector{T}, tab, order::Int, value::T) where {T<:Number}
     res = zeros(Complex{T}, size(tab[1]))
     for i = 0:order
         res .+= getpolylagrange(tab_time, i, order)(value) * tab[i+1]

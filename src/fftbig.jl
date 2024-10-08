@@ -116,12 +116,12 @@ function fftbig(par::PrepareFftBig, signal; flag_inv = false)
         flag_inv = fl,
     )
 end
-fftgen(_::Any, t::Array{Complex{Float64}}) = fft(t, (2,))
-fftgen(_::Any, t::Array{Float64}) = fft(t, (2,))
+fftgen(_::Missing, t::Array{Complex{Float64}}) = fft(t, (2,))
+fftgen(_::Missing, t::Array{Float64}) = fft(t, (2,))
 fftgen(p::PrepareFftBig, t::Array{T}) where {T<:AbstractFloat} = fftbig(p, t)
 fftgen(p::PrepareFftBig, t::Array{Complex{T}}) where {T<:AbstractFloat} = fftbig(p, t)
-ifftgen(_::Any, t::Array{Complex{Float64}}) = ifft(t, (2,))
-ifftgen(_::Any, t::Array{Float64}) = ifft(t, (2,))
+ifftgen(_::Missing, t::Array{Complex{Float64}}) = ifft(t, (2,))
+ifftgen(_::Missing, t::Array{Float64}) = ifft(t, (2,))
 ifftgen(p::PrepareFftBig, t::Array{T}) where {T<:AbstractFloat} =
     fftbig(p, t, flag_inv = true)
 ifftgen(p::PrepareFftBig, t::Array{Complex{T}}) where {T<:AbstractFloat} =

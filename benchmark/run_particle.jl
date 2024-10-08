@@ -1,5 +1,5 @@
 using HOODESolver
-using DifferentialEquations
+using OrdinaryDiffEq
 using LinearAlgebra
 using Plots
 using Random

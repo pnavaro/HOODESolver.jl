@@ -5,7 +5,7 @@ testODE:
 - Date: 2019-11-13
 =#
 using HOODESolver
-using DifferentialEquations
+using OrdinaryDiffEq
 using LinearAlgebra
 using Plots
 using Random
