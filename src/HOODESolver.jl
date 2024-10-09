@@ -6,4 +6,4 @@ export HOODEProblem, HOODEInterpolation, AbstractHOODESolution, HOODESolution
 export LinearHOODEOperator, isconstant, HOODEAB
 export solve, getexactsol
 
-end 
+end

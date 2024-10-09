@@ -8,27 +8,29 @@ ENV["GKSwstype"] = "100"
 bib = CitationBibliography(joinpath(@__DIR__, "references.bib"))
 makedocs(
     sitename = "HOODESolver.jl",
-    authors="Yves Mocquard, Nicolas Crouseilles and Pierre Navaro",
-    format=Documenter.HTML(;
-        prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://pnavaro.github.io/HOODESolver.jl",
+    authors = "Yves Mocquard, Nicolas Crouseilles and Pierre Navaro",
+    format = Documenter.HTML(;
+        prettyurls = get(ENV, "CI", "false") == "true",
+        canonical = "https://pnavaro.github.io/HOODESolver.jl",
         repolink = "https://github.com/pnavaro/HOODESolver.jl/blob/{commit}{path}#{line}",
-        assets=String[],
+        assets = String[],
     ),
     modules = [HOODESolver],
-    pages = ["Documentation"    => "index.md",
-             "Numerical Method" => "numerical_method.md",
-             "OrdinaryDiffEq"   => "common_interface.md",
-             "Quickstart"       => "quickstart.md",
-             "Charged Particle" => "charged_particle.md",
-             "Future work"      => "future_work.md",
-             "Types"            => "types.md",
-             "Functions"        => "functions.md"],
-    plugins = [bib], 
+    pages = [
+        "Documentation" => "index.md",
+        "Numerical Method" => "numerical_method.md",
+        "OrdinaryDiffEq" => "common_interface.md",
+        "Quickstart" => "quickstart.md",
+        "Charged Particle" => "charged_particle.md",
+        "Future work" => "future_work.md",
+        "Types" => "types.md",
+        "Functions" => "functions.md",
+    ],
+    plugins = [bib],
 )
 
 deploydocs(;
-branch = "gh-pages",
+    branch = "gh-pages",
     devbranch = "master",
-    repo="github.com/pnavaro/HOODESolver.jl",
+    repo = "github.com/pnavaro/HOODESolver.jl",
 )
