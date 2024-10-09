@@ -9,7 +9,7 @@ using Plots
 ```
 
 ```@example 4
-using DifferentialEquations
+using OrdinaryDiffEq
 
 epsilon = 0.002
 A = [ 0 0 1 0 ;

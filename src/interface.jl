@@ -92,7 +92,8 @@ function (interp::HOODEInterpolation)(t)
     #    interp.t[1], interp.t[end], 
     #    interp.order)
 end
-(interp::HOODEInterpolation)(vt::Vector{<:Number}) = RecursiveArrayTools.DiffEqArray(interp.(vt),vt)
+(interp::HOODEInterpolation)(vt::Vector{<:Number}) =
+    RecursiveArrayTools.DiffEqArray(interp.(vt), vt)
 if typeof(SciMLBase.AbstractTimeseriesSolution{Float64,Float64,Float64}) == DataType
     abstract type AbstractHOODESolution{T,N} <: SciMLBase.AbstractTimeseriesSolution{T,N,N} end
 else
@@ -136,7 +137,7 @@ struct HOODEETDRK2 <: AbstractHOODEAlgorithm end
 struct HOODEETDRK3 <: AbstractHOODEAlgorithm end
 struct HOODEETDRK4 <: AbstractHOODEAlgorithm end
 
-import SciMLBase:solve
+import SciMLBase: solve
 
 """
     function solve(prob::HOODEProblem{T}; 

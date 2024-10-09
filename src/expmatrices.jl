@@ -23,7 +23,7 @@ function _expmat1(mat)
 
     if valnorm > 1
         b = mat / valnorm
-        coef_int = Integer(floor(valnorm))
+        coef_int = floor(Int, valnorm)
         coef_mantissa = valnorm - coef_int
         return _expmat2(b)^coef_int * _expmat2(coef_mantissa * b)
     else
