@@ -1,7 +1,7 @@
 name = "HOODESolver"
 uuid = "217528c2-21c4-4222-9975-97f0b0cbd7c1"
 authors = ["Yves Mocquard", "Nicolas Crouseilles", "Pierre Navaro"]
-version = "0.2.7"
+version = "0.2.8"
 
 [deps]
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
