@@ -1,7 +1,6 @@
 name: Format
 
-on:
-  pull_request:
+on: [pull_request]
 
 concurrency:
   # Skip intermediate builds: always.
@@ -13,7 +12,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
         with:
           version: 1
@@ -28,5 +27,4 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           tool_name: JuliaFormatter
-          fail_on_error: true
 

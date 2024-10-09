@@ -41,7 +41,7 @@ end
 
 Base.exp(mat::Matrix{Complex{BigFloat}}) = _expmat0(mat)
 Base.exp(mat::Matrix{BigFloat}) = _expmat0(mat)
-Base.exp(mat::Matrix{Integer}) = _expmat1(mat)
+# Base.exp(mat::Matrix{Integer}) = _expmat1(mat)
 
 Base.exp(mat::SparseMatrixCSC{Complex{BigFloat},Int64}) = _expmat0(mat)
 Base.exp(mat::SparseMatrixCSC{BigFloat,Int64}) = _expmat0(mat)
